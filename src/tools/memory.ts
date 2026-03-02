@@ -1,5 +1,5 @@
-import { SmriteaClient } from 'smritea';
-import type { Memory, SearchResult } from 'smritea';
+import { SmriteaClient } from 'smritea-sdk';
+import type { Memory, SearchResult } from 'smritea-sdk';
 import type { AddMemoryInput, SearchMemoriesInput, GetMemoryInput, DeleteMemoryInput } from '../types.js';
 
 interface ToolResult {
