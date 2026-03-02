@@ -1,17 +1,14 @@
 import { mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import type { SelectAppInput } from '../types.js';
 import type { ResolvedConfig } from '../config.js';
-
-interface ToolResult {
-  content: Array<{ type: 'text'; text: string }>;
-}
 
 const SMRITEA_DIR = join(process.cwd(), '.smritea');
 const CONFIG_PATH = join(SMRITEA_DIR, 'config.json');
 const GITIGNORE_PATH = join(SMRITEA_DIR, '.gitignore');
 
-export function handleSelectApp(input: SelectAppInput): ToolResult {
+export function handleSelectApp(input: SelectAppInput): CallToolResult {
   mkdirSync(SMRITEA_DIR, { recursive: true });
 
   const config: { app_id: string; app_name?: string } = { app_id: input.app_id };
@@ -45,7 +42,7 @@ export function handleSelectApp(input: SelectAppInput): ToolResult {
  *
  * For now, returns the currently active app from config.
  */
-export function handleListApps(config: ResolvedConfig): ToolResult {
+export function handleListApps(config: ResolvedConfig): CallToolResult {
   return {
     content: [
       {

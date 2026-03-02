@@ -1,10 +1,7 @@
 import { SmriteaClient } from 'smritea-sdk';
 import type { Memory, SearchResult } from 'smritea-sdk';
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import type { AddMemoryInput, SearchMemoriesInput, GetMemoryInput, DeleteMemoryInput } from '../types.js';
-
-interface ToolResult {
-  content: Array<{ type: 'text'; text: string }>;
-}
 
 export function formatMemory(memory: Memory): string {
   return JSON.stringify(memory, null, 2);
@@ -17,7 +14,7 @@ export function formatSearchResult(result: SearchResult): string {
 export async function handleAddMemory(
   client: SmriteaClient,
   input: AddMemoryInput,
-): Promise<ToolResult> {
+): Promise<CallToolResult> {
   const memory = await client.add(input.content, {
     userId: input.user_id,
     metadata: input.metadata,
@@ -31,7 +28,7 @@ export async function handleAddMemory(
 export async function handleSearchMemories(
   client: SmriteaClient,
   input: SearchMemoriesInput,
-): Promise<ToolResult> {
+): Promise<CallToolResult> {
   const results = await client.search(input.query, {
     userId: input.user_id,
     limit: input.limit,
@@ -59,7 +56,7 @@ export async function handleSearchMemories(
 export async function handleGetMemory(
   client: SmriteaClient,
   input: GetMemoryInput,
-): Promise<ToolResult> {
+): Promise<CallToolResult> {
   const memory = await client.get(input.memory_id);
 
   return {
@@ -70,7 +67,7 @@ export async function handleGetMemory(
 export async function handleDeleteMemory(
   client: SmriteaClient,
   input: DeleteMemoryInput,
-): Promise<ToolResult> {
+): Promise<CallToolResult> {
   await client.delete(input.memory_id);
 
   return {
