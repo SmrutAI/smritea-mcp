@@ -2,13 +2,14 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { SmriteaClient } from 'smritea';
 import { loadConfig } from './config.js';
-import { AddMemoryInput, SearchMemoriesInput, GetMemoryInput, DeleteMemoryInput } from './types.js';
+import { AddMemoryInput, SearchMemoriesInput, GetMemoryInput, DeleteMemoryInput, SelectAppInput } from './types.js';
 import {
   handleAddMemory,
   handleSearchMemories,
   handleGetMemory,
   handleDeleteMemory,
 } from './tools/memory.js';
+import { handleSelectApp, handleListApps } from './tools/app.js';
 
 export async function startServer(): Promise<void> {
   const config = loadConfig();
@@ -50,6 +51,20 @@ export async function startServer(): Promise<void> {
     'Delete a memory by its ID. This action is irreversible.',
     DeleteMemoryInput.shape,
     async (input) => handleDeleteMemory(client, DeleteMemoryInput.parse(input)),
+  );
+
+  server.tool(
+    'select_app',
+    'Set the active smritea app for this project. Writes a project-scoped config to .smritea/config.json so all subsequent memory operations use this app.',
+    SelectAppInput.shape,
+    (input) => handleSelectApp(SelectAppInput.parse(input)),
+  );
+
+  server.tool(
+    'list_apps',
+    'Show the currently active app. Full app listing via API key auth is not yet available.',
+    {},
+    () => handleListApps(config),
   );
 
   const transport = new StdioServerTransport();

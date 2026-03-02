@@ -25,3 +25,9 @@ export const DeleteMemoryInput = z.object({
   memory_id: z.string().min(1).describe('The memory ID to delete'),
 });
 export type DeleteMemoryInput = z.infer<typeof DeleteMemoryInput>;
+
+export const SelectAppInput = z.object({
+  app_id: z.string().min(1).describe('The smritea app ID to use for this project'),
+  app_name: z.string().optional().describe('Optional display name for the app'),
+});
+export type SelectAppInput = z.infer<typeof SelectAppInput>;
