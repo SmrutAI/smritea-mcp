@@ -2,18 +2,43 @@ import { z } from 'zod';
 
 export const AddMemoryInput = z.object({
   content: z.string().min(1).describe('The memory content to store'),
-  user_id: z.string().optional().describe('User ID to associate with this memory'),
+  actor_id: z.string().optional().describe('Actor ID to associate with this memory (UUID)'),
+  actor_type: z
+    .enum(['user', 'agent', 'system'])
+    .optional()
+    .describe('Actor type: "user", "agent", or "system". Required when actor_id is provided.'),
+  actor_name: z.string().max(255).optional().describe('Display name of the actor (optional, max 255 chars)'),
+  conversation_id: z.string().optional().describe('Conversation ID to scope this memory to (UUID)'),
   metadata: z.record(z.string(), z.unknown()).optional().describe('Optional key-value metadata'),
 });
 export type AddMemoryInput = z.infer<typeof AddMemoryInput>;
 
 export const SearchMemoriesInput = z.object({
   query: z.string().min(1).describe('Natural language search query'),
-  user_id: z.string().optional().describe('Filter memories by user ID'),
-  limit: z.number().int().positive().optional().describe('Maximum number of results'),
-  method: z.string().optional().describe('Search method: quick_search, deep_search, context_aware_search'),
-  threshold: z.number().min(0).max(1).optional().describe('Minimum relevance score (0.0-1.0)'),
-  graph_depth: z.number().int().positive().optional().describe('Graph traversal depth override'),
+  actor_id: z.string().optional().describe('Filter memories by actor ID (UUID)'),
+  actor_type: z
+    .enum(['user', 'agent', 'system'])
+    .optional()
+    .describe('Filter by actor type: "user", "agent", or "system".'),
+  limit: z
+    .number()
+    .int()
+    .min(0)
+    .max(100)
+    .optional()
+    .describe('Maximum number of results (0 = use app default, typically 20; max 100)'),
+  method: z
+    .enum(['quick_search', 'deep_search', 'context_aware_search', 'graph_proximity', 'diversified', 'semantic_rerank'])
+    .optional()
+    .describe('Search method. Defaults to app config (typically quick_search).'),
+  threshold: z.number().min(0).max(1).optional().describe('Minimum relevance score filter (0.0–1.0). Note: pipeline uses RRF scores (~0.06), not cosine similarity.'),
+  graph_depth: z
+    .number()
+    .int()
+    .min(0)
+    .max(5)
+    .optional()
+    .describe('Graph traversal depth (0 = use app config; 1–5 = explicit override)'),
   conversation_id: z.string().optional().describe('Filter to a specific conversation'),
 });
 export type SearchMemoriesInput = z.infer<typeof SearchMemoriesInput>;

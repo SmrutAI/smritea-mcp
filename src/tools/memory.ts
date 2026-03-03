@@ -27,8 +27,15 @@ export async function handleAddMemory(
   firstPersonUserId?: string,
 ): Promise<CallToolResult> {
   try {
+    // Resolve actor_id: use what the AI provided; fall back to the configured first-person ID.
+    // Resolve actor_type: use what the AI provided; default to 'user' whenever actor_id is set.
+    const actorId = input.actor_id ?? firstPersonUserId;
+    const actorType = input.actor_type ?? (actorId !== undefined ? 'user' : undefined);
     const memory = await client.add(input.content, {
-      userId: input.user_id ?? firstPersonUserId,
+      actorId,
+      actorType,
+      actorName: input.actor_name,
+      conversationId: input.conversation_id,
       metadata: input.metadata,
     });
     return {
@@ -45,8 +52,12 @@ export async function handleSearchMemories(
   firstPersonUserId?: string,
 ): Promise<CallToolResult> {
   try {
+    // Same actor resolution as add_memory.
+    const actorId = input.actor_id ?? firstPersonUserId;
+    const actorType = input.actor_type ?? (actorId !== undefined ? 'user' : undefined);
     const results = await client.search(input.query, {
-      userId: input.user_id ?? firstPersonUserId,
+      actorId,
+      actorType,
       limit: input.limit,
       method: input.method,
       threshold: input.threshold,

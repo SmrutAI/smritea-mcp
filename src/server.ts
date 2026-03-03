@@ -12,7 +12,11 @@ import {
 } from './tools/memory.js';
 import { handleSelectApp, handleListApps } from './tools/app.js';
 
-export async function startServer(): Promise<void> {
+/**
+ * Creates and fully configures an McpServer with all tools and prompts.
+ * Does NOT connect a transport — caller is responsible for connecting.
+ */
+export function createMcpServer(): McpServer {
   const config = loadConfig();
 
   const client = new SmriteaClient({
@@ -35,13 +39,18 @@ export async function startServer(): Promise<void> {
 
   const firstPersonUserId = config.firstPersonUserId;
 
+  const firstPersonHint = firstPersonUserId
+    ? ` When the user refers to themselves ("I", "my", "me"), set actor_id="${firstPersonUserId}" and actor_type="user".` +
+      ' If you omit actor_id, the server fills it from the configured first-person ID as a fallback.'
+    : ' Set actor_id (UUID) and actor_type ("user", "agent", or "system") to scope the memory to a specific actor.';
+
   server.tool(
     'add_memory',
     'Store a memory in smritea. Call this whenever the user shares a preference, decision, fact ' +
     'about themselves, or anything they would want recalled in a future conversation. Do not wait ' +
     'to be asked — if the user says "I prefer X", "my X is Y", "remember that", or "don\'t forget", ' +
-    'call this immediately. If the user says "I" or refers to themselves, omit user_id — it is ' +
-    'automatically set to the configured default.',
+    'call this immediately.' +
+    firstPersonHint,
     AddMemoryInput.shape,
     async (input) => handleAddMemory(client, AddMemoryInput.parse(input), firstPersonUserId),
   );
@@ -51,8 +60,8 @@ export async function startServer(): Promise<void> {
     'Search smritea memories by natural language query. Call this at the start of a new task or ' +
     'topic to surface relevant context — user preferences, past decisions, stated constraints — ' +
     'without waiting for the user to re-explain them. Also call when the user asks "do you remember", ' +
-    '"what do you know about", or "remind me". Omit user_id when searching for the current user\'s ' +
-    'own memories — it defaults to the configured user automatically.',
+    '"what do you know about", or "remind me".' +
+    firstPersonHint,
     SearchMemoriesInput.shape,
     async (input) => handleSearchMemories(client, SearchMemoriesInput.parse(input), firstPersonUserId),
   );
@@ -113,6 +122,14 @@ export async function startServer(): Promise<void> {
     }),
   );
 
+  return server;
+}
+
+/**
+ * Stdio entry point — unchanged behaviour for existing users.
+ */
+export async function startServer(): Promise<void> {
+  const server = createMcpServer();
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error('smritea MCP server running (stdio)');

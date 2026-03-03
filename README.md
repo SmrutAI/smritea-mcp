@@ -46,6 +46,30 @@ On success, credentials are saved to `~/.smritea/mcp-config.json`.
 }
 ```
 
+**Cursor / network-connected clients (SSE mode)** — start the server first, then point Cursor at it:
+
+```bash
+# Start the SSE server (default port 3000, runs in background)
+npx -y smritea-mcp serve-sse &
+
+# Custom port
+npx -y smritea-mcp serve-sse 8080 &
+```
+
+Then add to `~/.cursor/mcp.json` (or Cursor Settings → MCP):
+
+```json
+{
+  "mcpServers": {
+    "smritea": {
+      "url": "http://localhost:3000/sse"
+    }
+  }
+}
+```
+
+> **Note**: `serve-sse` must be running before you start Cursor. Each client connection gets its own isolated session — you can connect multiple clients simultaneously on the same port.
+
 ### Step 3 — Set the active app (once per project)
 
 In a conversation with Claude Code, run:
@@ -140,13 +164,14 @@ Add a new memory to the active smritea app.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `content` | string | Yes | The memory content to store |
-| `user_id` | string | No | User ID to associate with this memory |
+| `actor_id` | string | No | Actor UUID to associate with this memory. Defaults to the configured `first_person_user_id` when omitted. |
+| `actor_type` | string | No | Actor type: `user`, `agent`, or `system`. Required when `actor_id` is provided. Defaults to `user` when omitted alongside `actor_id`. |
 | `metadata` | object | No | Optional key-value metadata |
 
 **Example**
 
 ```
-Add a memory: "User prefers dark mode and uses vim keybindings" for user_id "alice"
+Add a memory: "User prefers dark mode and uses vim keybindings" for actor_id "550e8400-e29b-41d4-a716-446655440000" actor_type "user"
 ```
 
 ---
@@ -160,7 +185,8 @@ Search for memories semantically. Returns results ranked by relevance score.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `query` | string | Yes | Natural language search query |
-| `user_id` | string | No | Filter results to a specific user |
+| `actor_id` | string | No | Filter results to a specific actor (UUID). Defaults to the configured `first_person_user_id` when omitted. |
+| `actor_type` | string | No | Filter by actor type: `user`, `agent`, or `system`. Defaults to `user` when omitted alongside `actor_id`. |
 | `limit` | number | No | Maximum number of results to return |
 | `method` | string | No | Search method: `quick_search`, `deep_search`, `context_aware_search` |
 | `threshold` | number | No | Minimum relevance score (0.0–1.0) |
@@ -170,7 +196,7 @@ Search for memories semantically. Returns results ranked by relevance score.
 **Example**
 
 ```
-Search memories for "editor preferences" for user_id "alice", limit 5
+Search memories for "editor preferences" for actor_id "550e8400-e29b-41d4-a716-446655440000" actor_type "user", limit 5
 ```
 
 ---
@@ -201,14 +227,30 @@ Delete a memory by its ID. This action is irreversible.
 
 ## How it works
 
-smritea-mcp is a TypeScript MCP server using `stdio` transport. It wraps the [smritea TypeScript SDK](https://github.com/SmrutAI/smritea-sdk) and exposes memory operations as MCP tools.
+smritea-mcp is a TypeScript MCP server that wraps the [smritea TypeScript SDK](https://github.com/SmrutAI/smritea-sdk) and exposes memory operations as MCP tools.
+
+It supports two transports:
+
+**stdio** (default, for Claude Code and local clients):
 
 All JSON-RPC communication flows over stdout. All logging goes to stderr so it never interferes with the MCP protocol stream.
 
 ```
-AI assistant (Claude Code / Cursor)
+AI assistant (Claude Code)
     ↕ JSON-RPC over stdio
-smritea-mcp (this server)
+smritea-mcp serve
+    ↕ HTTPS
+smritea TypeScript SDK  →  smritea Cloud API
+```
+
+**SSE** (for Cursor and network-connected clients):
+
+The server runs as an HTTP server. Clients open a persistent `GET /sse` EventStream connection to receive server messages, and send messages via `POST /messages?sessionId=<id>`. Each client connection gets its own isolated McpServer instance.
+
+```
+AI assistant (Cursor / other)
+    ↕ SSE stream (GET /sse) + POST /messages
+smritea-mcp serve-sse
     ↕ HTTPS
 smritea TypeScript SDK  →  smritea Cloud API
 ```

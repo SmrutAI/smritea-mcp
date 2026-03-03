@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { startServer } from './server.js';
+import { startSseServer } from './sse.js';
 import { createInterface } from 'node:readline/promises';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
@@ -50,6 +51,16 @@ if (subcommand === 'serve' || subcommand === undefined) {
     console.error('Fatal:', err);
     process.exit(1);
   });
+} else if (subcommand === 'serve-sse') {
+  const port = parseInt(process.argv[3] ?? '3000', 10);
+  if (isNaN(port)) {
+    console.error('Error: port must be a number');
+    process.exit(1);
+  }
+  startSseServer(port).catch((err: unknown) => {
+    console.error('Fatal:', err);
+    process.exit(1);
+  });
 } else if (subcommand === 'init') {
   runInit().catch((err: unknown) => {
     console.error('Init failed:', err);
@@ -57,6 +68,6 @@ if (subcommand === 'serve' || subcommand === undefined) {
   });
 } else {
   console.error(`Unknown subcommand: ${subcommand}`);
-  console.error('Usage: smritea-mcp [serve|init]');
+  console.error('Usage: smritea-mcp [serve|serve-sse [port]|init]');
   process.exit(1);
 }
