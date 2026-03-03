@@ -15,16 +15,30 @@ repos:
 
   - repo: local
     hooks:
+      - id: mcp-format
+        name: Format
+        entry: make format
+        language: system
+        files: \.(ts)$
+        pass_filenames: false
+
       - id: mcp-lint
-        name: Lint
+        name: Lint (typecheck + eslint)
         entry: make lint
         language: system
-        files: ^src/.*\.ts$
+        files: \.(ts)$
         pass_filenames: false
 
       - id: mcp-build
         name: Build
         entry: make build
         language: system
-        files: ^src/.*\.ts$
+        files: \.(ts)$
+        pass_filenames: false
+
+      - id: mcp-test
+        name: Test
+        entry: make test
+        language: system
+        files: \.(ts)$
         pass_filenames: false

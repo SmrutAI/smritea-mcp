@@ -1,10 +1,14 @@
-.PHONY: lint typecheck build test publish help
+.PHONY: lint typecheck build test format publish help
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
 
 test: ## Run smritea-mcp tests
 	npm run test
+
+format: ## Auto-fix TypeScript with ESLint (--fix)
+	npm install --silent
+	npm run lint:fix
 
 lint: ## Type-check and lint smritea-mcp TypeScript
 	npm install --silent
