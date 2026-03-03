@@ -21,10 +21,22 @@ async function runInit(): Promise<void> {
       process.exit(1);
     }
 
+    const firstPersonUserIdAnswer = await rl.question(
+      'Your name or user ID (used when you say "I prefer…", "I like…") [optional]: ',
+    );
+    const firstPersonUserId = firstPersonUserIdAnswer.trim() || undefined;
+
     mkdirSync(configDir, { recursive: true });
-    writeFileSync(configPath, JSON.stringify({ api_key: apiKey, base_url: baseUrl }, null, 2) + '\n');
+    const configData: Record<string, string> = { api_key: apiKey, base_url: baseUrl };
+    if (firstPersonUserId !== undefined) {
+      configData['first_person_user_id'] = firstPersonUserId;
+    }
+    writeFileSync(configPath, JSON.stringify(configData, null, 2) + '\n');
 
     console.error('✓ Config saved to ' + configPath);
+    if (firstPersonUserId !== undefined) {
+      console.error(`✓ First-person user ID set to: ${firstPersonUserId}`);
+    }
     console.error('Next: use the select_app tool in your AI assistant to set an app ID.');
   } finally {
     rl.close();

@@ -6,23 +6,55 @@ MCP (Model Context Protocol) server for [smritea](https://smritea.ai) — gives 
 
 ## Installation
 
+### Step 1 — Run init
+
 ```bash
-npx smritea-mcp init     # First-time setup: saves API key + base URL
-npx smritea-mcp serve    # Start the MCP server (stdio transport)
+npx -y smritea-mcp init
 ```
 
-### Claude Code (`~/.claude/mcp.json`)
+This interactive wizard prompts for three values:
+
+```
+API base URL [https://api.smritea.ai]:
+```
+Press Enter to use the default (`https://api.smritea.ai`). If you are self-hosting smritea, enter your custom URL here.
+
+```
+API key:
+```
+Paste your smritea API key (required). You can find it in the smritea dashboard under API Keys.
+
+```
+Your name or user ID (used when you say "I prefer…", "I like…") [optional]:
+```
+Optional. If set, this value is automatically used as the `user_id` when you refer to yourself in conversation ("I prefer dark mode", "I like Python"), so memories about you are stored under a consistent ID without having to pass `user_id` explicitly every time.
+
+On success, credentials are saved to `~/.smritea/mcp-config.json`.
+
+### Step 2 — Register the server with your AI client
+
+**Claude Code** — add to `~/.claude.json` under the `mcpServers` key:
 
 ```json
 {
   "mcpServers": {
     "smritea": {
       "command": "npx",
-      "args": ["smritea-mcp", "serve"]
+      "args": ["-y", "smritea-mcp", "serve"]
     }
   }
 }
 ```
+
+### Step 3 — Set the active app (once per project)
+
+In a conversation with Claude Code, run:
+
+```
+Use the select_app tool with app_id "<your-app-id>"
+```
+
+This writes `.smritea/config.json` in your project directory (automatically gitignored) so all memory operations in that project are scoped to the correct app.
 
 ---
 
@@ -37,9 +69,12 @@ Created once by `npx smritea-mcp init`. Stores credentials shared across all pro
 ```json
 {
   "api_key": "sk-...",
-  "base_url": "https://api.smritea.ai"
+  "base_url": "https://api.smritea.ai",
+  "first_person_user_id": "alice"
 }
 ```
+
+`first_person_user_id` is optional. When set, it is automatically used as `user_id` for memory operations where the user refers to themselves ("I prefer…", "I like…") without explicitly passing a `user_id`.
 
 ### Project-scoped (`.smritea/config.json`)
 
@@ -59,6 +94,7 @@ Created per-project by the `select_app` tool. Determines which smritea app recei
 | `SMRITEA_API_KEY` | `api_key` in user config |
 | `SMRITEA_BASE_URL` | `base_url` in user config |
 | `SMRITEA_APP_ID` | `app_id` in project config |
+| `SMRITEA_FIRST_PERSON_USER_ID` | `first_person_user_id` in user config |
 
 ---
 
@@ -128,6 +164,8 @@ Search for memories semantically. Returns results ranked by relevance score.
 | `limit` | number | No | Maximum number of results to return |
 | `method` | string | No | Search method: `quick_search`, `deep_search`, `context_aware_search` |
 | `threshold` | number | No | Minimum relevance score (0.0–1.0) |
+| `graph_depth` | number | No | Graph traversal depth override |
+| `conversation_id` | string | No | Filter to a specific conversation |
 
 **Example**
 

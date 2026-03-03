@@ -24,10 +24,11 @@ export function formatError(err: unknown): string {
 export async function handleAddMemory(
   client: SmriteaClient,
   input: AddMemoryInput,
+  firstPersonUserId?: string,
 ): Promise<CallToolResult> {
   try {
     const memory = await client.add(input.content, {
-      userId: input.user_id,
+      userId: input.user_id ?? firstPersonUserId,
       metadata: input.metadata,
     });
     return {
@@ -41,10 +42,11 @@ export async function handleAddMemory(
 export async function handleSearchMemories(
   client: SmriteaClient,
   input: SearchMemoriesInput,
+  firstPersonUserId?: string,
 ): Promise<CallToolResult> {
   try {
     const results = await client.search(input.query, {
-      userId: input.user_id,
+      userId: input.user_id ?? firstPersonUserId,
       limit: input.limit,
       method: input.method,
       threshold: input.threshold,

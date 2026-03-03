@@ -14,6 +14,7 @@ import { join } from 'node:path';
 export interface UserConfig {
   api_key: string;
   base_url: string;
+  first_person_user_id?: string;
 }
 
 export interface ProjectConfig {
@@ -25,6 +26,8 @@ export interface ResolvedConfig {
   apiKey: string;
   baseUrl: string;
   appId: string;
+  /** Used as user_id when the user refers to themselves ("I prefer…", "I like…"). */
+  firstPersonUserId?: string;
 }
 
 const USER_CONFIG_PATH = join(homedir(), '.smritea', 'mcp-config.json');
@@ -43,6 +46,7 @@ export function loadConfig(): ResolvedConfig {
   const apiKey = process.env['SMRITEA_API_KEY'] ?? user?.api_key;
   const baseUrl = process.env['SMRITEA_BASE_URL'] ?? user?.base_url ?? 'https://api.smritea.ai';
   const appId = process.env['SMRITEA_APP_ID'] ?? project?.app_id;
+  const firstPersonUserId = process.env['SMRITEA_FIRST_PERSON_USER_ID'] ?? user?.first_person_user_id;
 
   if (!apiKey) {
     throw new Error(
@@ -59,5 +63,5 @@ export function loadConfig(): ResolvedConfig {
     );
   }
 
-  return { apiKey, baseUrl, appId };
+  return { apiKey, baseUrl, appId, firstPersonUserId };
 }
