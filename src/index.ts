@@ -1,5 +1,35 @@
 #!/usr/bin/env node
 import { startServer } from './server.js';
+import { createInterface } from 'node:readline/promises';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
+
+async function runInit(): Promise<void> {
+  const configDir = join(homedir(), '.smritea');
+  const configPath = join(configDir, 'mcp-config.json');
+
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  try {
+    const baseUrlAnswer = await rl.question('API base URL [https://api.smritea.ai]: ');
+    const baseUrl = baseUrlAnswer.trim() || 'https://api.smritea.ai';
+
+    const apiKeyAnswer = await rl.question('API key: ');
+    const apiKey = apiKeyAnswer.trim();
+    if (!apiKey) {
+      console.error('Error: API key is required.');
+      process.exit(1);
+    }
+
+    mkdirSync(configDir, { recursive: true });
+    writeFileSync(configPath, JSON.stringify({ api_key: apiKey, base_url: baseUrl }, null, 2) + '\n');
+
+    console.error('✓ Config saved to ' + configPath);
+    console.error('Next: use the select_app tool in your AI assistant to set an app ID.');
+  } finally {
+    rl.close();
+  }
+}
 
 const subcommand = process.argv[2];
 
@@ -9,8 +39,10 @@ if (subcommand === 'serve' || subcommand === undefined) {
     process.exit(1);
   });
 } else if (subcommand === 'init') {
-  console.error('smritea-mcp init: not yet implemented');
-  process.exit(1);
+  runInit().catch((err: unknown) => {
+    console.error('Init failed:', err);
+    process.exit(1);
+  });
 } else {
   console.error(`Unknown subcommand: ${subcommand}`);
   console.error('Usage: smritea-mcp [serve|init]');

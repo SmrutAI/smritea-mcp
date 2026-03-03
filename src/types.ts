@@ -13,6 +13,8 @@ export const SearchMemoriesInput = z.object({
   limit: z.number().int().positive().optional().describe('Maximum number of results'),
   method: z.string().optional().describe('Search method: quick_search, deep_search, context_aware_search'),
   threshold: z.number().min(0).max(1).optional().describe('Minimum relevance score (0.0-1.0)'),
+  graph_depth: z.number().int().positive().optional().describe('Graph traversal depth override'),
+  conversation_id: z.string().optional().describe('Filter to a specific conversation'),
 });
 export type SearchMemoriesInput = z.infer<typeof SearchMemoriesInput>;
 
