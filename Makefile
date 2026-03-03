@@ -9,6 +9,7 @@ lint: ## Type-check and lint smritea-mcp TypeScript
 	npm run lint
 
 build: ## Compile TypeScript
+	rm -rf dist
 	npm install --silent
 	npm run build
 

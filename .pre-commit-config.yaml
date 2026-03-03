@@ -1,0 +1,30 @@
+# Pre-commit hooks for smritea-mcp
+#
+# Setup:
+#   pip install pre-commit && pre-commit install
+#
+# Usage:
+#   pre-commit run --all-files   # Run all hooks
+#   pre-commit run <hook-id>     # Run a specific hook
+#
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+
+  - repo: local
+    hooks:
+      - id: mcp-lint
+        name: Lint
+        entry: make lint
+        language: system
+        files: ^src/.*\.ts$
+        pass_filenames: false
+
+      - id: mcp-build
+        name: Build
+        entry: make build
+        language: system
+        files: ^src/.*\.ts$
+        pass_filenames: false
