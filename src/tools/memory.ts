@@ -59,7 +59,6 @@ export async function handleSearchMemories(
       actorId,
       actorType,
       limit: input.limit,
-      method: input.method,
       threshold: input.threshold,
       graphDepth: input.graph_depth,
       conversationId: input.conversation_id,

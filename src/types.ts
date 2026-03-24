@@ -27,10 +27,6 @@ export const SearchMemoriesInput = z.object({
     .max(100)
     .optional()
     .describe('Maximum number of results (0 = use app default, typically 20; max 100)'),
-  method: z
-    .enum(['quick_search', 'deep_search', 'context_aware_search', 'graph_proximity', 'diversified', 'semantic_rerank'])
-    .optional()
-    .describe('Search method. Defaults to app config (typically quick_search).'),
   threshold: z.number().min(0).max(1).optional().describe('Minimum relevance score filter (0.0–1.0). Note: pipeline uses RRF scores (~0.06), not cosine similarity.'),
   graph_depth: z
     .number()
