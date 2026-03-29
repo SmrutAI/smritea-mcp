@@ -101,8 +101,10 @@ describe('handleAddMemory', () => {
     );
 
     expect(mockClient.add).toHaveBeenCalledWith('hello', expect.objectContaining({
-      actorId: 'alice',
-      actorType: 'user',
+      scope: expect.objectContaining({
+        actorId: 'alice',
+        actorType: 'user',
+      }),
     }));
   });
 
@@ -116,8 +118,10 @@ describe('handleAddMemory', () => {
     );
 
     expect(mockClient.add).toHaveBeenCalledWith('hello', expect.objectContaining({
-      actorId: 'bob',
-      actorType: 'user',
+      scope: expect.objectContaining({
+        actorId: 'bob',
+        actorType: 'user',
+      }),
     }));
   });
 
@@ -199,8 +203,10 @@ describe('handleSearchMemories', () => {
     );
 
     expect(mockClient.search).toHaveBeenCalledWith('q', expect.objectContaining({
-      actorId: 'alice',
-      actorType: 'user',
+      scope: expect.objectContaining({
+        actorId: 'alice',
+        actorType: 'user',
+      }),
     }));
   });
 
@@ -214,8 +220,10 @@ describe('handleSearchMemories', () => {
     );
 
     expect(mockClient.search).toHaveBeenCalledWith('q', expect.objectContaining({
-      actorId: 'bob',
-      actorType: 'user',
+      scope: expect.objectContaining({
+        actorId: 'bob',
+        actorType: 'user',
+      }),
     }));
   });
 

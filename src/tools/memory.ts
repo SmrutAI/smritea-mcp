@@ -32,10 +32,7 @@ export async function handleAddMemory(
     const actorId = input.actor_id ?? firstPersonUserId;
     const actorType = input.actor_type ?? (actorId !== undefined ? 'user' : undefined);
     const memory = await client.add(input.content, {
-      actorId,
-      actorType,
-      actorName: input.actor_name,
-      conversationId: input.conversation_id,
+      scope: { actorId, actorType, actorName: input.actor_name, conversationId: input.conversation_id },
       metadata: input.metadata,
     });
     return {
@@ -56,12 +53,10 @@ export async function handleSearchMemories(
     const actorId = input.actor_id ?? firstPersonUserId;
     const actorType = input.actor_type ?? (actorId !== undefined ? 'user' : undefined);
     const results = await client.search(input.query, {
-      actorId,
-      actorType,
+      scope: { actorId, actorType, conversationId: input.conversation_id },
       limit: input.limit,
       threshold: input.threshold,
       graphDepth: input.graph_depth,
-      conversationId: input.conversation_id,
     });
 
     if (results.length === 0) {
