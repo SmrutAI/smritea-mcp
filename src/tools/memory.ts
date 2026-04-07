@@ -31,12 +31,12 @@ export async function handleAddMemory(
     // Resolve actor_type: use what the AI provided; default to 'user' whenever actor_id is set.
     const actorId = input.actor_id ?? firstPersonUserId;
     const actorType = input.actor_type ?? (actorId !== undefined ? 'user' : undefined);
-    const memory = await client.add(input.content, {
+    const result = await client.add(input.content, {
       scope: { actorId, actorType, actorName: input.actor_name, conversationId: input.conversation_id },
       metadata: input.metadata,
     });
     return {
-      content: [{ type: 'text', text: formatMemory(memory) }],
+      content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
     };
   } catch (err) {
     return { isError: true, content: [{ type: 'text', text: formatError(err) }] };
@@ -53,10 +53,19 @@ export async function handleSearchMemories(
     const actorId = input.actor_id ?? firstPersonUserId;
     const actorType = input.actor_type ?? (actorId !== undefined ? 'user' : undefined);
     const results = await client.search(input.query, {
-      scope: { actorId, actorType, conversationId: input.conversation_id },
+      scope: {
+        actorId,
+        actorType,
+        conversationId: input.conversation_id,
+        participantIds: input.participant_ids,
+      },
       limit: input.limit,
       threshold: input.threshold,
       graphDepth: input.graph_depth,
+      fromTime: input.from_time,
+      toTime: input.to_time,
+      validAt: input.valid_at,
+      metadataFilter: input.metadata_filter,
     });
 
     if (results.length === 0) {

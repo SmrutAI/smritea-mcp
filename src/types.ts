@@ -20,6 +20,13 @@ export const SearchMemoriesInput = z.object({
     .enum(['user', 'agent', 'system'])
     .optional()
     .describe('Filter by actor type: "user", "agent", or "system".'),
+  participant_ids: z
+    .array(z.string())
+    .min(2)
+    .optional()
+    .describe(
+      'Search across conversations where ALL listed actors participated (AND semantics). Requires at least 2 IDs. Mutually exclusive with conversation_id.',
+    ),
   limit: z
     .number()
     .int()
@@ -36,6 +43,29 @@ export const SearchMemoriesInput = z.object({
     .optional()
     .describe('Graph traversal depth (0 = use app config; 1–5 = explicit override)'),
   conversation_id: z.string().optional().describe('Filter to a specific conversation'),
+  from_time: z
+    .string()
+    .optional()
+    .describe('ISO-8601 datetime — only return memories created at or after this time (e.g. "2024-01-01T00:00:00Z")'),
+  to_time: z
+    .string()
+    .optional()
+    .describe('ISO-8601 datetime — only return memories created at or before this time (e.g. "2024-12-31T23:59:59Z")'),
+  valid_at: z
+    .string()
+    .optional()
+    .describe('ISO-8601 datetime — return memories valid at exactly this point in time. Mutually exclusive with from_time/to_time.'),
+  metadata_filter: z
+    .record(z.unknown())
+    .optional()
+    .describe(
+      'MongoDB-style operator DSL to filter by memory metadata. ' +
+        'Simple equality: {"department": "engineering"}. ' +
+        'Range: {"level": {"$gte": 4}}. ' +
+        'Logical: {"$and": [{"department": "eng"}, {"level": {"$gt": 3}}]}. ' +
+        'Operators: $eq $ne $gt $gte $lt $lte $in $nin $contains $and $or $not "*". ' +
+        'Values must be string or number. Note: $contains may return fewer results than limit.',
+    ),
 });
 export type SearchMemoriesInput = z.infer<typeof SearchMemoriesInput>;
 
