@@ -1,3 +1,11 @@
+---
+type: Overview
+title: smritea-mcp
+status: stable
+tags:
+- readme
+---
+
 # smritea-mcp
 
 MCP (Model Context Protocol) server for [smritea](https://smritea.ai) — gives AI assistants (Claude Code, Cursor, etc.) direct access to your smritea memory store.
