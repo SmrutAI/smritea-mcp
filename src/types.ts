@@ -9,7 +9,34 @@ export const AddMemoryInput = z.object({
     .describe('Actor type: "user", "agent", or "system". Required when actor_id is provided.'),
   actor_name: z.string().max(255).optional().describe('Display name of the actor (optional, max 255 chars)'),
   conversation_id: z.string().optional().describe('Conversation ID to scope this memory to (UUID)'),
+  source_type: z
+    .enum(['conversation', 'document', 'api'])
+    .optional()
+    .describe('Origin of the memory: "conversation", "document", or "api". Defaults to "api" when omitted.'),
   metadata: z.record(z.string(), z.unknown()).optional().describe('Optional key-value metadata'),
+  event_occurred_at: z
+    .string()
+    .optional()
+    .describe(
+      'ISO-8601 datetime — when this content was created or occurred. Used by the extraction LLM to resolve relative temporal expressions like "last year" or "yesterday". Defaults to current time if omitted.',
+    ),
+  importance: z
+    .number()
+    .min(0)
+    .max(1)
+    .optional()
+    .describe('How important is this memory (0.0-1.0). Higher = ranks higher in search. Default: 1.0.'),
+  decay_factor: z
+    .number()
+    .min(0)
+    .optional()
+    .describe(
+      'Rate of relevance decay over time (>=0). 0 = no decay (memory score is pinned permanently). 0.2 = light decay (default). 1.0 = standard. 3.0+ = aggressive.',
+    ),
+  decay_function: z
+    .enum(['exponential', 'gaussian', 'linear'])
+    .optional()
+    .describe('Decay curve shape: "exponential", "gaussian", or "linear". Default: "exponential".'),
 });
 export type AddMemoryInput = z.infer<typeof AddMemoryInput>;
 
@@ -43,6 +70,10 @@ export const SearchMemoriesInput = z.object({
     .optional()
     .describe('Graph traversal depth (0 = use app config; 1–5 = explicit override)'),
   conversation_id: z.string().optional().describe('Filter to a specific conversation'),
+  source_type: z
+    .enum(['conversation', 'document', 'api'])
+    .optional()
+    .describe('Filter by origin of the memory: "conversation", "document", or "api".'),
   from_time: z
     .string()
     .optional()

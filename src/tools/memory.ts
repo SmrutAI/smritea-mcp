@@ -32,8 +32,19 @@ export async function handleAddMemory(
     const actorId = input.actor_id ?? firstPersonUserId;
     const actorType = input.actor_type ?? (actorId !== undefined ? 'user' : undefined);
     const result = await client.add(input.content, {
-      scope: { actorId, actorType, actorName: input.actor_name, conversationId: input.conversation_id },
+      scope: {
+        actorId,
+        actorType,
+        actorName: input.actor_name,
+        conversationId: input.conversation_id,
+        sourceType: input.source_type,
+      },
       metadata: input.metadata,
+      eventOccurredAt: input.event_occurred_at,
+      relativeStanding:
+        input.importance !== undefined || input.decay_factor !== undefined || input.decay_function !== undefined
+          ? { importance: input.importance, decayFactor: input.decay_factor, decayFunction: input.decay_function }
+          : undefined,
     });
     return {
       content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
@@ -57,6 +68,7 @@ export async function handleSearchMemories(
         actorId,
         actorType,
         conversationId: input.conversation_id,
+        sourceType: input.source_type,
         participantIds: input.participant_ids,
       },
       limit: input.limit,
