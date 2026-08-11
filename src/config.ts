@@ -1,36 +1,75 @@
 /**
- * Two-tier configuration for smritea-mcp.
+ * Three-tier configuration for smritea-mcp.
  *
- * User-scoped  (~/.smritea/mcp-config.json): api_key, base_url
- * Project-scoped (.smritea/config.json):     app_id, app_name
+ * User-scoped auth (~/.smritea/auth.json):             studio tokens and per-app API keys
+ * User-scoped config (~/.smritea/config.json):         selected app and defaults
+ * Project-scoped     (.smritea/config.json):           project metadata
  *
  * Environment variable overrides:
- *   SMRITEA_API_KEY, SMRITEA_BASE_URL, SMRITEA_APP_ID
+ *   SMRITEA_API_KEY, SMRITEA_BASE_URL, SMRITEA_STUDIO_BASE_URL, SMRITEA_APP_ID
+ *
+ * smritea-cloud runs two separate planes (see cloud_backend/README.md):
+ *   - Data plane  (`dataBaseUrl`)     — memory add/search/get/delete (SmriteaClient). Hardcoded: https://api-us.smritea.ai
+ *   - Control plane (`studioBaseUrl`) — org/app/auth management. Hardcoded: https://api.smritea.ai
+ * Both are env-var-or-hardcoded-default only unless a global config file sets them.
+ * SmriteaClient only ever calls the data plane; studioBaseUrl is resolved for future
+ * studio-facing calls (e.g. app listing, credential validation) — not yet used at runtime.
  */
-import { readFileSync, existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
-export interface UserConfig {
-  api_key: string;
-  base_url: string;
-  first_person_user_id?: string;
+export interface AuthFile {
+  access_token: string;
+  refresh_token: string;
+  expires_at: string;
+  user_id?: string;
+  email?: string;
+  org_id?: string;
+  organization_id?: string;
+  org_name?: string;
+  apps: Record<
+    string,
+    {
+      api_key: string;
+      app_name?: string;
+      first_person_user_id?: string;
+    }
+  >;
+}
+
+export interface GlobalConfigFile {
+  selected_app_id?: string;
+  base_url?: string;
+  studio_base_url?: string;
+  default_project?: string;
+  preferences?: Record<string, unknown>;
 }
 
 export interface ProjectConfig {
-  app_id: string;
+  app_id?: string;
   app_name?: string;
+  project?: string;
 }
 
 export interface ResolvedConfig {
-  apiKey: string;
-  baseUrl: string;
-  appId: string;
-  /** Used as user_id when the user refers to themselves ("I prefer…", "I like…"). */
+  studioAccessToken?: string;
+  studioRefreshToken?: string;
+  selectedAppId?: string;
+  selectedAppAPIKey?: string;
+  dataBaseUrl: string;
+  studioBaseUrl: string;
+  projectName?: string;
   firstPersonUserId?: string;
+  apiKey?: string;
+  appId?: string;
 }
 
-const USER_CONFIG_PATH = join(homedir(), '.smritea', 'mcp-config.json');
+const DEFAULT_DATA_PLANE_BASE_URL = 'https://api-us.smritea.ai';
+const DEFAULT_STUDIO_BASE_URL = 'https://api.smritea.ai';
+
+const AUTH_CONFIG_PATH = join(homedir(), '.smritea', 'auth.json');
+const GLOBAL_CONFIG_PATH = join(homedir(), '.smritea', 'config.json');
 const PROJECT_CONFIG_PATH = join(process.cwd(), '.smritea', 'config.json');
 
 function readJsonFile<T>(path: string): T | null {
@@ -39,29 +78,42 @@ function readJsonFile<T>(path: string): T | null {
   return JSON.parse(raw) as T;
 }
 
+function readAuthFile(): AuthFile | null {
+  return readJsonFile<AuthFile>(AUTH_CONFIG_PATH);
+}
+
+function readGlobalConfigFile(): GlobalConfigFile | null {
+  return readJsonFile<GlobalConfigFile>(GLOBAL_CONFIG_PATH);
+}
+
+function readProjectConfig(): ProjectConfig | null {
+  return readJsonFile<ProjectConfig>(PROJECT_CONFIG_PATH);
+}
+
 export function loadConfig(): ResolvedConfig {
-  const user = readJsonFile<UserConfig>(USER_CONFIG_PATH);
-  const project = readJsonFile<ProjectConfig>(PROJECT_CONFIG_PATH);
+  const auth = readAuthFile();
+  const globalConfig = readGlobalConfigFile();
+  const projectConfig = readProjectConfig();
 
-  const apiKey = process.env['SMRITEA_API_KEY'] ?? user?.api_key;
-  const baseUrl = process.env['SMRITEA_BASE_URL'] ?? user?.base_url ?? 'https://api.smritea.ai';
-  const appId = process.env['SMRITEA_APP_ID'] ?? project?.app_id;
-  const firstPersonUserId = process.env['SMRITEA_FIRST_PERSON_USER_ID'] ?? user?.first_person_user_id;
+  const selectedAppId =
+    process.env['SMRITEA_APP_ID'] ?? projectConfig?.app_id ?? globalConfig?.selected_app_id;
+  const selectedAppAPIKey = process.env['SMRITEA_API_KEY'] ?? (selectedAppId ? auth?.apps?.[selectedAppId]?.api_key : undefined);
+  const dataBaseUrl = process.env['SMRITEA_BASE_URL'] ?? globalConfig?.base_url ?? DEFAULT_DATA_PLANE_BASE_URL;
+  const studioBaseUrl =
+    process.env['SMRITEA_STUDIO_BASE_URL'] ?? globalConfig?.studio_base_url ?? DEFAULT_STUDIO_BASE_URL;
 
-  if (!apiKey) {
-    throw new Error(
-      'smritea API key not configured. Run: npx smritea-mcp init\n' +
-      `Or set SMRITEA_API_KEY env var.\n` +
-      `Config file expected at: ${USER_CONFIG_PATH}`
-    );
-  }
-  if (!appId) {
-    throw new Error(
-      'smritea app ID not configured. Run: npx smritea-mcp select-app <app_id>\n' +
-      `Or set SMRITEA_APP_ID env var.\n` +
-      `Config file expected at: ${PROJECT_CONFIG_PATH}`
-    );
-  }
+  const firstPersonUserId = auth?.user_id ?? (selectedAppId ? auth?.apps?.[selectedAppId]?.first_person_user_id : undefined);
 
-  return { apiKey, baseUrl, appId, firstPersonUserId };
+  return {
+    studioAccessToken: auth?.access_token,
+    studioRefreshToken: auth?.refresh_token,
+    selectedAppId,
+    selectedAppAPIKey,
+    dataBaseUrl,
+    studioBaseUrl,
+    projectName: projectConfig?.project,
+    firstPersonUserId,
+    apiKey: selectedAppAPIKey,
+    appId: selectedAppId,
+  };
 }

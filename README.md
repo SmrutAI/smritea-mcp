@@ -14,30 +14,13 @@ MCP (Model Context Protocol) server for [smritea](https://smritea.ai) — gives 
 
 ## Installation
 
-### Step 1 — Run init
+### Step 1 — Run Studio login
 
 ```bash
-npx -y smritea-mcp init
+npx -y smritea-mcp login
 ```
 
-This interactive wizard prompts for three values:
-
-```
-API base URL [https://api.smritea.ai]:
-```
-Press Enter to use the default (`https://api.smritea.ai`). If you are self-hosting smritea, enter your custom URL here.
-
-```
-API key:
-```
-Paste your smritea API key (required). You can find it in the smritea dashboard under API Keys.
-
-```
-Your name or user ID (used when you say "I prefer…", "I like…") [optional]:
-```
-Optional. If set, this value is automatically used as the `user_id` when you refer to yourself in conversation ("I prefer dark mode", "I like Python"), so memories about you are stored under a consistent ID without having to pass `user_id` explicitly every time.
-
-On success, credentials are saved to `~/.smritea/mcp-config.json`.
+This opens the browser, authenticates against your Studio account, and saves Studio tokens to `~/.smritea/auth.json`.
 
 ### Step 2 — Register the server with your AI client
 
@@ -78,55 +61,46 @@ Then add to `~/.cursor/mcp.json` (or Cursor Settings → MCP):
 
 > **Note**: `serve-sse` must be running before you start Cursor. Each client connection gets its own isolated session — you can connect multiple clients simultaneously on the same port.
 
-### Step 3 — Set the active app (once per project)
+### Step 3 — Select the active app (once per project)
 
 In a conversation with Claude Code, run:
 
 ```
-Use the select_app tool with app_id "<your-app-id>"
+Use the list_apps tool, then use the select_app tool with app_id "<your-app-id>"
 ```
 
-This writes `.smritea/config.json` in your project directory (automatically gitignored) so all memory operations in that project are scoped to the correct app.
+`list_apps` uses the generated Studio SDK and the Studio JWT from `~/.smritea/auth.json` to load real apps from the control plane. `select_app` stores `selected_app_id` in `~/.smritea/config.json`. If the selected app has no stored API key yet, `select_app` creates one through the Studio API and saves it back to `~/.smritea/auth.json` using the name `smritea-plugin-<YYYY-MM-DD>`.
+
+Project-level `.smritea/config.json` stays reserved for project metadata only.
 
 ---
 
 ## Configuration
 
-smritea-mcp uses a two-tier config system.
+smritea-mcp uses three files with separate responsibilities.
 
-### User-scoped (`~/.smritea/mcp-config.json`)
+### `~/.smritea/auth.json` (global auth)
 
-Created once by `npx smritea-mcp init`. Stores credentials shared across all projects.
+Stores Studio access + refresh tokens and per-app API keys.
 
-```json
-{
-  "api_key": "sk-...",
-  "base_url": "https://api.smritea.ai",
-  "first_person_user_id": "alice"
-}
-```
+### `~/.smritea/config.json` (global selection)
 
-`first_person_user_id` is optional. When set, it is automatically used as `user_id` for memory operations where the user refers to themselves ("I prefer…", "I like…") without explicitly passing a `user_id`.
+Stores the selected app ID and user-level defaults.
 
-### Project-scoped (`.smritea/config.json`)
+### `.smritea/config.json` (project metadata)
 
-Created per-project by the `select_app` tool. Determines which smritea app receives memory operations in this project. Automatically gitignored.
-
-```json
-{
-  "app_id": "app_abc123",
-  "app_name": "My App"
-}
-```
+Stores project-only metadata such as the project name. It is not the primary auth file and it does not own Studio tokens.
 
 ### Environment variable overrides
 
-| Variable | Overrides |
-|----------|-----------|
-| `SMRITEA_API_KEY` | `api_key` in user config |
-| `SMRITEA_BASE_URL` | `base_url` in user config |
-| `SMRITEA_APP_ID` | `app_id` in project config |
-| `SMRITEA_FIRST_PERSON_USER_ID` | `first_person_user_id` in user config |
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `SMRITEA_BASE_URL` | Data-plane base URL for memory operations | `https://api-us.smritea.ai` |
+| `SMRITEA_STUDIO_BASE_URL` | Control-plane base URL for Studio auth/app operations | `https://api.smritea.ai` |
+| `SMRITEA_API_KEY` | Override selected app API key | — |
+| `SMRITEA_APP_ID` | Override selected app ID | — |
+
+The MCP resolves the selected app from `~/.smritea/config.json`, then resolves the app API key from `~/.smritea/auth.json.apps[selected_app_id].api_key`.
 
 ---
 
@@ -155,9 +129,9 @@ Use the select_app tool with app_id "app_abc123" and app_name "My Project"
 
 ### `list_apps`
 
-Show the currently active app for this project.
+List real Studio apps for the logged-in Studio account.
 
-> **Note**: Listing all apps via API key auth is not yet available. API keys are scoped to a single app. Use `select_app` to switch apps.
+It uses the generated Studio SDK against the control plane with the Studio JWT from `~/.smritea/auth.json`.
 
 **Parameters**: none
 
@@ -174,7 +148,14 @@ Add a new memory to the active smritea app.
 | `content` | string | Yes | The memory content to store |
 | `actor_id` | string | No | Actor UUID to associate with this memory. Defaults to the configured `first_person_user_id` when omitted. |
 | `actor_type` | string | No | Actor type: `user`, `agent`, or `system`. Required when `actor_id` is provided. Defaults to `user` when omitted alongside `actor_id`. |
+| `actor_name` | string | No | Optional actor display name |
+| `conversation_id` | string | No | Scope this memory to a conversation |
+| `source_type` | string | No | Origin: `conversation`, `document`, or `api` |
 | `metadata` | object | No | Optional key-value metadata |
+| `event_occurred_at` | string | No | ISO-8601 event time used for temporal resolution |
+| `importance` | number | No | Memory importance from `0.0` to `1.0` |
+| `decay_factor` | number | No | Time-decay strength |
+| `decay_function` | string | No | Decay curve: `exponential`, `gaussian`, `linear` |
 
 **Example**
 
@@ -200,6 +181,7 @@ Search for memories semantically. Returns results ranked by relevance score.
 | `threshold` | number | No | Minimum relevance score (0.0–1.0) |
 | `graph_depth` | number | No | Graph traversal depth override |
 | `conversation_id` | string | No | Filter to a specific conversation |
+| `source_type` | string | No | Filter by origin: `conversation`, `document`, or `api` |
 
 **Example**
 
@@ -235,7 +217,11 @@ Delete a memory by its ID. This action is irreversible.
 
 ## How it works
 
-smritea-mcp is a TypeScript MCP server that wraps the [smritea TypeScript SDK](https://github.com/SmrutAI/smritea-sdk) and exposes memory operations as MCP tools.
+smritea-mcp is a TypeScript MCP server that wraps two client layers:
+- the customer `smritea-sdk` for dataplane memory operations
+- the generated Studio SDK for control-plane login, app listing, and API-key provisioning
+
+The server starts without requiring app selection — `list_apps` and `select_app` work immediately after login. The dataplane client is created lazily on the first memory tool call. Every tool invocation reads config and auth fresh from disk, so login, token refresh, and app selection take effect without restarting the server.
 
 It supports two transports:
 

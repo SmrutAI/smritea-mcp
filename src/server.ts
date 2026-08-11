@@ -3,6 +3,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod';
 import { SmriteaClient } from 'smritea-sdk';
 import { loadConfig } from './config.js';
+import { refreshIfNeeded } from './auth.js';
 import { AddMemoryInput, SearchMemoriesInput, GetMemoryInput, DeleteMemoryInput, SelectAppInput } from './types.js';
 import {
   handleAddMemory,
@@ -12,19 +13,27 @@ import {
 } from './tools/memory.js';
 import { handleSelectApp, handleListApps } from './tools/app.js';
 
+function getMemoryClient(): SmriteaClient {
+  const config = loadConfig();
+
+  if (config.apiKey === undefined || config.appId === undefined) {
+    throw new Error(
+      'No app selected or no API key found. Run list_apps and select_app first.',
+    );
+  }
+
+  return new SmriteaClient({
+    apiKey: config.apiKey,
+    appId: config.appId,
+    baseUrl: config.dataBaseUrl,
+  });
+}
+
 /**
  * Creates and fully configures an McpServer with all tools and prompts.
  * Does NOT connect a transport — caller is responsible for connecting.
  */
 export function createMcpServer(): McpServer {
-  const config = loadConfig();
-
-  const client = new SmriteaClient({
-    apiKey: config.apiKey,
-    appId: config.appId,
-    baseUrl: config.baseUrl,
-  });
-
   const server = new McpServer(
     { name: 'smritea', version: '0.1.0' },
     {
@@ -37,12 +46,9 @@ export function createMcpServer(): McpServer {
     },
   );
 
-  const firstPersonUserId = config.firstPersonUserId;
-
-  const firstPersonHint = firstPersonUserId
-    ? ` When the user refers to themselves ("I", "my", "me"), set actor_id="${firstPersonUserId}" and actor_type="user".` +
-      ' If you omit actor_id, the server fills it from the configured first-person ID as a fallback.'
-    : ' Set actor_id (UUID) and actor_type ("user", "agent", or "system") to scope the memory to a specific actor.';
+  const firstPersonHint =
+    ' Set actor_id (UUID) and actor_type ("user", "agent", or "system") to scope the memory to a specific actor.' +
+    ' If a first-person user ID is configured in ~/.smritea/auth.json, it is used as the default actor_id.';
 
   server.tool(
     'add_memory',
@@ -52,7 +58,12 @@ export function createMcpServer(): McpServer {
     'call this immediately.' +
     firstPersonHint,
     AddMemoryInput.shape,
-    async (input) => handleAddMemory(client, AddMemoryInput.parse(input), firstPersonUserId),
+    async (input) => {
+      await refreshIfNeeded();
+      const config = loadConfig();
+      const client = getMemoryClient();
+      return handleAddMemory(client, AddMemoryInput.parse(input), config.firstPersonUserId);
+    },
   );
 
   server.tool(
@@ -63,7 +74,12 @@ export function createMcpServer(): McpServer {
     '"what do you know about", or "remind me".' +
     firstPersonHint,
     SearchMemoriesInput.shape,
-    async (input) => handleSearchMemories(client, SearchMemoriesInput.parse(input), firstPersonUserId),
+    async (input) => {
+      await refreshIfNeeded();
+      const config = loadConfig();
+      const client = getMemoryClient();
+      return handleSearchMemories(client, SearchMemoriesInput.parse(input), config.firstPersonUserId);
+    },
   );
 
   server.tool(
@@ -71,7 +87,11 @@ export function createMcpServer(): McpServer {
     'Retrieve a specific memory by its ID. Use when you already have a memory_id from a previous ' +
     'search result and need the full memory object.',
     GetMemoryInput.shape,
-    async (input) => handleGetMemory(client, GetMemoryInput.parse(input)),
+    async (input) => {
+      await refreshIfNeeded();
+      const client = getMemoryClient();
+      return handleGetMemory(client, GetMemoryInput.parse(input));
+    },
   );
 
   server.tool(
@@ -80,24 +100,35 @@ export function createMcpServer(): McpServer {
     'or says a stored fact is no longer true. This action is irreversible — confirm the memory_id ' +
     'from a search result before deleting.',
     DeleteMemoryInput.shape,
-    async (input) => handleDeleteMemory(client, DeleteMemoryInput.parse(input)),
+    async (input) => {
+      await refreshIfNeeded();
+      const client = getMemoryClient();
+      return handleDeleteMemory(client, DeleteMemoryInput.parse(input));
+    },
   );
 
   server.tool(
     'select_app',
-    'Set the active smritea app for this project. Writes a project-scoped config to ' +
-    '.smritea/config.json so all subsequent memory operations use this app. Call this once ' +
-    'when setting up smritea in a new project.',
+    'Set the active smritea app. Stores selected_app_id in ~/.smritea/config.json and provisions ' +
+    'an API key if needed. Call this once when setting up smritea in a new project.',
     SelectAppInput.shape,
-    (input) => handleSelectApp(SelectAppInput.parse(input)),
+    async (input) => {
+      await refreshIfNeeded();
+      const config = loadConfig();
+      return handleSelectApp(SelectAppInput.parse(input), config);
+    },
   );
 
   server.tool(
     'list_apps',
-    'Show the currently configured smritea app for this project. Useful for confirming which ' +
-    'app memories are being stored under.',
+    'List Studio apps for the logged-in account. Uses the Studio JWT from ~/.smritea/auth.json ' +
+    'to query the control plane.',
     {},
-    () => handleListApps(config),
+    async () => {
+      await refreshIfNeeded();
+      const config = loadConfig();
+      return handleListApps(config);
+    },
   );
 
   server.prompt(
