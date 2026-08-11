@@ -2,7 +2,8 @@ import { mkdirSync, writeFileSync, existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { Configuration, DashboardApi } from '../../../../../sdks/autogen/studio/typescript/src/index.js';
+import { DashboardApi } from '../_internal/autogen/apis/DashboardApi.js';
+import { Configuration } from '../_internal/autogen/runtime.js';
 import type { SelectAppInput } from '../types.js';
 import type { AuthFile, GlobalConfigFile, ResolvedConfig } from '../config.js';
 

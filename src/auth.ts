@@ -4,7 +4,9 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import http, { type IncomingMessage, type ServerResponse } from 'node:http';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { AuthApi, Configuration, type CLIRefreshTokenRequest, type CLITokenRequest } from '../../../../sdks/autogen/studio/typescript/src/index.js';
+import { AuthApi } from './_internal/autogen/apis/AuthApi.js';
+import { type CLIRefreshTokenRequest, type CLITokenRequest } from './_internal/autogen/models/index.js';
+import { Configuration } from './_internal/autogen/runtime.js';
 import { loadConfig, type AuthFile } from './config.js';
 
 const AUTH_DIR_PATH = join(homedir(), '.smritea');
