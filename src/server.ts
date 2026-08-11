@@ -25,7 +25,7 @@ function getMemoryClient(): SmriteaClient {
   return new SmriteaClient({
     apiKey: config.apiKey,
     appId: config.appId,
-    baseUrl: config.dataBaseUrl,
+    baseUrl: config.memoryBaseUrl,
   });
 }
 
@@ -109,7 +109,7 @@ export function createMcpServer(): McpServer {
 
   server.tool(
     'select_app',
-    'Set the active smritea app. Stores selected_app_id in ~/.smritea/config.json and provisions ' +
+    'Set the active smritea app. Stores selected_app_id in ~/.smritea/settings.json and provisions ' +
     'an API key if needed. Call this once when setting up smritea in a new project.',
     SelectAppInput.shape,
     async (input) => {

@@ -2,15 +2,12 @@ import { spawn } from 'node:child_process';
 import { createHash, randomBytes } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import http, { type IncomingMessage, type ServerResponse } from 'node:http';
-import { homedir } from 'node:os';
-import { join } from 'node:path';
+import { dirname } from 'node:path';
 import { AuthApi } from './_internal/autogen/apis/AuthApi.js';
 import { type CLIRefreshTokenRequest, type CLITokenRequest } from './_internal/autogen/models/index.js';
 import { Configuration } from './_internal/autogen/runtime.js';
-import { loadConfig, type AuthFile } from './config.js';
+import { ensureSettingsFile, getAuthFilePath, loadConfig, type AuthFile } from './config.js';
 
-const AUTH_DIR_PATH = join(homedir(), '.smritea');
-const AUTH_FILE_PATH = join(AUTH_DIR_PATH, 'auth.json');
 const CALLBACK_HOST = '127.0.0.1';
 const CALLBACK_PATH = '/callback';
 const CLIENT_ID = 'smritea-plugin';
@@ -183,7 +180,7 @@ async function refreshToken(studioBaseUrl: string, refreshTokenValue: string): P
 
 function readAuth(): PersistedAuth | null {
   try {
-    return JSON.parse(readFileSync(AUTH_FILE_PATH, 'utf-8')) as PersistedAuth;
+    return JSON.parse(readFileSync(getAuthFilePath(), 'utf-8')) as PersistedAuth;
   } catch (err) {
     if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
       return null;
@@ -218,8 +215,9 @@ export function loadAuth(): PersistedAuth | null {
 
 export function saveAuth(tokens: CLITokenResponse): PersistedAuth {
   const nextAuth = mergeAuth(readAuth(), tokens);
-  mkdirSync(AUTH_DIR_PATH, { recursive: true });
-  writeFileSync(AUTH_FILE_PATH, JSON.stringify(nextAuth, null, 2) + '\n', 'utf-8');
+  const authFilePath = getAuthFilePath();
+  mkdirSync(dirname(authFilePath), { recursive: true });
+  writeFileSync(authFilePath, JSON.stringify(nextAuth, null, 2) + '\n', 'utf-8');
   return nextAuth;
 }
 
@@ -255,6 +253,7 @@ export async function refreshIfNeeded(): Promise<PersistedAuth | null> {
 }
 
 export async function runLoginFlow(): Promise<void> {
+  ensureSettingsFile();
   const { studioBaseUrl } = loadConfig();
   const state = generateState();
   const codeVerifier = generateCodeVerifier();

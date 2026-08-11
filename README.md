@@ -69,38 +69,36 @@ In a conversation with Claude Code, run:
 Use the list_apps tool, then use the select_app tool with app_id "<your-app-id>"
 ```
 
-`list_apps` uses the generated Studio SDK and the Studio JWT from `~/.smritea/auth.json` to load real apps from the control plane. `select_app` stores `selected_app_id` in `~/.smritea/config.json`. If the selected app has no stored API key yet, `select_app` creates one through the Studio API and saves it back to `~/.smritea/auth.json` using the name `smritea-plugin-<YYYY-MM-DD>`.
+`list_apps` uses the generated Studio SDK and the Studio JWT from `~/.smritea/auth.json` to load real apps from the control plane. `select_app` stores `selected_app_id` in `~/.smritea/settings.json`. If the selected app has no stored API key yet, `select_app` creates one through the Studio API and saves it back to `~/.smritea/auth.json` using the name `smritea-plugin-<YYYY-MM-DD>`.
 
-Project-level `.smritea/config.json` stays reserved for project metadata only.
+Project-level `.smritea/settings.json` can override `selected_app_id` and both base URLs for a specific project — see Configuration below.
 
 ---
 
 ## Configuration
 
-smritea-mcp uses three files with separate responsibilities.
+smritea-mcp uses two files with separate responsibilities.
 
-### `~/.smritea/auth.json` (global auth)
+### `~/.smritea/auth.json` (account secrets)
 
-Stores Studio access + refresh tokens and per-app API keys.
+Stores Studio access + refresh tokens, account identity, and per-app API keys (`apps`). Never contains anything meant to be shared — never commit this file.
 
-### `~/.smritea/config.json` (global selection)
+### `settings.json` (selection and URLs — safe to commit)
 
-Stores the selected app ID and user-level defaults.
+Stores `selected_app_id`, `studio_base_url`, `memory_base_url`, and (optionally) `auth_file_path` — where this settings file says `auth.json` should be read from. Contains no secrets, so it's safe to check into a project's version control.
 
-### `.smritea/config.json` (project metadata)
+Resolved from exactly one of two locations, the whole file at once, never merged field-by-field:
 
-Stores project-only metadata such as the project name. It is not the primary auth file and it does not own Studio tokens.
+- `~/.smritea/settings.json` — the default, used whenever `SMRITEA_DEV_CONFIG` is unset.
+- `.smritea/settings.json` (in the current working directory) — used instead of the user-level file, in full, only when `SMRITEA_DEV_CONFIG` is set AND this project file exists. If `SMRITEA_DEV_CONFIG` is set but no project-level file exists, the user-level file is still used.
 
-### Environment variable overrides
+### Environment variable
 
 | Variable | Purpose | Default |
 |----------|---------|---------|
-| `SMRITEA_BASE_URL` | Data-plane base URL for memory operations | `https://api-us.smritea.ai` |
-| `SMRITEA_STUDIO_BASE_URL` | Control-plane base URL for Studio auth/app operations | `https://api.smritea.ai` |
-| `SMRITEA_API_KEY` | Override selected app API key | — |
-| `SMRITEA_APP_ID` | Override selected app ID | — |
+| `SMRITEA_DEV_CONFIG` | Enables reading a project-level `.smritea/settings.json` instead of the user-level one, when present. Not a value override — it only selects which settings file to read. | unset (always use the user-level file) |
 
-The MCP resolves the selected app from `~/.smritea/config.json`, then resolves the app API key from `~/.smritea/auth.json.apps[selected_app_id].api_key`.
+The MCP resolves the selected app from the active `settings.json`, then resolves the app API key from `~/.smritea/auth.json.apps[selected_app_id].api_key` (or wherever that settings file's `auth_file_path` points instead).
 
 ---
 
@@ -110,7 +108,7 @@ The MCP resolves the selected app from `~/.smritea/config.json`, then resolves t
 
 Set the active smritea app for the current project. All subsequent memory operations in this project will use the specified app.
 
-Writes `.smritea/config.json` in the current working directory and creates `.smritea/.gitignore` so the config is never accidentally committed.
+Writes the currently active `settings.json` (user-level by default, or the project-level `.smritea/settings.json` when `SMRITEA_DEV_CONFIG` is set and that file exists) and creates `.smritea/.gitignore` in the current working directory so a user-level default install never accidentally commits a stray `.smritea/` directory.
 
 **Parameters**
 

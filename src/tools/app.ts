@@ -1,15 +1,11 @@
 import { mkdirSync, writeFileSync, existsSync, readFileSync } from 'node:fs';
-import { homedir } from 'node:os';
 import { join } from 'node:path';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { DashboardApi } from '../_internal/autogen/apis/DashboardApi.js';
 import { Configuration } from '../_internal/autogen/runtime.js';
 import type { SelectAppInput } from '../types.js';
-import type { AuthFile, GlobalConfigFile, ResolvedConfig } from '../config.js';
+import { getAuthFilePath, readSettingsFile, writeSettingsFile, type AuthFile, type ResolvedConfig, type SmriteaSettings } from '../config.js';
 
-const USER_SMRITEA_DIR = join(homedir(), '.smritea');
-const AUTH_PATH = join(USER_SMRITEA_DIR, 'auth.json');
-const GLOBAL_CONFIG_PATH = join(USER_SMRITEA_DIR, 'config.json');
 const PROJECT_SMRITEA_DIR = join(process.cwd(), '.smritea');
 const GITIGNORE_PATH = join(PROJECT_SMRITEA_DIR, '.gitignore');
 
@@ -32,7 +28,7 @@ function writeJsonFile(path: string, value: unknown): void {
 }
 
 function readAuthFile(): AuthFile | null {
-  return readJsonFile<AuthFile>(AUTH_PATH);
+  return readJsonFile<AuthFile>(getAuthFilePath());
 }
 
 function getRuntimeConfig(config?: ResolvedConfig): ResolvedConfig {
@@ -41,24 +37,20 @@ function getRuntimeConfig(config?: ResolvedConfig): ResolvedConfig {
   }
 
   const auth = readAuthFile();
-  const globalConfig = readGlobalConfigFile();
+  const settings = readSettingsFile();
 
   return {
     studioAccessToken: auth?.access_token,
     studioRefreshToken: auth?.refresh_token,
-    selectedAppId: globalConfig?.selected_app_id,
+    selectedAppId: settings?.selected_app_id,
     selectedAppAPIKey: undefined,
-    dataBaseUrl: 'https://api-us.smritea.ai',
-    studioBaseUrl: globalConfig?.studio_base_url ?? 'https://api.smritea.ai',
+    memoryBaseUrl: 'https://api-us.smritea.ai',
+    studioBaseUrl: settings?.studio_base_url ?? 'https://api.smritea.ai',
     projectName: undefined,
     firstPersonUserId: auth?.user_id,
     apiKey: undefined,
-    appId: globalConfig?.selected_app_id,
+    appId: settings?.selected_app_id,
   };
-}
-
-function readGlobalConfigFile(): GlobalConfigFile | null {
-  return readJsonFile<GlobalConfigFile>(GLOBAL_CONFIG_PATH);
 }
 
 function getRequiredStudioAccessToken(config: ResolvedConfig): string {
@@ -108,7 +100,7 @@ function buildApiKeyName(now: Date = new Date()): string {
 
 async function createStudioApiKey(config: ResolvedConfig, appId: string): Promise<string> {
   const auth = readAuthFile();
-  const orgId = auth?.org_id?.trim() ?? auth?.organization_id?.trim();
+  const orgId = auth?.organization_id?.trim();
   if (!orgId) {
     throw new Error('Organization ID not found in ~/.smritea/auth.json. Run Studio login first.');
   }
@@ -145,7 +137,7 @@ async function ensureStoredApiKey(config: ResolvedConfig, input: SelectAppInput)
       app_name: appName,
       first_person_user_id: existingEntry?.first_person_user_id,
     };
-    writeJsonFile(AUTH_PATH, auth);
+    writeJsonFile(getAuthFilePath(), auth);
     return { appName, createdApiKey: false };
   }
 
@@ -155,23 +147,21 @@ async function ensureStoredApiKey(config: ResolvedConfig, input: SelectAppInput)
     app_name: appName,
     first_person_user_id: existingEntry?.first_person_user_id,
   };
-  writeJsonFile(AUTH_PATH, auth);
+  writeJsonFile(getAuthFilePath(), auth);
   return { appName, createdApiKey: true };
 }
 
 export async function handleSelectApp(input: SelectAppInput, config: ResolvedConfig): Promise<CallToolResult> {
-  mkdirSync(USER_SMRITEA_DIR, { recursive: true });
-
-  const globalConfig = readGlobalConfigFile() ?? {};
-  globalConfig.selected_app_id = input.app_id;
-  writeJsonFile(GLOBAL_CONFIG_PATH, globalConfig);
+  const settings: SmriteaSettings = readSettingsFile() ?? {};
+  settings.selected_app_id = input.app_id;
+  writeSettingsFile(settings);
 
   const { appName, createdApiKey } = await ensureStoredApiKey(config, input);
 
   // Prevent committing project-scoped metadata if users create it later.
   mkdirSync(PROJECT_SMRITEA_DIR, { recursive: true });
   if (!existsSync(GITIGNORE_PATH)) {
-    writeFileSync(GITIGNORE_PATH, 'config.json\n', 'utf-8');
+    writeFileSync(GITIGNORE_PATH, 'settings.json\n', 'utf-8');
   }
 
   const name = appName !== undefined ? ` (${appName})` : '';
@@ -185,9 +175,9 @@ export async function handleSelectApp(input: SelectAppInput, config: ResolvedCon
         type: 'text',
         text: [
           `App selected: ${input.app_id}${name}`,
-          `User config written to: ${GLOBAL_CONFIG_PATH}`,
+          'User settings updated.',
           keyNote,
-          'Project .smritea/config.json stays reserved for project metadata only.',
+          "When SMRITEA_DEV_CONFIG is set, this project's .smritea/settings.json is used instead of the user-level file.",
         ].join('\n'),
       },
     ],
