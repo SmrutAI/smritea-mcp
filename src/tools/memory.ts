@@ -1,7 +1,8 @@
-import { SmriteaClient, SmriteaError, SmriteaRateLimitError } from 'smritea-sdk';
+import { SmriteaClient, SmriteaError, SmriteaRateLimitError, SmriteaAuthError, SmriteaQuotaError, SmriteaValidationError, SmriteaNotFoundError } from 'smritea-sdk';
 import type { Memory, SearchResult } from 'smritea-sdk';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import type { AddMemoryInput, SearchMemoriesInput, GetMemoryInput, DeleteMemoryInput } from '../types.js';
+import type { ResolvedConfig } from '../config.js';
 
 export function formatMemory(memory: Memory): string {
   return JSON.stringify(memory, null, 2);
@@ -12,11 +13,24 @@ export function formatSearchResult(result: SearchResult): string {
 }
 
 export function formatError(err: unknown): string {
-  if (err instanceof SmriteaRateLimitError && err.retryAfter !== undefined) {
-    return `${err.message} (retry after ${err.retryAfter}s)`;
+  if (err instanceof SmriteaAuthError) {
+    return 'Authentication failed. Run `smritea-mcp login` to re-authenticate.';
+  }
+  if (err instanceof SmriteaQuotaError) {
+    return 'This app has no credits remaining. Contact your Organization admin to add credits.';
+  }
+  if (err instanceof SmriteaRateLimitError) {
+    const suffix = err.retryAfter !== undefined ? ` (retry after ${err.retryAfter}s)` : '';
+    return `Rate limit exceeded.${suffix} Wait a moment and try again.`;
+  }
+  if (err instanceof SmriteaNotFoundError) {
+    return `Not found: ${err.message}`;
+  }
+  if (err instanceof SmriteaValidationError) {
+    return `Invalid request: ${err.message}`;
   }
   if (err instanceof SmriteaError) {
-    return err.message;
+    return `Server error: ${err.message}. Try again in a moment.`;
   }
   return String(err);
 }
@@ -24,19 +38,18 @@ export function formatError(err: unknown): string {
 export async function handleAddMemory(
   client: SmriteaClient,
   input: AddMemoryInput,
-  firstPersonUserId?: string,
-  projectName?: string,
+  config: ResolvedConfig,
 ): Promise<CallToolResult> {
   try {
-    // Resolve actor_id: use what the AI provided; fall back to the configured first-person ID.
-    // Resolve actor_type: use what the AI provided; default to 'user' whenever actor_id is set.
-    const actorId = input.actor_id ?? firstPersonUserId;
+    const actorId = input.actor_id ?? config.firstPersonEmail;
     const actorType = input.actor_type ?? (actorId !== undefined ? 'user' : undefined);
+    const actorName = input.actor_name ?? config.actorName;
+    const projectName = config.projectName;
     const result = await client.add(input.content, {
       scope: {
         actorId,
         actorType,
-        actorName: input.actor_name,
+        actorName,
         conversationId: input.conversation_id,
         sourceType: input.source_type,
       },
@@ -58,13 +71,12 @@ export async function handleAddMemory(
 export async function handleSearchMemories(
   client: SmriteaClient,
   input: SearchMemoriesInput,
-  firstPersonUserId?: string,
-  projectName?: string,
+  config: ResolvedConfig,
 ): Promise<CallToolResult> {
   try {
-    // Same actor resolution as add_memory.
-    const actorId = input.actor_id ?? firstPersonUserId;
+    const actorId = input.actor_id ?? config.firstPersonEmail;
     const actorType = input.actor_type ?? (actorId !== undefined ? 'user' : undefined);
+    const projectName = config.projectName;
     const metadataFilter =
       projectName === undefined || projectName.trim().length === 0
         ? input.metadata_filter

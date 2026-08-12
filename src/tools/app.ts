@@ -1,5 +1,4 @@
 import { writeFileSync, existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { DashboardApi } from '../_internal/autogen/apis/DashboardApi.js';
 import { Configuration } from '../_internal/autogen/runtime.js';

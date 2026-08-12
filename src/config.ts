@@ -50,6 +50,7 @@ export interface SmriteaSettings {
   /** Absolute path to the auth.json file this settings file says to use. Default: ~/.smritea/auth.json. */
   auth_file_path?: string;
   project_name?: string;
+  actor_name?: string;
   /** Up to 3 free-form tag strings, stored as map keys. Not yet consumed by any tool call. */
   tags?: Record<string, boolean>;
   preferences?: Record<string, unknown>;
@@ -63,7 +64,9 @@ export interface ResolvedConfig {
   memoryBaseUrl: string;
   studioBaseUrl: string;
   projectName?: string;
+  actorName?: string;
   firstPersonUserId?: string;
+  firstPersonEmail?: string;
   apiKey?: string;
   appId?: string;
 }
@@ -184,6 +187,8 @@ export function loadConfig(): ResolvedConfig {
   const studioBaseUrl = settings?.studio_base_url ?? DEFAULT_STUDIO_BASE_URL;
 
   const firstPersonUserId = auth?.user_id ?? (selectedAppId ? auth?.apps?.[selectedAppId]?.first_person_user_id : undefined);
+  const firstPersonEmail = auth?.email;
+  const actorName = settings?.actor_name;
 
   return {
     studioAccessToken: auth?.access_token,
@@ -193,7 +198,9 @@ export function loadConfig(): ResolvedConfig {
     memoryBaseUrl,
     studioBaseUrl,
     projectName: settings?.project_name,
+    actorName,
     firstPersonUserId,
+    firstPersonEmail,
     apiKey: selectedAppAPIKey,
     appId: selectedAppId,
   };

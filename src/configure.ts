@@ -74,6 +74,31 @@ export async function runConfigureFlow(): Promise<void> {
     log.success(`App selected: ${chosen}`);
   }
 
+  let updateActorName = current.actor_name === undefined;
+  if (current.actor_name !== undefined) {
+    log.info(`Your name: ${current.actor_name}`);
+    const update = await confirm({ message: 'Update your name?', initialValue: false });
+    if (isCancel(update)) {
+      cancel('Cancelled.');
+      process.exit(0);
+    }
+    updateActorName = update;
+  }
+  if (updateActorName) {
+    const name = await text({
+      message: 'Your name (to make your memories memorable):',
+      initialValue: current.actor_name ?? '',
+      validate: (value) => ((value ?? '').trim().length === 0 ? 'Name cannot be empty.' : undefined),
+    });
+    if (isCancel(name)) {
+      cancel('Cancelled.');
+      process.exit(0);
+    }
+    const latest = readSettingsFileAt(path) ?? {};
+    writeSettingsFileAt(path, { ...latest, actor_name: name });
+    current = { ...current, actor_name: name };
+  }
+
   let updateProjectName = current.project_name === undefined;
   if (current.project_name !== undefined) {
     log.info(`Project name: ${current.project_name}`);

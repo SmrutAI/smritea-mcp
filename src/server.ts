@@ -62,7 +62,7 @@ export function createMcpServer(): McpServer {
       await refreshIfNeeded();
       const config = loadConfig();
       const client = getMemoryClient();
-      return handleAddMemory(client, AddMemoryInput.parse(input), config.firstPersonUserId, config.projectName);
+      return handleAddMemory(client, AddMemoryInput.parse(input), config);
     },
   );
 
@@ -78,7 +78,7 @@ export function createMcpServer(): McpServer {
       await refreshIfNeeded();
       const config = loadConfig();
       const client = getMemoryClient();
-      return handleSearchMemories(client, SearchMemoriesInput.parse(input), config.firstPersonUserId, config.projectName);
+      return handleSearchMemories(client, SearchMemoriesInput.parse(input), config);
     },
   );
 

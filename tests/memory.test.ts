@@ -12,6 +12,30 @@ vi.mock('smritea-sdk', () => {
       this.statusCode = statusCode;
     }
   }
+  class SmriteaAuthError extends SmriteaError {
+    constructor(message: string, statusCode?: number) {
+      super(message, statusCode ?? 401);
+      this.name = 'SmriteaAuthError';
+    }
+  }
+  class SmriteaQuotaError extends SmriteaError {
+    constructor(message: string, statusCode?: number) {
+      super(message, statusCode ?? 402);
+      this.name = 'SmriteaQuotaError';
+    }
+  }
+  class SmriteaValidationError extends SmriteaError {
+    constructor(message: string, statusCode?: number) {
+      super(message, statusCode ?? 400);
+      this.name = 'SmriteaValidationError';
+    }
+  }
+  class SmriteaNotFoundError extends SmriteaError {
+    constructor(message: string, statusCode?: number) {
+      super(message, statusCode ?? 404);
+      this.name = 'SmriteaNotFoundError';
+    }
+  }
   class SmriteaRateLimitError extends SmriteaError {
     retryAfter?: number;
     constructor(message: string, statusCode?: number, retryAfter?: number) {
@@ -20,10 +44,11 @@ vi.mock('smritea-sdk', () => {
       this.retryAfter = retryAfter;
     }
   }
-  return { SmriteaError, SmriteaRateLimitError, SmriteaClient: vi.fn() };
+  return { SmriteaError, SmriteaAuthError, SmriteaQuotaError, SmriteaValidationError, SmriteaNotFoundError, SmriteaRateLimitError, SmriteaClient: vi.fn() };
 });
 
-import { SmriteaError, SmriteaRateLimitError } from 'smritea-sdk';
+import { SmriteaError, SmriteaAuthError, SmriteaQuotaError, SmriteaRateLimitError } from 'smritea-sdk';
+import type { ResolvedConfig } from '../src/config.js';
 import {
   formatError,
   handleAddMemory,
@@ -31,6 +56,14 @@ import {
   handleGetMemory,
   handleDeleteMemory,
 } from '../src/tools/memory.js';
+
+function makeConfig(overrides?: Partial<ResolvedConfig>): ResolvedConfig {
+  return {
+    memoryBaseUrl: 'https://api-us.smritea.ai',
+    studioBaseUrl: 'https://api.smritea.ai',
+    ...overrides,
+  };
+}
 
 // ---------------------------------------------------------------------------
 // formatError
@@ -45,14 +78,23 @@ describe('formatError', () => {
   it('omits retry-after when retryAfter is undefined', () => {
     const err = new SmriteaRateLimitError('rate limited', 429);
     const result = formatError(err);
+    expect(result).toContain('Rate limit exceeded');
     expect(result).not.toContain('retry after');
-    // Falls through to SmriteaError branch, returns .message
-    expect(result).toBe('rate limited');
   });
 
-  it('returns message for plain SmriteaError', () => {
-    const err = new SmriteaError('not found', 404);
-    expect(formatError(err)).toBe('not found');
+  it('returns auth message for SmriteaAuthError', () => {
+    const err = new SmriteaAuthError('unauthorized', 401);
+    expect(formatError(err)).toContain('smritea-mcp login');
+  });
+
+  it('returns quota message for SmriteaQuotaError', () => {
+    const err = new SmriteaQuotaError('no credits', 402);
+    expect(formatError(err)).toContain('Organization admin');
+  });
+
+  it('returns server error message for plain SmriteaError', () => {
+    const err = new SmriteaError('internal', 500);
+    expect(formatError(err)).toContain('Server error');
   });
 
   it('returns String(err) for generic errors', () => {
@@ -82,6 +124,7 @@ describe('handleAddMemory', () => {
     const result = await handleAddMemory(
       mockClient as any,
       { content: 'test memory' },
+      makeConfig(),
     );
 
     expect(result.isError).toBeUndefined();
@@ -91,30 +134,31 @@ describe('handleAddMemory', () => {
     expect(parsed.content).toBe('test memory');
   });
 
-  it('uses firstPersonUserId when input.actor_id is undefined', async () => {
+  it('uses firstPersonEmail as actorId when input.actor_id is undefined', async () => {
     mockClient.add.mockResolvedValue({ id: 'mem_2' });
 
     await handleAddMemory(
       mockClient as any,
       { content: 'hello' },
-      'alice',
+      makeConfig({ firstPersonEmail: 'alice@example.com', actorName: 'Alice' }),
     );
 
     expect(mockClient.add).toHaveBeenCalledWith('hello', expect.objectContaining({
       scope: expect.objectContaining({
-        actorId: 'alice',
+        actorId: 'alice@example.com',
         actorType: 'user',
+        actorName: 'Alice',
       }),
     }));
   });
 
-  it('prefers input.actor_id over firstPersonUserId', async () => {
+  it('prefers input.actor_id over firstPersonEmail', async () => {
     mockClient.add.mockResolvedValue({ id: 'mem_3' });
 
     await handleAddMemory(
       mockClient as any,
       { content: 'hello', actor_id: 'bob' },
-      'alice',
+      makeConfig({ firstPersonEmail: 'alice@example.com' }),
     );
 
     expect(mockClient.add).toHaveBeenCalledWith('hello', expect.objectContaining({
@@ -133,6 +177,7 @@ describe('handleAddMemory', () => {
     const result = await handleAddMemory(
       mockClient as any,
       { content: 'test' },
+      makeConfig(),
     );
 
     expect(result.isError).toBe(true);
@@ -145,6 +190,7 @@ describe('handleAddMemory', () => {
     const result = await handleAddMemory(
       mockClient as any,
       { content: 'test' },
+      makeConfig(),
     );
 
     expect(result.isError).toBe(true);
@@ -168,6 +214,7 @@ describe('handleSearchMemories', () => {
     const result = await handleSearchMemories(
       mockClient as any,
       { query: 'anything' },
+      makeConfig(),
     );
 
     expect(result.isError).toBeUndefined();
@@ -183,6 +230,7 @@ describe('handleSearchMemories', () => {
     const result = await handleSearchMemories(
       mockClient as any,
       { query: 'test query' },
+      makeConfig(),
     );
 
     expect(result.isError).toBeUndefined();
@@ -193,30 +241,30 @@ describe('handleSearchMemories', () => {
     expect(parsed[1].score).toBe(0.80);
   });
 
-  it('uses firstPersonUserId when input.actor_id is undefined', async () => {
+  it('uses firstPersonEmail as actorId when input.actor_id is undefined', async () => {
     mockClient.search.mockResolvedValue([]);
 
     await handleSearchMemories(
       mockClient as any,
       { query: 'q' },
-      'alice',
+      makeConfig({ firstPersonEmail: 'alice@example.com' }),
     );
 
     expect(mockClient.search).toHaveBeenCalledWith('q', expect.objectContaining({
       scope: expect.objectContaining({
-        actorId: 'alice',
+        actorId: 'alice@example.com',
         actorType: 'user',
       }),
     }));
   });
 
-  it('prefers input.actor_id over firstPersonUserId', async () => {
+  it('prefers input.actor_id over firstPersonEmail', async () => {
     mockClient.search.mockResolvedValue([]);
 
     await handleSearchMemories(
       mockClient as any,
       { query: 'q', actor_id: 'bob' },
-      'alice',
+      makeConfig({ firstPersonEmail: 'alice@example.com' }),
     );
 
     expect(mockClient.search).toHaveBeenCalledWith('q', expect.objectContaining({
@@ -233,10 +281,11 @@ describe('handleSearchMemories', () => {
     const result = await handleSearchMemories(
       mockClient as any,
       { query: 'test' },
+      makeConfig(),
     );
 
     expect(result.isError).toBe(true);
-    expect(result.content[0].text).toBe('forbidden');
+    expect(result.content[0].text).toContain('Server error');
   });
 });
 
@@ -274,7 +323,7 @@ describe('handleGetMemory', () => {
     );
 
     expect(result.isError).toBe(true);
-    expect(result.content[0].text).toBe('not found');
+    expect(result.content[0].text).toContain('Server error');
   });
 });
 
