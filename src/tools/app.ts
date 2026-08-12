@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync, existsSync, readFileSync } from 'node:fs';
+import { writeFileSync, existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { DashboardApi } from '../_internal/autogen/apis/DashboardApi.js';
@@ -6,8 +6,6 @@ import { Configuration } from '../_internal/autogen/runtime.js';
 import type { SelectAppInput } from '../types.js';
 import { getAuthFilePath, readSettingsFile, readSettingsFileAt, writeSettingsFile, writeSettingsFileAt, type AuthFile, type ResolvedConfig, type SmriteaSettings } from '../config.js';
 
-const PROJECT_SMRITEA_DIR = join(process.cwd(), '.smritea');
-const GITIGNORE_PATH = join(PROJECT_SMRITEA_DIR, '.gitignore');
 
 export interface StudioAppItem {
   id: string;
@@ -161,12 +159,6 @@ export async function handleSelectApp(input: SelectAppInput, config: ResolvedCon
   }
 
   const { appName, createdApiKey } = await ensureStoredApiKey(config, input);
-
-  // Prevent committing project-scoped metadata if users create it later.
-  mkdirSync(PROJECT_SMRITEA_DIR, { recursive: true });
-  if (!existsSync(GITIGNORE_PATH)) {
-    writeFileSync(GITIGNORE_PATH, 'settings.json\n', 'utf-8');
-  }
 
   const name = appName !== undefined ? ` (${appName})` : '';
   const keyNote = createdApiKey

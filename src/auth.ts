@@ -4,7 +4,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import http, { type IncomingMessage, type ServerResponse } from 'node:http';
 import { dirname } from 'node:path';
 import { AuthApi } from './_internal/autogen/apis/AuthApi.js';
-import { type CLIRefreshTokenRequest, type CLITokenRequest } from './_internal/autogen/models/index.js';
+import { type CLIRefreshTokenRequest, type CLITokenRequest, type CLITokenResponse } from './_internal/autogen/models/index.js';
 import { Configuration } from './_internal/autogen/runtime.js';
 import { ensureSettingsFile, getAuthFilePath, loadConfig, type AuthFile } from './config.js';
 
@@ -13,16 +13,6 @@ const CALLBACK_PATH = '/callback';
 const CLIENT_ID = 'smritea-plugin';
 const CALLBACK_TIMEOUT_MS = 5 * 60 * 1000;
 const REFRESH_SKEW_MS = 60 * 1000;
-
-type CLITokenResponse = {
-  access_token: string;
-  refresh_token: string;
-  token_type: string;
-  expires_in: number;
-  user_id: string;
-  email: string;
-  organization_id: string;
-};
 
 type PersistedAuth = AuthFile &
   Partial<CLITokenResponse> & {
@@ -56,7 +46,8 @@ function generateCodeChallenge(verifier: string): string {
 
 function deriveFrontendUrl(studioBaseUrl: string): string {
   if (studioBaseUrl.includes('://api.')) {
-    return studioBaseUrl.replace('://api.', '://app.');
+    const domain = studioBaseUrl.split('://api.')[1];
+    return `https://${domain}`;
   }
   // Local dev: cloud_frontend/apps/smritea-cloud-ui/vite.config.ts hardcodes port 3000 (strictPort: true).
   if (studioBaseUrl.includes('://localhost')) {
@@ -197,14 +188,14 @@ function mergeAuth(existing: PersistedAuth | null, tokens: CLITokenResponse): Pe
   const base: Partial<PersistedAuth> = existing ?? {};
   return {
     ...base,
-    access_token: tokens.access_token,
-    refresh_token: tokens.refresh_token,
-    token_type: tokens.token_type,
-    expires_in: tokens.expires_in,
-    expires_at: toExpiresAt(tokens.expires_in),
-    user_id: tokens.user_id || base.user_id,
+    access_token: tokens.accessToken ?? '',
+    refresh_token: tokens.refreshToken ?? '',
+    token_type: tokens.tokenType,
+    expires_in: tokens.expiresIn,
+    expires_at: toExpiresAt(tokens.expiresIn ?? 0),
+    user_id: tokens.userId || base.user_id,
     email: tokens.email || base.email,
-    organization_id: tokens.organization_id || base.organization_id,
+    organization_id: tokens.organizationId || base.organization_id,
     apps: existing?.apps ?? {},
   };
 }
