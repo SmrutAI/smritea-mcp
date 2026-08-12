@@ -75,6 +75,18 @@ Project-level `.smritea/settings.json` can override `selected_app_id` and both b
 
 ---
 
+## CLI Commands
+
+| Command | Title | Description |
+|---------|-------|-------------|
+| `smritea-mcp serve` | Start the MCP server (stdio) | The default command (also runs when no subcommand is given). Starts the MCP server over stdio and blocks, communicating via JSON-RPC on stdout — this is what Claude Code launches. |
+| `smritea-mcp serve-sse [port]` | Start the MCP server (SSE) | Starts the MCP server as an HTTP server using Server-Sent Events, for Cursor and other network-connected clients. Defaults to port `3000` if no port is given. |
+| `smritea-mcp login` | Authenticate with Studio | Opens the browser, runs the OAuth PKCE flow against Studio, and saves the resulting access and refresh tokens to `auth.json`. |
+| `smritea-mcp configure` | Interactive setup wizard | Guided terminal setup: logs in first if needed, asks whether to configure at the user or project level, lets you pick a Studio app (provisioning an API key if one isn't already stored), and prompts for a project name and up to 3 tags — each answer is saved immediately as you go, and re-running it shows your current values before asking whether to change them. |
+| `smritea-mcp init` | Removed | No longer does anything. Prints a message directing you to run `login` and then use the `select_app` tool, and exits with an error. |
+
+---
+
 ## Configuration
 
 smritea-mcp uses two files with separate responsibilities.

@@ -4,12 +4,12 @@ import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { DashboardApi } from '../_internal/autogen/apis/DashboardApi.js';
 import { Configuration } from '../_internal/autogen/runtime.js';
 import type { SelectAppInput } from '../types.js';
-import { getAuthFilePath, readSettingsFile, writeSettingsFile, type AuthFile, type ResolvedConfig, type SmriteaSettings } from '../config.js';
+import { getAuthFilePath, readSettingsFile, readSettingsFileAt, writeSettingsFile, writeSettingsFileAt, type AuthFile, type ResolvedConfig, type SmriteaSettings } from '../config.js';
 
 const PROJECT_SMRITEA_DIR = join(process.cwd(), '.smritea');
 const GITIGNORE_PATH = join(PROJECT_SMRITEA_DIR, '.gitignore');
 
-interface StudioAppItem {
+export interface StudioAppItem {
   id: string;
   name?: string;
 }
@@ -82,7 +82,7 @@ function createStudioApi(config: ResolvedConfig): DashboardApi {
   );
 }
 
-async function listStudioApps(config: ResolvedConfig): Promise<StudioAppItem[]> {
+export async function fetchStudioApps(config: ResolvedConfig): Promise<StudioAppItem[]> {
   const api = createStudioApi(config);
   const items = await api.listApps();
 
@@ -151,10 +151,14 @@ async function ensureStoredApiKey(config: ResolvedConfig, input: SelectAppInput)
   return { appName, createdApiKey: true };
 }
 
-export async function handleSelectApp(input: SelectAppInput, config: ResolvedConfig): Promise<CallToolResult> {
-  const settings: SmriteaSettings = readSettingsFile() ?? {};
+export async function handleSelectApp(input: SelectAppInput, config: ResolvedConfig, targetPath?: string): Promise<CallToolResult> {
+  const settings: SmriteaSettings = (targetPath !== undefined ? readSettingsFileAt(targetPath) : readSettingsFile()) ?? {};
   settings.selected_app_id = input.app_id;
-  writeSettingsFile(settings);
+  if (targetPath !== undefined) {
+    writeSettingsFileAt(targetPath, settings);
+  } else {
+    writeSettingsFile(settings);
+  }
 
   const { appName, createdApiKey } = await ensureStoredApiKey(config, input);
 
@@ -185,7 +189,7 @@ export async function handleSelectApp(input: SelectAppInput, config: ResolvedCon
 }
 
 export async function handleListApps(config: ResolvedConfig): Promise<CallToolResult> {
-  const apps = await listStudioApps(config);
+  const apps = await fetchStudioApps(config);
   const selectedAppId = config.selectedAppId;
 
   const lines = apps.length > 0

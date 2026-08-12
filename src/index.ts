@@ -2,6 +2,7 @@
 import { startServer } from './server.js';
 import { startSseServer } from './sse.js';
 import { runLoginFlow } from './auth.js';
+import { runConfigureFlow } from './configure.js';
 
 const subcommand = process.argv[2];
 
@@ -30,8 +31,13 @@ if (subcommand === 'serve' || subcommand === undefined) {
     console.error('Login failed:', err);
     process.exit(1);
   });
+} else if (subcommand === 'configure') {
+  runConfigureFlow().catch((err: unknown) => {
+    console.error('Configure failed:', err);
+    process.exit(1);
+  });
 } else {
   console.error(`Unknown subcommand: ${subcommand}`);
-  console.error('Usage: smritea-mcp [serve|serve-sse [port]|login]');
+  console.error('Usage: smritea-mcp [serve|serve-sse [port]|login|configure]');
   process.exit(1);
 }

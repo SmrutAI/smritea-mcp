@@ -16,6 +16,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@clack/prompts": "^1.7.0",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "smritea-sdk": "file:../../polyglot/smritea-sdk/typescript",
     "zod": "^3.23.0"

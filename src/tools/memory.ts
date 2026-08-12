@@ -25,6 +25,7 @@ export async function handleAddMemory(
   client: SmriteaClient,
   input: AddMemoryInput,
   firstPersonUserId?: string,
+  projectName?: string,
 ): Promise<CallToolResult> {
   try {
     // Resolve actor_id: use what the AI provided; fall back to the configured first-person ID.
@@ -39,7 +40,7 @@ export async function handleAddMemory(
         conversationId: input.conversation_id,
         sourceType: input.source_type,
       },
-      metadata: input.metadata,
+      metadata: projectName !== undefined && projectName.trim().length > 0 ? { ...input.metadata, project_name: projectName } : input.metadata,
       eventOccurredAt: input.event_occurred_at,
       relativeStanding:
         input.importance !== undefined || input.decay_factor !== undefined || input.decay_function !== undefined
@@ -58,11 +59,18 @@ export async function handleSearchMemories(
   client: SmriteaClient,
   input: SearchMemoriesInput,
   firstPersonUserId?: string,
+  projectName?: string,
 ): Promise<CallToolResult> {
   try {
     // Same actor resolution as add_memory.
     const actorId = input.actor_id ?? firstPersonUserId;
     const actorType = input.actor_type ?? (actorId !== undefined ? 'user' : undefined);
+    const metadataFilter =
+      projectName === undefined || projectName.trim().length === 0
+        ? input.metadata_filter
+        : input.metadata_filter !== undefined
+          ? { $and: [input.metadata_filter, { project_name: projectName }] }
+          : { project_name: projectName };
     const results = await client.search(input.query, {
       scope: {
         actorId,
@@ -77,7 +85,7 @@ export async function handleSearchMemories(
       fromTime: input.from_time,
       toTime: input.to_time,
       validAt: input.valid_at,
-      metadataFilter: input.metadata_filter,
+      metadataFilter,
     });
 
     if (results.length === 0) {

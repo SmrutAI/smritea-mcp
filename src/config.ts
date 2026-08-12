@@ -49,7 +49,9 @@ export interface SmriteaSettings {
   memory_base_url?: string;
   /** Absolute path to the auth.json file this settings file says to use. Default: ~/.smritea/auth.json. */
   auth_file_path?: string;
-  default_project?: string;
+  project_name?: string;
+  /** Up to 3 free-form tag strings, stored as map keys. Not yet consumed by any tool call. */
+  tags?: Record<string, boolean>;
   preferences?: Record<string, unknown>;
 }
 
@@ -70,11 +72,14 @@ const DEFAULT_MEMORY_BASE_URL = 'https://api-us.smritea.ai';
 const DEFAULT_STUDIO_BASE_URL = 'https://api.smritea.ai';
 
 const AUTH_CONFIG_PATH = join(homedir(), '.smritea', 'auth.json');
-const DEFAULT_USER_SETTINGS_PATH = join(homedir(), '.smritea', 'settings.json');
 
-function isDevConfigEnabled(): boolean {
+export function isDevConfigEnabled(): boolean {
   const v = process.env['SMRITEA_DEV_CONFIG'];
   return v !== undefined && v !== '' && v !== '0' && v.toLowerCase() !== 'false';
+}
+
+function settingsFileName(): string {
+  return isDevConfigEnabled() ? 'settings.dev.json' : 'settings.json';
 }
 
 /**
@@ -83,11 +88,12 @@ function isDevConfigEnabled(): boolean {
  * SMRITEA_DEV_CONFIG on  → <cwd>/.smritea/settings.json if it exists, else still the user file.
  */
 function resolveSettingsPath(): string {
-  const projectPath = join(process.cwd(), '.smritea', 'settings.json');
-  if (isDevConfigEnabled() && existsSync(projectPath)) {
+  const fileName = settingsFileName();
+  const projectPath = join(process.cwd(), '.smritea', fileName);
+  if (existsSync(projectPath)) {
     return projectPath;
   }
-  return DEFAULT_USER_SETTINGS_PATH;
+  return join(homedir(), '.smritea', fileName);
 }
 
 function readJsonFile<T>(path: string): T | null {
@@ -136,6 +142,21 @@ export function writeSettingsFile(value: SmriteaSettings): void {
   writeJsonFile(resolveSettingsPath(), value);
 }
 
+export function getSettingsPathForScope(scope: 'user' | 'project'): string {
+  const fileName = settingsFileName();
+  return scope === 'user'
+    ? join(homedir(), '.smritea', fileName)
+    : join(process.cwd(), '.smritea', fileName);
+}
+
+export function readSettingsFileAt(path: string): SmriteaSettings | null {
+  return readJsonFile<SmriteaSettings>(path);
+}
+
+export function writeSettingsFileAt(path: string, value: SmriteaSettings): void {
+  writeJsonFile(path, value);
+}
+
 function readAuthFile(): AuthFile | null {
   return readJsonFile<AuthFile>(getAuthFilePath());
 }
@@ -171,7 +192,7 @@ export function loadConfig(): ResolvedConfig {
     selectedAppAPIKey,
     memoryBaseUrl,
     studioBaseUrl,
-    projectName: settings?.default_project,
+    projectName: settings?.project_name,
     firstPersonUserId,
     apiKey: selectedAppAPIKey,
     appId: selectedAppId,

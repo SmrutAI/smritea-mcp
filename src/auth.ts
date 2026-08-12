@@ -58,9 +58,9 @@ function deriveFrontendUrl(studioBaseUrl: string): string {
   if (studioBaseUrl.includes('://api.')) {
     return studioBaseUrl.replace('://api.', '://app.');
   }
-  // Local dev: frontend runs on port 4200 by default
+  // Local dev: cloud_frontend/apps/smritea-cloud-ui/vite.config.ts hardcodes port 3000 (strictPort: true).
   if (studioBaseUrl.includes('://localhost')) {
-    return 'http://localhost:4200';
+    return 'http://localhost:3000';
   }
   return studioBaseUrl;
 }
