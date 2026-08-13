@@ -77,7 +77,7 @@ No authorization required
 | **201** | Created |  -  |
 | **400** | Invalid request |  -  |
 | **401** | Unauthorized |  -  |
-| **403** | Forbidden - user not member of organization |  -  |
+| **403** | Forbidden - insufficient permissions |  -  |
 | **500** | Internal server error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
@@ -139,6 +139,7 @@ No authorization required
 |-------------|-------------|------------------|
 | **200** | OK |  -  |
 | **401** | Unauthorized |  -  |
+| **403** | Insufficient permissions |  -  |
 | **500** | Internal server error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)

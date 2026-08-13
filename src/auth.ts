@@ -84,9 +84,21 @@ function openBrowser(url: string): void {
 function writeHtml(res: ServerResponse, statusCode: number, title: string, message: string): void {
   res.statusCode = statusCode;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.end(
-    `<!doctype html><html><head><meta charset="utf-8"><title>${title}</title></head><body><h1>${title}</h1><p>${message}</p></body></html>`,
-  );
+  const isSuccess = statusCode === 200;
+  res.end(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f0eb;color:#1a1a1a}
+.card{text-align:center;padding:48px 40px}
+.monk{width:120px;height:120px;margin:0 auto 24px}
+h1{font-size:28px;font-weight:700;margin-bottom:8px}
+p{font-size:16px;color:#666;margin-top:4px}
+</style></head><body>
+<div class="card">
+<img src="https://cdn.smritea.ai/${isSuccess ? 'monk_happy_logged_in.png' : 'monk_sad_login_failed.png'}" alt="Smritea" class="monk" />
+<h1>${isSuccess ? 'Signed in to Smritea' : title}</h1>
+<p>${isSuccess ? 'You can close this tab and return to the app.' : message}</p>
+</div></body></html>`);
 }
 
 function getServerPort(server: http.Server): number {
