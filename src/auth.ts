@@ -90,13 +90,13 @@ function writeHtml(res: ServerResponse, statusCode: number, title: string, messa
 *{margin:0;padding:0;box-sizing:border-box}
 body{min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f0eb;color:#1a1a1a}
 .card{text-align:center;padding:48px 40px}
-.monk{width:120px;height:120px;margin:0 auto 24px}
+.monk{width:120px;height:120px;margin:0 auto 24px;border-radius:16px;box-shadow:0 0 30px 15px #f5f0eb}
 h1{font-size:28px;font-weight:700;margin-bottom:8px}
 p{font-size:16px;color:#666;margin-top:4px}
 </style></head><body>
 <div class="card">
-<img src="https://cdn.smritea.ai/${isSuccess ? 'monk_happy_logged_in.png' : 'monk_sad_login_failed.png'}" alt="Smritea" class="monk" />
-<h1>${isSuccess ? 'Signed in to Smritea' : title}</h1>
+<img src="https://cdn.smritea.ai/${isSuccess ? 'monk_happy_logged_in.png' : 'monk_sad_login_failed.png'}" alt="Smonku" class="monk" />
+<h1>${isSuccess ? 'Smonku signed you in!' : title}</h1>
 <p>${isSuccess ? 'You can close this tab and return to the app.' : message}</p>
 </div></body></html>`);
 }
@@ -284,7 +284,7 @@ export async function runLoginFlow(): Promise<void> {
         try {
           const callback = readCallback(req);
           if (callback.state !== state) {
-            writeHtml(res, 400, 'Login failed', 'State verification failed.');
+            writeHtml(res, 400, 'Smonku couldn\'t sign you in', 'State verification failed.');
             finish(() => reject(new Error('OAuth state verification failed.')));
             return;
           }
@@ -298,14 +298,14 @@ export async function runLoginFlow(): Promise<void> {
           finish(() => resolve({ callback, redirectUri: `http://${CALLBACK_HOST}:${getServerPort(activeServer)}${CALLBACK_PATH}` }));
         } catch (err) {
           if (err instanceof Error && err.message === 'Unexpected callback path.') {
-            writeHtml(res, 404, 'Not found', 'This callback path is not valid.');
+            writeHtml(res, 404, 'Smonku couldn\'t sign you in', 'This callback path is not valid.');
             return;
           }
 
           writeHtml(
             res,
             400,
-            'Login failed',
+            'Smonku couldn\'t sign you in',
             err instanceof Error ? err.message : 'The login callback was invalid.',
           );
           finish(() => reject(err));
