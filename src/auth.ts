@@ -85,19 +85,19 @@ function writeHtml(res: ServerResponse, statusCode: number, title: string, messa
   res.statusCode = statusCode;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   const isSuccess = statusCode === 200;
-  res.end(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title>
+  res.end(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${title}</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f0eb;color:#1a1a1a}
-.card{text-align:center;padding:48px 40px}
-.monk{width:120px;height:120px;margin:0 auto 24px;border-radius:16px;box-shadow:0 0 30px 15px #f5f0eb}
-h1{font-size:28px;font-weight:700;margin-bottom:8px}
-p{font-size:16px;color:#666;margin-top:4px}
+.card{text-align:center;padding:48px 40px;max-width:400px}
+.monk{width:200px;height:200px;margin:0 auto 28px;-webkit-mask-image:radial-gradient(ellipse 70% 70% at center,black 40%,transparent 100%);mask-image:radial-gradient(ellipse 70% 70% at center,black 40%,transparent 100%)}
+h1{font-size:32px;font-weight:700;margin-bottom:10px}
+p{font-size:18px;color:#666;margin-top:6px;line-height:1.5}
 </style></head><body>
 <div class="card">
 <img src="https://cdn.smritea.ai/${isSuccess ? 'monk_happy_logged_in.png' : 'monk_sad_login_failed.png'}" alt="Smonku" class="monk" />
-<h1>${isSuccess ? 'Smonku signed you in!' : title}</h1>
-<p>${isSuccess ? 'You can close this tab and return to the app.' : message}</p>
+<h1>${isSuccess ? 'Welcome home!' : title}</h1>
+<p>${isSuccess ? 'Smonku remembered you. You can close this tab and return to the app.' : message}</p>
 </div></body></html>`);
 }
 
@@ -284,7 +284,7 @@ export async function runLoginFlow(): Promise<void> {
         try {
           const callback = readCallback(req);
           if (callback.state !== state) {
-            writeHtml(res, 400, 'Smonku couldn\'t sign you in', 'State verification failed.');
+            writeHtml(res, 400, 'The door didn\'t open this time', 'State verification failed.');
             finish(() => reject(new Error('OAuth state verification failed.')));
             return;
           }
@@ -298,14 +298,14 @@ export async function runLoginFlow(): Promise<void> {
           finish(() => resolve({ callback, redirectUri: `http://${CALLBACK_HOST}:${getServerPort(activeServer)}${CALLBACK_PATH}` }));
         } catch (err) {
           if (err instanceof Error && err.message === 'Unexpected callback path.') {
-            writeHtml(res, 404, 'Smonku couldn\'t sign you in', 'This callback path is not valid.');
+            writeHtml(res, 404, 'The door didn\'t open this time', 'This callback path is not valid.');
             return;
           }
 
           writeHtml(
             res,
             400,
-            'Smonku couldn\'t sign you in',
+            'The door didn\'t open this time',
             err instanceof Error ? err.message : 'The login callback was invalid.',
           );
           finish(() => reject(err));
