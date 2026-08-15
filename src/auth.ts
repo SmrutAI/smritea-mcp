@@ -7,6 +7,7 @@ import { AuthApi } from './_internal/autogen/apis/AuthApi.js';
 import { type CLIRefreshTokenRequest, type CLITokenRequest, type CLITokenResponse } from './_internal/autogen/models/index.js';
 import { Configuration } from './_internal/autogen/runtime.js';
 import { ensureSettingsFile, getAuthFilePath, loadConfig, type AuthFile } from './config.js';
+import { SMONKU_CSS } from './views/styles.js';
 
 const CALLBACK_HOST = '127.0.0.1';
 const CALLBACK_PATH = '/callback';
@@ -86,18 +87,11 @@ function writeHtml(res: ServerResponse, statusCode: number, title: string, messa
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   const isSuccess = statusCode === 200;
   res.end(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${title}</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f0eb;color:#1a1a1a}
-.card{text-align:center;padding:48px 40px;max-width:400px}
-.monk{width:200px;height:200px;margin:0 auto 28px;-webkit-mask-image:radial-gradient(ellipse 70% 70% at center,black 40%,transparent 100%);mask-image:radial-gradient(ellipse 70% 70% at center,black 40%,transparent 100%)}
-h1{font-size:32px;font-weight:700;margin-bottom:10px}
-p{font-size:18px;color:#666;margin-top:6px;line-height:1.5}
-</style></head><body>
+<style>${SMONKU_CSS}</style></head><body>
 <div class="card">
-<img src="https://cdn.smritea.ai/${isSuccess ? 'monk_happy_logged_in.png' : 'monk_sad_login_failed.png'}" alt="Smonku" class="monk" />
-<h1>${isSuccess ? 'Welcome home!' : title}</h1>
-<p>${isSuccess ? 'Smonku remembered you. You can close this tab and return to the app.' : message}</p>
+<img src="https://cdn.smritea.ai/${isSuccess ? 'monk_happy_logged_in.png' : 'monk_sad_login_failed.png'}" alt="Smonku" class="monk smonku-fade smonku-enter" />
+<h1 class="smonku-text-1">${isSuccess ? 'Welcome home!' : title}</h1>
+<p class="smonku-text-2">${isSuccess ? 'Smonku remembered you. You can close this tab and return to the app.' : message}</p>
 </div></body></html>`);
 }
 
