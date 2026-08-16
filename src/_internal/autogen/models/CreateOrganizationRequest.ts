@@ -36,7 +36,7 @@ export interface CreateOrganizationRequest {
      * @type {string}
      * @memberof CreateOrganizationRequest
      */
-    slug: string;
+    slug?: string;
 }
 
 /**
@@ -44,7 +44,6 @@ export interface CreateOrganizationRequest {
  */
 export function instanceOfCreateOrganizationRequest(value: object): value is CreateOrganizationRequest {
     if (!('name' in value) || value['name'] === undefined) return false;
-    if (!('slug' in value) || value['slug'] === undefined) return false;
     return true;
 }
 
@@ -60,7 +59,7 @@ export function CreateOrganizationRequestFromJSONTyped(json: any, ignoreDiscrimi
         
         'countryCode': json['country_code'] == null ? undefined : json['country_code'],
         'name': json['name'],
-        'slug': json['slug'],
+        'slug': json['slug'] == null ? undefined : json['slug'],
     };
 }
 

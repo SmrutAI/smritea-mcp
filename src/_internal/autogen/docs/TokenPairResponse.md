@@ -1,34 +1,36 @@
 
-# OrganizationSummary
+# TokenPairResponse
 
 
 ## Properties
 
 Name | Type
 ------------ | -------------
-`id` | string
-`memberCount` | number
+`accessToken` | string
+`email` | string
+`expiresIn` | number
 `name` | string
-`plan` | string
-`role` | string
-`slug` | string
-`status` | string
+`organizationId` | string
+`refreshToken` | string
+`tokenType` | string
+`userId` | string
 
 ## Example
 
 ```typescript
-import type { OrganizationSummary } from ''
+import type { TokenPairResponse } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "id": null,
-  "memberCount": null,
+  "accessToken": null,
+  "email": null,
+  "expiresIn": null,
   "name": null,
-  "plan": null,
-  "role": null,
-  "slug": null,
-  "status": null,
-} satisfies OrganizationSummary
+  "organizationId": null,
+  "refreshToken": null,
+  "tokenType": null,
+  "userId": null,
+} satisfies TokenPairResponse
 
 console.log(example)
 
@@ -37,7 +39,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as OrganizationSummary
+const exampleParsed = JSON.parse(exampleJSON) as TokenPairResponse
 console.log(exampleParsed)
 ```
 

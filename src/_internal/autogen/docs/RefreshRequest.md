@@ -1,36 +1,22 @@
 
-# LoginResponse
+# RefreshRequest
 
 
 ## Properties
 
 Name | Type
 ------------ | -------------
-`accessToken` | string
-`email` | string
-`expiresIn` | number
-`name` | string
-`organizationId` | string
 `refreshToken` | string
-`tokenType` | string
-`userId` | string
 
 ## Example
 
 ```typescript
-import type { LoginResponse } from ''
+import type { RefreshRequest } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "accessToken": null,
-  "email": null,
-  "expiresIn": null,
-  "name": null,
-  "organizationId": null,
   "refreshToken": null,
-  "tokenType": null,
-  "userId": null,
-} satisfies LoginResponse
+} satisfies RefreshRequest
 
 console.log(example)
 
@@ -39,7 +25,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as LoginResponse
+const exampleParsed = JSON.parse(exampleJSON) as RefreshRequest
 console.log(exampleParsed)
 ```
 

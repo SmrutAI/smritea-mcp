@@ -16,71 +16,71 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface LoginResponse
+ * @interface TokenPairResponse
  */
-export interface LoginResponse {
+export interface TokenPairResponse {
     /**
      * 
      * @type {string}
-     * @memberof LoginResponse
+     * @memberof TokenPairResponse
      */
     accessToken?: string;
     /**
      * 
      * @type {string}
-     * @memberof LoginResponse
+     * @memberof TokenPairResponse
      */
     email?: string;
     /**
      * 
      * @type {number}
-     * @memberof LoginResponse
+     * @memberof TokenPairResponse
      */
     expiresIn?: number;
     /**
      * 
      * @type {string}
-     * @memberof LoginResponse
+     * @memberof TokenPairResponse
      */
     name?: string;
     /**
      * 
      * @type {string}
-     * @memberof LoginResponse
+     * @memberof TokenPairResponse
      */
     organizationId?: string;
     /**
      * 
      * @type {string}
-     * @memberof LoginResponse
+     * @memberof TokenPairResponse
      */
     refreshToken?: string;
     /**
      * 
      * @type {string}
-     * @memberof LoginResponse
+     * @memberof TokenPairResponse
      */
     tokenType?: string;
     /**
      * 
      * @type {string}
-     * @memberof LoginResponse
+     * @memberof TokenPairResponse
      */
     userId?: string;
 }
 
 /**
- * Check if a given object implements the LoginResponse interface.
+ * Check if a given object implements the TokenPairResponse interface.
  */
-export function instanceOfLoginResponse(value: object): value is LoginResponse {
+export function instanceOfTokenPairResponse(value: object): value is TokenPairResponse {
     return true;
 }
 
-export function LoginResponseFromJSON(json: any): LoginResponse {
-    return LoginResponseFromJSONTyped(json, false);
+export function TokenPairResponseFromJSON(json: any): TokenPairResponse {
+    return TokenPairResponseFromJSONTyped(json, false);
 }
 
-export function LoginResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): LoginResponse {
+export function TokenPairResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): TokenPairResponse {
     if (json == null) {
         return json;
     }
@@ -97,11 +97,11 @@ export function LoginResponseFromJSONTyped(json: any, ignoreDiscriminator: boole
     };
 }
 
-export function LoginResponseToJSON(json: any): LoginResponse {
-    return LoginResponseToJSONTyped(json, false);
+export function TokenPairResponseToJSON(json: any): TokenPairResponse {
+    return TokenPairResponseToJSONTyped(json, false);
 }
 
-export function LoginResponseToJSONTyped(value?: LoginResponse | null, ignoreDiscriminator: boolean = false): any {
+export function TokenPairResponseToJSONTyped(value?: TokenPairResponse | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }

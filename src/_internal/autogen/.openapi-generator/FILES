@@ -108,8 +108,9 @@ docs/InternalSearchMemoriesRequest.md
 docs/LedgerEntry.md
 docs/ListEntitiesResponse.md
 docs/LocationCount.md
+docs/LoginChallengeResponse.md
 docs/LoginRequest.md
-docs/LoginResponse.md
+docs/LogoutRequest.md
 docs/MRRSeriesPoint.md
 docs/McpCliApi.md
 docs/MemoryExtractionResultDTO.md
@@ -130,6 +131,7 @@ docs/OpsSanityReportResponse.md
 docs/OpsViolationResponse.md
 docs/OrgGrandfatherResponse.md
 docs/OrgMemberDetails.md
+docs/OrgSummary.md
 docs/OrgUpdateMemberRoleRequest.md
 docs/OrganizationDetails.md
 docs/OrganizationSummary.md
@@ -167,6 +169,8 @@ docs/PublicInvitationInfo.md
 docs/RateLimitStatusResponse.md
 docs/RateLimitWindow.md
 docs/ReauthorizeResponse.md
+docs/RefreshRequest.md
+docs/RefreshTokenResponse.md
 docs/RegisterDataPlaneRequest.md
 docs/RegisterRequest.md
 docs/RegisterResponse.md
@@ -197,6 +201,7 @@ docs/SearchMemoryResult.md
 docs/SearchMethod.md
 docs/SearchMethodInfo.md
 docs/SearchMethodsResponse.md
+docs/SelectOrgRequest.md
 docs/SetGrandfatherRequest.md
 docs/SourceWeightsConfig.md
 docs/StageTrace.md
@@ -207,6 +212,7 @@ docs/SubscriptionPaymentResponse.md
 docs/SubscriptionResponse.md
 docs/SubscriptionView.md
 docs/SuspendOrgRequest.md
+docs/SwitchOrgRequest.md
 docs/SyncOutboxEntryResponse.md
 docs/SyncOutboxListResponse.md
 docs/SyncOutboxStatsResponse.md
@@ -222,6 +228,7 @@ docs/TeamUpdateMemberRoleRequest.md
 docs/TemporalConfigUsed.md
 docs/TemporalDecayConfig.md
 docs/TemporalFilter.md
+docs/TokenPairResponse.md
 docs/Trace.md
 docs/UnlinkValidation.md
 docs/UpdateAppRequest.md
@@ -345,8 +352,9 @@ models/InternalSearchMemoriesRequest.ts
 models/LedgerEntry.ts
 models/ListEntitiesResponse.ts
 models/LocationCount.ts
+models/LoginChallengeResponse.ts
 models/LoginRequest.ts
-models/LoginResponse.ts
+models/LogoutRequest.ts
 models/MRRSeriesPoint.ts
 models/MemoryExtractionResultDTO.ts
 models/MemoryResponse.ts
@@ -366,6 +374,7 @@ models/OpsSanityReportResponse.ts
 models/OpsViolationResponse.ts
 models/OrgGrandfatherResponse.ts
 models/OrgMemberDetails.ts
+models/OrgSummary.ts
 models/OrgUpdateMemberRoleRequest.ts
 models/OrganizationDetails.ts
 models/OrganizationSummary.ts
@@ -403,6 +412,8 @@ models/PublicInvitationInfo.ts
 models/RateLimitStatusResponse.ts
 models/RateLimitWindow.ts
 models/ReauthorizeResponse.ts
+models/RefreshRequest.ts
+models/RefreshTokenResponse.ts
 models/RegisterDataPlaneRequest.ts
 models/RegisterRequest.ts
 models/RegisterResponse.ts
@@ -433,6 +444,7 @@ models/SearchMemoryResult.ts
 models/SearchMethod.ts
 models/SearchMethodInfo.ts
 models/SearchMethodsResponse.ts
+models/SelectOrgRequest.ts
 models/SetGrandfatherRequest.ts
 models/SourceWeightsConfig.ts
 models/StageTrace.ts
@@ -443,6 +455,7 @@ models/SubscriptionPaymentResponse.ts
 models/SubscriptionResponse.ts
 models/SubscriptionView.ts
 models/SuspendOrgRequest.ts
+models/SwitchOrgRequest.ts
 models/SyncOutboxEntryResponse.ts
 models/SyncOutboxListResponse.ts
 models/SyncOutboxStatsResponse.ts
@@ -458,6 +471,7 @@ models/TeamUpdateMemberRoleRequest.ts
 models/TemporalConfigUsed.ts
 models/TemporalDecayConfig.ts
 models/TemporalFilter.ts
+models/TokenPairResponse.ts
 models/Trace.ts
 models/UnlinkValidation.ts
 models/UpdateAppRequest.ts

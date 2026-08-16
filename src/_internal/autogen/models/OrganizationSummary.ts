@@ -55,6 +55,12 @@ export interface OrganizationSummary {
      * @memberof OrganizationSummary
      */
     slug?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OrganizationSummary
+     */
+    status?: string;
 }
 
 /**
@@ -80,6 +86,7 @@ export function OrganizationSummaryFromJSONTyped(json: any, ignoreDiscriminator:
         'plan': json['plan'] == null ? undefined : json['plan'],
         'role': json['role'] == null ? undefined : json['role'],
         'slug': json['slug'] == null ? undefined : json['slug'],
+        'status': json['status'] == null ? undefined : json['status'],
     };
 }
 
@@ -100,6 +107,7 @@ export function OrganizationSummaryToJSONTyped(value?: OrganizationSummary | nul
         'plan': value['plan'],
         'role': value['role'],
         'slug': value['slug'],
+        'status': value['status'],
     };
 }
 

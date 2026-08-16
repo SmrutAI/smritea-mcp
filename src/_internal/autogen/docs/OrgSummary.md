@@ -1,34 +1,26 @@
 
-# OrganizationSummary
+# OrgSummary
 
 
 ## Properties
 
 Name | Type
 ------------ | -------------
-`id` | string
-`memberCount` | number
 `name` | string
-`plan` | string
+`organizationId` | string
 `role` | string
-`slug` | string
-`status` | string
 
 ## Example
 
 ```typescript
-import type { OrganizationSummary } from ''
+import type { OrgSummary } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "id": null,
-  "memberCount": null,
   "name": null,
-  "plan": null,
+  "organizationId": null,
   "role": null,
-  "slug": null,
-  "status": null,
-} satisfies OrganizationSummary
+} satisfies OrgSummary
 
 console.log(example)
 
@@ -37,7 +29,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as OrganizationSummary
+const exampleParsed = JSON.parse(exampleJSON) as OrgSummary
 console.log(exampleParsed)
 ```
 

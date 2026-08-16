@@ -1,34 +1,24 @@
 
-# OrganizationSummary
+# LoginChallengeResponse
 
 
 ## Properties
 
 Name | Type
 ------------ | -------------
-`id` | string
-`memberCount` | number
-`name` | string
-`plan` | string
-`role` | string
-`slug` | string
-`status` | string
+`orgs` | [Array&lt;OrgSummary&gt;](OrgSummary.md)
+`selectionToken` | string
 
 ## Example
 
 ```typescript
-import type { OrganizationSummary } from ''
+import type { LoginChallengeResponse } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "id": null,
-  "memberCount": null,
-  "name": null,
-  "plan": null,
-  "role": null,
-  "slug": null,
-  "status": null,
-} satisfies OrganizationSummary
+  "orgs": null,
+  "selectionToken": null,
+} satisfies LoginChallengeResponse
 
 console.log(example)
 
@@ -37,7 +27,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as OrganizationSummary
+const exampleParsed = JSON.parse(exampleJSON) as LoginChallengeResponse
 console.log(exampleParsed)
 ```
 

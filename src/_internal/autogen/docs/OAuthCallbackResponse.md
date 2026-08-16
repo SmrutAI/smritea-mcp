@@ -12,7 +12,9 @@ Name | Type
 `isNewUser` | boolean
 `name` | string
 `organizationId` | string
+`orgs` | [Array&lt;OrgSummary&gt;](OrgSummary.md)
 `refreshToken` | string
+`selectionToken` | string
 `tokenType` | string
 `userId` | string
 
@@ -29,7 +31,9 @@ const example = {
   "isNewUser": null,
   "name": null,
   "organizationId": null,
+  "orgs": null,
   "refreshToken": null,
+  "selectionToken": null,
   "tokenType": null,
   "userId": null,
 } satisfies OAuthCallbackResponse

@@ -13,6 +13,14 @@
  */
 
 import { mapValues } from '../runtime';
+import type { OrgSummary } from './OrgSummary';
+import {
+    OrgSummaryFromJSON,
+    OrgSummaryFromJSONTyped,
+    OrgSummaryToJSON,
+    OrgSummaryToJSONTyped,
+} from './OrgSummary';
+
 /**
  * 
  * @export
@@ -56,11 +64,23 @@ export interface OAuthCallbackResponse {
      */
     organizationId?: string;
     /**
+     * Multi-org challenge (present only when the user belongs to >1 org; tokens empty then).
+     * @type {Array<OrgSummary>}
+     * @memberof OAuthCallbackResponse
+     */
+    orgs?: Array<OrgSummary>;
+    /**
      * 
      * @type {string}
      * @memberof OAuthCallbackResponse
      */
     refreshToken?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OAuthCallbackResponse
+     */
+    selectionToken?: string;
     /**
      * 
      * @type {string}
@@ -98,7 +118,9 @@ export function OAuthCallbackResponseFromJSONTyped(json: any, ignoreDiscriminato
         'isNewUser': json['is_new_user'] == null ? undefined : json['is_new_user'],
         'name': json['name'] == null ? undefined : json['name'],
         'organizationId': json['organization_id'] == null ? undefined : json['organization_id'],
+        'orgs': json['orgs'] == null ? undefined : ((json['orgs'] as Array<any>).map(OrgSummaryFromJSON)),
         'refreshToken': json['refresh_token'] == null ? undefined : json['refresh_token'],
+        'selectionToken': json['selection_token'] == null ? undefined : json['selection_token'],
         'tokenType': json['token_type'] == null ? undefined : json['token_type'],
         'userId': json['user_id'] == null ? undefined : json['user_id'],
     };
@@ -121,7 +143,9 @@ export function OAuthCallbackResponseToJSONTyped(value?: OAuthCallbackResponse |
         'is_new_user': value['isNewUser'],
         'name': value['name'],
         'organization_id': value['organizationId'],
+        'orgs': value['orgs'] == null ? undefined : ((value['orgs'] as Array<any>).map(OrgSummaryToJSON)),
         'refresh_token': value['refreshToken'],
+        'selection_token': value['selectionToken'],
         'token_type': value['tokenType'],
         'user_id': value['userId'],
     };
