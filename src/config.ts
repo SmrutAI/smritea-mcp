@@ -205,3 +205,65 @@ export function loadConfig(): ResolvedConfig {
     appId: selectedAppId,
   };
 }
+
+/**
+ * Status of the MANDATORY user-level configuration (~/.smritea/). Project-level overrides are
+ * optional and intentionally NOT considered here — this checks the user account baseline only.
+ */
+export interface UserSetupStatus {
+  /** Every value the `configure` flow collects (login, app+key, name, project) is present. */
+  ok: boolean;
+  /** The minimum needed to call the memory API: logged in + selected app + that app's API key. */
+  canOperate: boolean;
+  loggedIn: boolean;
+  email?: string;
+  selectedAppId?: string;
+  hasApiKey: boolean;
+  actorName?: string;
+  projectName?: string;
+  /** Actionable, human-readable items still missing (empty when ok). */
+  missing: string[];
+  userSettingsPath: string;
+  userAuthPath: string;
+}
+
+/**
+ * Verifies that user-level configuration has been set up — i.e. every value the
+ * `smritea-mcp configure` flow collects exists at the user scope (~/.smritea/). Reads the
+ * USER-level settings.json specifically (never a project override) and its auth.json. Returns a
+ * granular status + a `missing` list so callers can tell the user exactly what to run.
+ */
+export function verifyUserSetup(): UserSetupStatus {
+  const userSettingsPath = getSettingsPathForScope('user');
+  const settings = readSettingsFileAt(userSettingsPath);
+  const userAuthPath = settings?.auth_file_path ?? AUTH_CONFIG_PATH;
+  const auth = readJsonFile<AuthFile>(userAuthPath);
+
+  const loggedIn = auth?.access_token !== undefined && auth.access_token.length > 0 && auth.email !== undefined;
+  const selectedAppId = settings?.selected_app_id;
+  const hasApiKey = selectedAppId !== undefined && auth?.apps?.[selectedAppId]?.api_key !== undefined;
+  const actorName = settings?.actor_name !== undefined && settings.actor_name.trim().length > 0 ? settings.actor_name : undefined;
+  const projectName = settings?.project_name !== undefined && settings.project_name.trim().length > 0 ? settings.project_name : undefined;
+
+  const missing: string[] = [];
+  if (!loggedIn) missing.push('Not logged in — run `smritea-mcp login`.');
+  if (selectedAppId === undefined) missing.push('No app selected — run `smritea-mcp configure`.');
+  else if (!hasApiKey) missing.push('Selected app has no API key — re-run `smritea-mcp configure`.');
+  if (actorName === undefined) missing.push('Your name is not set — run `smritea-mcp configure`.');
+  if (projectName === undefined) missing.push('Project name is not set — run `smritea-mcp configure`.');
+
+  const canOperate = loggedIn && selectedAppId !== undefined && hasApiKey;
+  return {
+    ok: missing.length === 0,
+    canOperate,
+    loggedIn,
+    email: auth?.email,
+    selectedAppId,
+    hasApiKey,
+    actorName,
+    projectName,
+    missing,
+    userSettingsPath,
+    userAuthPath,
+  };
+}

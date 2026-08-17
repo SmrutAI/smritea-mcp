@@ -116,6 +116,13 @@ The MCP resolves the selected app from the active `settings.json`, then resolves
 
 ## Tools
 
+The four memory tools (`add_memory`, `search_memories`, `get_memory`, `delete_memory`) preflight-check
+that the account is fully set up (login + selected app + API key) before calling the API. If anything
+is missing, the tool returns actionable setup guidance instead of a raw SDK error.
+
+Every optional tool parameter treats `null`, `""`, and omission identically as "not provided" and falls
+back to its configured default — none of them throw on a nullish input.
+
 ### `select_app`
 
 Set the active smritea app for the current project. All subsequent memory operations in this project will use the specified app.
@@ -156,9 +163,9 @@ Add a new memory to the active smritea app.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `content` | string | Yes | The memory content to store |
-| `actor_id` | string | No | Actor UUID to associate with this memory. Defaults to the configured `first_person_user_id` when omitted. |
-| `actor_type` | string | No | Actor type: `user`, `agent`, or `system`. Required when `actor_id` is provided. Defaults to `user` when omitted alongside `actor_id`. |
-| `actor_name` | string | No | Optional actor display name |
+| `actor_id` | string | No | Actor UUID. Omit for the user's own memory — defaults to their configured email as the first-person User ID. For a different person, leave this unset and set `actor_name` instead; `actor_id` is auto-derived from it. |
+| `actor_type` | string | No | Actor type: `user`, `agent`, or `system`. Defaults to `user`. |
+| `actor_name` | string | No | Display name of a different, named actor (e.g. `"Harry Potter"`). Auto-derived into a stable slug used as `actor_id` (e.g. `"harry-potter"`) — the same name always maps to the same id. Omit for the user's own memory. |
 | `conversation_id` | string | No | Scope this memory to a conversation |
 | `source_type` | string | No | Origin: `conversation`, `document`, or `api` |
 | `metadata` | object | No | Optional key-value metadata |
@@ -184,8 +191,9 @@ Search for memories semantically. Returns results ranked by relevance score.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `query` | string | Yes | Natural language search query |
-| `actor_id` | string | No | Filter results to a specific actor (UUID). Defaults to the configured `first_person_user_id` when omitted. |
-| `actor_type` | string | No | Filter by actor type: `user`, `agent`, or `system`. Defaults to `user` when omitted alongside `actor_id`. |
+| `actor_id` | string | No | Filter to a specific actor (UUID). Omit for the user's own memories — defaults to their configured email. For a different named person, leave this unset and set `actor_name` instead (same slug derivation as `add_memory`). |
+| `actor_type` | string | No | Filter by actor type: `user`, `agent`, or `system`. Defaults to `user`. |
+| `actor_name` | string | No | Search a specific named person's memories (e.g. `"Harry Potter"`) — `actor_id` is derived from it, the same slug used on `add_memory`. Omit for the user's own memories. |
 | `limit` | number | No | Maximum number of results to return |
 | `method` | string | No | Search method: `quick_search`, `deep_search`, `context_aware_search` |
 | `threshold` | number | No | Minimum relevance score (0.0–1.0) |

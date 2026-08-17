@@ -4,6 +4,39 @@ import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import type { AddMemoryInput, SearchMemoriesInput, GetMemoryInput, DeleteMemoryInput } from '../types.js';
 import type { ResolvedConfig } from '../config.js';
 
+/** Treats null, undefined, and empty/whitespace-only strings as "not provided". Preserves 0 and false. */
+function blank<T>(v: T | null | undefined): T | undefined {
+  if (v === null || v === undefined) return undefined;
+  if (typeof v === 'string' && v.trim().length === 0) return undefined;
+  return v;
+}
+
+/**
+ * Normalises a display name into a stable actor_id slug so the SAME person maps to the SAME id on
+ * every add and search: "Harry Potter" -> "harry-potter". Returns undefined if nothing usable remains.
+ */
+function normalizeActorId(name: string): string | undefined {
+  const slug = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return slug.length > 0 ? slug : undefined;
+}
+
+/**
+ * Resolves the actor id for a memory op from (possibly null/empty) input plus config defaults:
+ * explicit actor_id wins; else a non-user actor_name is slugified; else it is the first-person
+ * user, so the configured email (used as the User ID) applies.
+ */
+function resolveActorId(
+  inputActorId: string | null | undefined,
+  inputActorName: string | null | undefined,
+  config: ResolvedConfig,
+): string | undefined {
+  const explicit = blank(inputActorId);
+  if (explicit !== undefined) return explicit;
+  const name = blank(inputActorName);
+  if (name !== undefined) return normalizeActorId(name) ?? config.firstPersonEmail;
+  return config.firstPersonEmail;
+}
+
 export function formatMemory(memory: Memory): string {
   return JSON.stringify(memory, null, 2);
 }
@@ -41,23 +74,27 @@ export async function handleAddMemory(
   config: ResolvedConfig,
 ): Promise<CallToolResult> {
   try {
-    const actorId = input.actor_id ?? config.firstPersonEmail;
-    const actorType = input.actor_type ?? (actorId !== undefined ? 'user' : undefined);
-    const actorName = input.actor_name ?? config.actorName;
+    const actorId = resolveActorId(input.actor_id, input.actor_name, config);
+    const actorType = blank(input.actor_type) ?? (actorId !== undefined ? 'user' : undefined);
+    const actorName = blank(input.actor_name) ?? config.actorName;
     const projectName = config.projectName;
+    const importance = blank(input.importance);
+    const decayFactor = blank(input.decay_factor);
+    const decayFunction = blank(input.decay_function);
+    const inputMetadata = blank(input.metadata);
     const result = await client.add(input.content, {
       scope: {
         actorId,
         actorType,
         actorName,
-        conversationId: input.conversation_id,
-        sourceType: input.source_type,
+        conversationId: blank(input.conversation_id),
+        sourceType: blank(input.source_type),
       },
-      metadata: projectName !== undefined && projectName.trim().length > 0 ? { ...input.metadata, project_name: projectName } : input.metadata,
-      eventOccurredAt: input.event_occurred_at,
+      metadata: projectName !== undefined && projectName.trim().length > 0 ? { ...inputMetadata, project_name: projectName } : inputMetadata,
+      eventOccurredAt: blank(input.event_occurred_at),
       relativeStanding:
-        input.importance !== undefined || input.decay_factor !== undefined || input.decay_function !== undefined
-          ? { importance: input.importance, decayFactor: input.decay_factor, decayFunction: input.decay_function }
+        importance !== undefined || decayFactor !== undefined || decayFunction !== undefined
+          ? { importance, decayFactor, decayFunction }
           : undefined,
     });
     return {
@@ -74,29 +111,30 @@ export async function handleSearchMemories(
   config: ResolvedConfig,
 ): Promise<CallToolResult> {
   try {
-    const actorId = input.actor_id ?? config.firstPersonEmail;
-    const actorType = input.actor_type ?? (actorId !== undefined ? 'user' : undefined);
+    const actorId = resolveActorId(input.actor_id, input.actor_name, config);
+    const actorType = blank(input.actor_type) ?? (actorId !== undefined ? 'user' : undefined);
     const projectName = config.projectName;
+    const inputMetadataFilter = blank(input.metadata_filter);
     const metadataFilter =
       projectName === undefined || projectName.trim().length === 0
-        ? input.metadata_filter
-        : input.metadata_filter !== undefined
-          ? { $and: [input.metadata_filter, { project_name: projectName }] }
+        ? inputMetadataFilter
+        : inputMetadataFilter !== undefined
+          ? { $and: [inputMetadataFilter, { project_name: projectName }] }
           : { project_name: projectName };
     const results = await client.search(input.query, {
       scope: {
         actorId,
         actorType,
-        conversationId: input.conversation_id,
-        sourceType: input.source_type,
-        participantIds: input.participant_ids,
+        conversationId: blank(input.conversation_id),
+        sourceType: blank(input.source_type),
+        participantIds: blank(input.participant_ids),
       },
-      limit: input.limit,
-      threshold: input.threshold,
-      graphDepth: input.graph_depth,
-      fromTime: input.from_time,
-      toTime: input.to_time,
-      validAt: input.valid_at,
+      limit: blank(input.limit),
+      threshold: blank(input.threshold),
+      graphDepth: blank(input.graph_depth),
+      fromTime: blank(input.from_time),
+      toTime: blank(input.to_time),
+      validAt: blank(input.valid_at),
       metadataFilter,
     });
 

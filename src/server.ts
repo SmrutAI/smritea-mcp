@@ -1,8 +1,9 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { SmriteaClient } from 'smritea-sdk';
-import { loadConfig } from './config.js';
+import { loadConfig, verifyUserSetup } from './config.js';
 import { refreshIfNeeded } from './auth.js';
 import { AddMemoryInput, SearchMemoriesInput, GetMemoryInput, DeleteMemoryInput, SelectAppInput } from './types.js';
 import {
@@ -30,6 +31,49 @@ function getMemoryClient(): SmriteaClient {
 }
 
 /**
+ * Preflight for the memory tools: if the user-level setup can't support an API call
+ * (not logged in / no app / no API key), return a friendly, actionable tool result instead of
+ * letting the SDK throw. Returns null when the call may proceed.
+ */
+function setupPreflight(): CallToolResult | null {
+  const status = verifyUserSetup();
+  if (status.ok) {
+    return null;
+  }
+  const lines = status.missing.map((m) => `  - ${m}`).join('\n');
+  return {
+    isError: true,
+    content: [
+      {
+        type: 'text',
+        text: `smritea is not set up for this account yet. Complete setup, then retry:\n${lines}`,
+      },
+    ],
+  };
+}
+
+/**
+ * Builds the actor-identity hint injected into the memory tool descriptions from the configured
+ * first-person email (used as the actor_id / User ID) and display name. Tells the model to use
+ * these as defaults and to leave the fields unset rather than invent placeholder values.
+ */
+function actorDefaultsHint(email: string | undefined, name: string | undefined): string {
+  if (email === undefined) {
+    return (
+      ' Identity is not configured — run `smritea-mcp configure`.' +
+      ' For the user\'s own memory, leave actor_id, actor_type, and actor_name unset.' +
+      ' For a different named person, set actor_name only. Never invent UUIDs or placeholder IDs.'
+    );
+  }
+  const namePart = name !== undefined && name.trim().length > 0 ? ` and actor_name "${name}"` : '';
+  return (
+    ` If the memory is the USER's own, leave actor_id, actor_type, and actor_name UNSET — they default to actor_id "${email}"${namePart}, actor_type "user".` +
+    ' If the memory is clearly from a DIFFERENT named person, set actor_name to that person\'s name (e.g. "Harry Potter") and leave actor_id unset — it is auto-normalized to a stable id ("harry-potter").' +
+    ' Every actor field is optional on every call; null or empty string are treated as unset. Never invent UUIDs or placeholder IDs.'
+  );
+}
+
+/**
  * Creates and fully configures an McpServer with all tools and prompts.
  * Does NOT connect a transport — caller is responsible for connecting.
  */
@@ -46,9 +90,8 @@ export function createMcpServer(): McpServer {
     },
   );
 
-  const firstPersonHint =
-    ' Set actor_id (UUID) and actor_type ("user", "agent", or "system") to scope the memory to a specific actor.' +
-    ' If a first-person user ID is configured in ~/.smritea/auth.json, it is used as the default actor_id.';
+  const startupConfig = loadConfig();
+  const firstPersonHint = actorDefaultsHint(startupConfig.firstPersonEmail, startupConfig.actorName);
 
   server.tool(
     'add_memory',
@@ -59,6 +102,10 @@ export function createMcpServer(): McpServer {
     firstPersonHint,
     AddMemoryInput.shape,
     async (input) => {
+      const pre = setupPreflight();
+      if (pre !== null) {
+        return pre;
+      }
       await refreshIfNeeded();
       const config = loadConfig();
       const client = getMemoryClient();
@@ -75,6 +122,10 @@ export function createMcpServer(): McpServer {
     firstPersonHint,
     SearchMemoriesInput.shape,
     async (input) => {
+      const pre = setupPreflight();
+      if (pre !== null) {
+        return pre;
+      }
       await refreshIfNeeded();
       const config = loadConfig();
       const client = getMemoryClient();
@@ -88,6 +139,10 @@ export function createMcpServer(): McpServer {
     'search result and need the full memory object.',
     GetMemoryInput.shape,
     async (input) => {
+      const pre = setupPreflight();
+      if (pre !== null) {
+        return pre;
+      }
       await refreshIfNeeded();
       const client = getMemoryClient();
       return handleGetMemory(client, GetMemoryInput.parse(input));
@@ -101,6 +156,10 @@ export function createMcpServer(): McpServer {
     'from a search result before deleting.',
     DeleteMemoryInput.shape,
     async (input) => {
+      const pre = setupPreflight();
+      if (pre !== null) {
+        return pre;
+      }
       await refreshIfNeeded();
       const client = getMemoryClient();
       return handleDeleteMemory(client, DeleteMemoryInput.parse(input));
