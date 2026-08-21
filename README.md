@@ -123,10 +123,16 @@ is missing, the tool returns actionable setup guidance instead of a raw SDK erro
 Every optional tool parameter treats `null`, `""`, and omission identically as "not provided" and falls
 back to its configured default — none of them throw on a nullish input.
 
-When the access token has expired, the memory tools renew it automatically before the call. If the
-session can no longer be renewed — the refresh token has expired or been revoked — they return a clear
-"run `smritea-mcp login` to re-authenticate" message instead of a raw error, so an expired session
-prompts a clean re-login rather than failing cryptically.
+When the access token has expired, the memory tools renew it automatically before the call. Renewal
+failures are reported by cause, so the AI sees exactly what went wrong:
+
+- **HTTP 401** (refresh token expired or revoked) — the only case treated as a dead session. Returns a
+  clear "run `smritea-mcp login` to re-authenticate" message.
+- **Any other 4xx/5xx** — reports the real HTTP status plus the server's `code` and `message`, read from
+  the response body, and suggests a retry.
+- **Network / transport error** (no response received) — reported as a connectivity problem to check and
+  retry.
+- **HTTP 200 with no access token** — reported as an unexpected response from the auth service.
 
 ### `select_app`
 

@@ -5,7 +5,7 @@ import http, { type IncomingMessage, type ServerResponse } from 'node:http';
 import { dirname } from 'node:path';
 import { AuthApi } from './_internal/autogen/apis/AuthApi.js';
 import { type CLIRefreshTokenRequest, type CLITokenRequest, type CLITokenResponse } from './_internal/autogen/models/index.js';
-import { Configuration } from './_internal/autogen/runtime.js';
+import { Configuration, ResponseError } from './_internal/autogen/runtime.js';
 import { ensureSettingsFile, getAuthFilePath, loadConfig, type AuthFile } from './config.js';
 import { SMONKU_CSS } from './views/styles.js';
 
@@ -250,6 +250,53 @@ function needsRefresh(auth: PersistedAuth): boolean {
   return expiresAt - REFRESH_SKEW_MS <= Date.now();
 }
 
+/**
+ * Maps a token-refresh failure to a meaningful error for the caller (and the AI to read):
+ * - HTTP 401 → the refresh token is expired/revoked; this is the ONLY case that needs a re-login.
+ * - Any other 4xx/5xx → surface BOTH the HTTP status code AND the server's error code + message
+ *   (from the SDK ResponseError's raw `.response`), explicitly NOT framed as a login problem.
+ * - No response (network/transport error) → surface the underlying error as a connectivity problem.
+ */
+async function renewFailureError(err: unknown): Promise<Error> {
+  if (err instanceof ResponseError) {
+    const status = err.response.status;
+    if (status === 401) {
+      return new AuthRequiredError(SESSION_EXPIRED_MSG, { cause: err });
+    }
+    let detail = '';
+    try {
+      const raw = (await err.response.clone().text()).trim();
+      let code: unknown;
+      let message: unknown;
+      try {
+        const parsed = JSON.parse(raw) as Record<string, unknown>;
+        code = parsed['code'];
+        message = parsed['message'];
+      } catch {
+        // Non-JSON body — fall through to the raw text below.
+      }
+      if (typeof code === 'string' || typeof message === 'string') {
+        detail = ` (code: ${typeof code === 'string' ? code : 'n/a'}, message: ${typeof message === 'string' ? message : 'n/a'})`;
+      } else if (raw.length > 0) {
+        detail = ` — ${raw.slice(0, 500)}`;
+      }
+    } catch {
+      detail = '';
+    }
+    return new Error(
+      `Token refresh failed with HTTP ${status}${detail}. Retry, and check your connection or the ` +
+        'smritea service status if it persists.',
+      { cause: err },
+    );
+  }
+  const netDetail = err instanceof Error && err.message.length > 0 ? err.message : String(err);
+  return new Error(
+    `Token refresh failed before a response was received: ${netDetail}. This looks like a network or ` +
+      'connectivity problem — check your connection and retry.',
+    { cause: err },
+  );
+}
+
 export async function refreshIfNeeded(): Promise<PersistedAuth | null> {
   const auth = loadAuth();
   if (auth === null) {
@@ -269,15 +316,17 @@ export async function refreshIfNeeded(): Promise<PersistedAuth | null> {
   try {
     tokens = await refreshToken(studioBaseUrl, auth.refresh_token);
   } catch (err) {
-    // Refresh token expired/revoked, a non-2xx from the endpoint, or a network failure — the session
-    // cannot be renewed silently, so ask the user to sign in again instead of leaking a raw error.
-    throw new AuthRequiredError(SESSION_EXPIRED_MSG, { cause: err });
+    // 401 → re-login; any other 4xx/5xx → real status + server code/message; network error → as such.
+    throw await renewFailureError(err);
   }
 
-  // A successful refresh MUST return a new access token. A 200 with an error/empty body (no token) is
-  // unusable and means the session is effectively dead.
+  // A successful refresh MUST return a new access token. A 200 without one is an unexpected response
+  // from the auth service — report it as such, not as a login problem.
   if (typeof tokens.accessToken !== 'string' || tokens.accessToken.length === 0) {
-    throw new AuthRequiredError();
+    throw new Error(
+      'Token refresh returned HTTP 200 but no access token — the smritea auth service sent an ' +
+        'unexpected response. Retry; if it persists, report it.',
+    );
   }
 
   return saveAuth(tokens);

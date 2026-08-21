@@ -1,6 +1,6 @@
 {
   "name": "smritea-mcp",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "MCP server for smritea AI memory system",
   "bin": {
     "smritea-mcp": "./dist/index.js"

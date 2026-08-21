@@ -4,7 +4,7 @@ import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { SmriteaClient } from 'smritea-sdk';
 import { loadConfig, verifyUserSetup } from './config.js';
-import { refreshIfNeeded, AuthRequiredError } from './auth.js';
+import { refreshIfNeeded } from './auth.js';
 import { AddMemoryInput, SearchMemoriesInput, GetMemoryInput, DeleteMemoryInput, SelectAppInput } from './types.js';
 import {
   handleAddMemory,
@@ -63,10 +63,13 @@ async function guardedRefresh(): Promise<CallToolResult | null> {
     await refreshIfNeeded();
     return null;
   } catch (err) {
+    // refreshIfNeeded already mapped the failure to a meaningful message: the re-login prompt for a
+    // 401, or the real HTTP status + server code/message for any other 4xx/5xx (or a network error).
+    // Surface that message verbatim so the AI sees exactly what failed, never a blanket "re-login".
     const text =
-      err instanceof AuthRequiredError
+      err instanceof Error && err.message.length > 0
         ? err.message
-        : 'Could not renew your smritea session. Run `smritea-mcp login` to re-authenticate.';
+        : `Could not renew your smritea session: ${String(err)}`;
     return { isError: true, content: [{ type: 'text', text }] };
   }
 }
