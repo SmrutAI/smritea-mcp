@@ -15,6 +15,22 @@ const CLIENT_ID = 'smritea-plugin';
 const CALLBACK_TIMEOUT_MS = 5 * 60 * 1000;
 const REFRESH_SKEW_MS = 60 * 1000;
 
+/** Message shown to the user when their session cannot be renewed and they must sign in again. */
+const SESSION_EXPIRED_MSG =
+  'Your smritea session has expired or could not be renewed. Run `smritea-mcp login` to re-authenticate.';
+
+/**
+ * Thrown when the stored session cannot be renewed — the refresh call failed, the refresh token was
+ * revoked/expired, or the refresh response was unusable. Callers surface its message and stop; the
+ * user must sign in again. This replaces the raw HTTP error / date crash that used to leak out.
+ */
+export class AuthRequiredError extends Error {
+  override name = 'AuthRequiredError' as const;
+  constructor(message: string = SESSION_EXPIRED_MSG, options?: { cause?: unknown }) {
+    super(message, options);
+  }
+}
+
 type PersistedAuth = AuthFile &
   Partial<CLITokenResponse> & {
     expires_at?: string;
@@ -187,7 +203,10 @@ function readAuth(): PersistedAuth | null {
 }
 
 function toExpiresAt(expiresInSeconds: number): string {
-  return new Date(Date.now() + expiresInSeconds * 1000).toISOString();
+  // Guard a non-finite value (e.g. a malformed refresh response): NaN would make an Invalid Date whose
+  // toISOString() throws the opaque "Invalid time value". Fall back to 0 (treated as immediate expiry).
+  const secs = Number.isFinite(expiresInSeconds) ? expiresInSeconds : 0;
+  return new Date(Date.now() + secs * 1000).toISOString();
 }
 
 function mergeAuth(existing: PersistedAuth | null, tokens: CLITokenResponse): PersistedAuth {
@@ -242,11 +261,26 @@ export async function refreshIfNeeded(): Promise<PersistedAuth | null> {
   }
 
   if (typeof auth.refresh_token !== 'string' || auth.refresh_token.length === 0) {
-    throw new Error('Saved auth is missing refresh_token.');
+    throw new AuthRequiredError();
   }
 
   const { studioBaseUrl } = loadConfig();
-  return saveAuth(await refreshToken(studioBaseUrl, auth.refresh_token));
+  let tokens: CLITokenResponse;
+  try {
+    tokens = await refreshToken(studioBaseUrl, auth.refresh_token);
+  } catch (err) {
+    // Refresh token expired/revoked, a non-2xx from the endpoint, or a network failure — the session
+    // cannot be renewed silently, so ask the user to sign in again instead of leaking a raw error.
+    throw new AuthRequiredError(SESSION_EXPIRED_MSG, { cause: err });
+  }
+
+  // A successful refresh MUST return a new access token. A 200 with an error/empty body (no token) is
+  // unusable and means the session is effectively dead.
+  if (typeof tokens.accessToken !== 'string' || tokens.accessToken.length === 0) {
+    throw new AuthRequiredError();
+  }
+
+  return saveAuth(tokens);
 }
 
 export async function runLoginFlow(): Promise<void> {

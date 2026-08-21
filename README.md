@@ -123,6 +123,11 @@ is missing, the tool returns actionable setup guidance instead of a raw SDK erro
 Every optional tool parameter treats `null`, `""`, and omission identically as "not provided" and falls
 back to its configured default — none of them throw on a nullish input.
 
+When the access token has expired, the memory tools renew it automatically before the call. If the
+session can no longer be renewed — the refresh token has expired or been revoked — they return a clear
+"run `smritea-mcp login` to re-authenticate" message instead of a raw error, so an expired session
+prompts a clean re-login rather than failing cryptically.
+
 ### `select_app`
 
 Set the active smritea app for the current project. All subsequent memory operations in this project will use the specified app.

@@ -4,7 +4,7 @@ import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { SmriteaClient } from 'smritea-sdk';
 import { loadConfig, verifyUserSetup } from './config.js';
-import { refreshIfNeeded } from './auth.js';
+import { refreshIfNeeded, AuthRequiredError } from './auth.js';
 import { AddMemoryInput, SearchMemoriesInput, GetMemoryInput, DeleteMemoryInput, SelectAppInput } from './types.js';
 import {
   handleAddMemory,
@@ -50,6 +50,37 @@ function setupPreflight(): CallToolResult | null {
       },
     ],
   };
+}
+
+/**
+ * Renews the access token if it is stale. Any renewal failure — refresh token expired/revoked, a
+ * non-2xx from the endpoint, a network error, or an unusable response — is turned into a clear
+ * "sign in again" tool result instead of leaking a raw error or the old "Invalid time value" crash.
+ * Returns null when the session is usable and the call may proceed.
+ */
+async function guardedRefresh(): Promise<CallToolResult | null> {
+  try {
+    await refreshIfNeeded();
+    return null;
+  } catch (err) {
+    const text =
+      err instanceof AuthRequiredError
+        ? err.message
+        : 'Could not renew your smritea session. Run `smritea-mcp login` to re-authenticate.';
+    return { isError: true, content: [{ type: 'text', text }] };
+  }
+}
+
+/**
+ * Full preflight for the memory tools: verify user-level setup, then renew the session. Returns a
+ * ready-to-send error result on any problem, or null when the call may proceed.
+ */
+async function ensureSession(): Promise<CallToolResult | null> {
+  const pre = setupPreflight();
+  if (pre !== null) {
+    return pre;
+  }
+  return guardedRefresh();
 }
 
 /**
@@ -102,11 +133,10 @@ export function createMcpServer(): McpServer {
     firstPersonHint,
     AddMemoryInput.shape,
     async (input) => {
-      const pre = setupPreflight();
+      const pre = await ensureSession();
       if (pre !== null) {
         return pre;
       }
-      await refreshIfNeeded();
       const config = loadConfig();
       const client = getMemoryClient();
       return handleAddMemory(client, AddMemoryInput.parse(input), config);
@@ -122,11 +152,10 @@ export function createMcpServer(): McpServer {
     firstPersonHint,
     SearchMemoriesInput.shape,
     async (input) => {
-      const pre = setupPreflight();
+      const pre = await ensureSession();
       if (pre !== null) {
         return pre;
       }
-      await refreshIfNeeded();
       const config = loadConfig();
       const client = getMemoryClient();
       return handleSearchMemories(client, SearchMemoriesInput.parse(input), config);
@@ -139,11 +168,10 @@ export function createMcpServer(): McpServer {
     'search result and need the full memory object.',
     GetMemoryInput.shape,
     async (input) => {
-      const pre = setupPreflight();
+      const pre = await ensureSession();
       if (pre !== null) {
         return pre;
       }
-      await refreshIfNeeded();
       const client = getMemoryClient();
       return handleGetMemory(client, GetMemoryInput.parse(input));
     },
@@ -156,11 +184,10 @@ export function createMcpServer(): McpServer {
     'from a search result before deleting.',
     DeleteMemoryInput.shape,
     async (input) => {
-      const pre = setupPreflight();
+      const pre = await ensureSession();
       if (pre !== null) {
         return pre;
       }
-      await refreshIfNeeded();
       const client = getMemoryClient();
       return handleDeleteMemory(client, DeleteMemoryInput.parse(input));
     },
@@ -172,7 +199,10 @@ export function createMcpServer(): McpServer {
     'an API key if needed. Call this once when setting up smritea in a new project.',
     SelectAppInput.shape,
     async (input) => {
-      await refreshIfNeeded();
+      const pre = await guardedRefresh();
+      if (pre !== null) {
+        return pre;
+      }
       const config = loadConfig();
       return handleSelectApp(SelectAppInput.parse(input), config);
     },
@@ -184,7 +214,10 @@ export function createMcpServer(): McpServer {
     'to query the control plane.',
     {},
     async () => {
-      await refreshIfNeeded();
+      const pre = await guardedRefresh();
+      if (pre !== null) {
+        return pre;
+      }
       const config = loadConfig();
       return handleListApps(config);
     },
