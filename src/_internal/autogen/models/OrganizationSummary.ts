@@ -24,6 +24,12 @@ export interface OrganizationSummary {
      * @type {string}
      * @memberof OrganizationSummary
      */
+    color?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OrganizationSummary
+     */
     id?: string;
     /**
      * 
@@ -80,6 +86,7 @@ export function OrganizationSummaryFromJSONTyped(json: any, ignoreDiscriminator:
     }
     return {
         
+        'color': json['color'] == null ? undefined : json['color'],
         'id': json['id'] == null ? undefined : json['id'],
         'memberCount': json['member_count'] == null ? undefined : json['member_count'],
         'name': json['name'] == null ? undefined : json['name'],
@@ -101,6 +108,7 @@ export function OrganizationSummaryToJSONTyped(value?: OrganizationSummary | nul
 
     return {
         
+        'color': value['color'],
         'id': value['id'],
         'member_count': value['memberCount'],
         'name': value['name'],

@@ -32,6 +32,12 @@ export interface OrganizationDetails {
      * @type {string}
      * @memberof OrganizationDetails
      */
+    color?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OrganizationDetails
+     */
     createdAt?: string;
     /**
      * 
@@ -118,6 +124,7 @@ export function OrganizationDetailsFromJSONTyped(json: any, ignoreDiscriminator:
     }
     return {
         
+        'color': json['color'] == null ? undefined : json['color'],
         'createdAt': json['created_at'] == null ? undefined : json['created_at'],
         'id': json['id'] == null ? undefined : json['id'],
         'logoUrl': json['logo_url'] == null ? undefined : json['logo_url'],
@@ -144,6 +151,7 @@ export function OrganizationDetailsToJSONTyped(value?: OrganizationDetails | nul
 
     return {
         
+        'color': value['color'],
         'created_at': value['createdAt'],
         'id': value['id'],
         'logo_url': value['logoUrl'],

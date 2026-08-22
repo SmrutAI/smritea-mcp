@@ -6,6 +6,7 @@
 
 Name | Type
 ------------ | -------------
+`color` | string
 `createdAt` | string
 `id` | string
 `logoUrl` | string
@@ -26,6 +27,7 @@ import type { OrganizationDetails } from ''
 
 // TODO: Update the object below with actual values
 const example = {
+  "color": null,
   "createdAt": null,
   "id": null,
   "logoUrl": null,

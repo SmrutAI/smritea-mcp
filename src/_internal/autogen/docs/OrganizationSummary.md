@@ -6,6 +6,7 @@
 
 Name | Type
 ------------ | -------------
+`color` | string
 `id` | string
 `memberCount` | number
 `name` | string
@@ -21,6 +22,7 @@ import type { OrganizationSummary } from ''
 
 // TODO: Update the object below with actual values
 const example = {
+  "color": null,
   "id": null,
   "memberCount": null,
   "name": null,

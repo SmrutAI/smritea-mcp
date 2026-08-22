@@ -24,6 +24,12 @@ export interface OrgSummary {
      * @type {string}
      * @memberof OrgSummary
      */
+    color?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OrgSummary
+     */
     name?: string;
     /**
      * 
@@ -56,6 +62,7 @@ export function OrgSummaryFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     }
     return {
         
+        'color': json['color'] == null ? undefined : json['color'],
         'name': json['name'] == null ? undefined : json['name'],
         'organizationId': json['organization_id'] == null ? undefined : json['organization_id'],
         'role': json['role'] == null ? undefined : json['role'],
@@ -73,6 +80,7 @@ export function OrgSummaryToJSONTyped(value?: OrgSummary | null, ignoreDiscrimin
 
     return {
         
+        'color': value['color'],
         'name': value['name'],
         'organization_id': value['organizationId'],
         'role': value['role'],
