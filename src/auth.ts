@@ -66,7 +66,7 @@ function deriveFrontendUrl(studioBaseUrl: string): string {
     const domain = studioBaseUrl.split('://api.')[1];
     return `https://${domain}`;
   }
-  // Local dev: cloud_frontend/apps/smritea-cloud-ui/vite.config.ts hardcodes port 3000 (strictPort: true).
+  // Local dev: the studio frontend's dev server is hardcoded to port 3000 (strictPort).
   if (studioBaseUrl.includes('://localhost')) {
     return 'http://localhost:3000';
   }

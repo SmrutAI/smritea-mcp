@@ -4,9 +4,22 @@ title: smritea-mcp
 status: stable
 tags:
 - readme
+stale_after: 2026-12-31
+generated:
+  by: Tushar Dwivedi
+  at: 2026-08-25T00:00:00Z
 ---
 
 # smritea-mcp
+
+
+| Section | What it covers |
+|---------|----------------|
+| [Installation](#installation) | Installation |
+| [CLI Commands](#cli-commands) | CLI Commands |
+| [Configuration](#configuration) | smritea-mcp uses two files with separate responsibilities. |
+| [Tools](#tools) | The four memory tools (add_memory, search_memories, get_memory, delete_memory)… |
+| [How it works](#how-it-works) | smritea-mcp is a TypeScript MCP server that wraps two client layers: |
 
 MCP (Model Context Protocol) server for [smritea](https://smritea.ai) — gives AI assistants (Claude Code, Cursor, etc.) direct access to your smritea memory store.
 
