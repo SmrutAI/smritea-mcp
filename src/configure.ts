@@ -8,7 +8,7 @@ export async function runConfigureFlow(): Promise<void> {
   // @clack/prompts is ESM-only; this package stays CommonJS, so it's loaded via dynamic import
   // rather than a static one, which Node's CJS runtime can do without issue.
   const { intro, outro, select, text, confirm, isCancel, cancel, log } = await import('@clack/prompts');
-  intro('smritea configure');
+  intro('◆ smritea configure');
 
   let auth;
   try {
@@ -17,7 +17,7 @@ export async function runConfigureFlow(): Promise<void> {
     auth = null;
   }
   if (auth === null) {
-    log.info('Not logged in — opening browser for Studio login...');
+    log.info('Not logged in yet — opening your browser to sign in to Studio...');
     await runLoginFlow();
   }
 
@@ -71,7 +71,7 @@ export async function runConfigureFlow(): Promise<void> {
     const selectedApp = apps.find((a) => a.id === chosen);
     await handleSelectApp({ app_id: chosen as string, app_name: selectedApp?.name }, config, path);
     current = readSettingsFileAt(path) ?? {};
-    log.success(`App selected: ${chosen}`);
+    log.success(`Using app: ${chosen}`);
   }
 
   let updateActorName = current.actor_name === undefined;
@@ -150,5 +150,5 @@ export async function runConfigureFlow(): Promise<void> {
     writeSettingsFileAt(path, { ...latest, tags });
   }
 
-  outro('Configuration saved.');
+  outro('◆ All set — smritea is configured for this project.');
 }
