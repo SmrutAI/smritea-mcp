@@ -6,7 +6,7 @@
 
 Name | Type
 ------------ | -------------
-`classificationSchema` | { [key: string]: string; }
+`classificationSchema` | [Array&lt;EntityDef&gt;](EntityDef.md)
 `relationshipSchema` | [Array&lt;RelationshipType&gt;](RelationshipType.md)
 
 ## Example

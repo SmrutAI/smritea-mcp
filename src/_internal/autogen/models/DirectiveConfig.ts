@@ -27,6 +27,13 @@ import {
     TagSchemaDefToJSON,
     TagSchemaDefToJSONTyped,
 } from './TagSchemaDef';
+import type { EntityDef } from './EntityDef';
+import {
+    EntityDefFromJSON,
+    EntityDefFromJSONTyped,
+    EntityDefToJSON,
+    EntityDefToJSONTyped,
+} from './EntityDef';
 
 /**
  * 
@@ -43,13 +50,11 @@ export interface DirectiveConfig {
     affirmativeDirective?: string;
     /**
      * ClassificationSchema provides custom entity types that REPLACE the defaults.
-     * Map keys are type names, values are descriptions.
-     * Example: {"patient": "A person receiving medical care", "medication": "A drug or treatment"}
      * When non-empty, only these types are used (default types are not included).
-     * @type {{ [key: string]: string; }}
+     * @type {Array<EntityDef>}
      * @memberof DirectiveConfig
      */
-    classificationSchema?: { [key: string]: string; };
+    classificationSchema?: Array<EntityDef>;
     /**
      * ExtractionDirective provides domain-specific guidance for the LLM.
      * Example: "Focus on medical entities like patients, diagnoses, and medications.
@@ -99,7 +104,7 @@ export function DirectiveConfigFromJSONTyped(json: any, ignoreDiscriminator: boo
     return {
         
         'affirmativeDirective': json['affirmative_directive'] == null ? undefined : json['affirmative_directive'],
-        'classificationSchema': json['classification_schema'] == null ? undefined : json['classification_schema'],
+        'classificationSchema': json['classification_schema'] == null ? undefined : ((json['classification_schema'] as Array<any>).map(EntityDefFromJSON)),
         'extractionDirective': json['extraction_directive'] == null ? undefined : json['extraction_directive'],
         'negativeDirective': json['negative_directive'] == null ? undefined : json['negative_directive'],
         'relationshipSchema': json['relationship_schema'] == null ? undefined : ((json['relationship_schema'] as Array<any>).map(RelationshipDefFromJSON)),
@@ -119,7 +124,7 @@ export function DirectiveConfigToJSONTyped(value?: DirectiveConfig | null, ignor
     return {
         
         'affirmative_directive': value['affirmativeDirective'],
-        'classification_schema': value['classificationSchema'],
+        'classification_schema': value['classificationSchema'] == null ? undefined : ((value['classificationSchema'] as Array<any>).map(EntityDefToJSON)),
         'extraction_directive': value['extractionDirective'],
         'negative_directive': value['negativeDirective'],
         'relationship_schema': value['relationshipSchema'] == null ? undefined : ((value['relationshipSchema'] as Array<any>).map(RelationshipDefToJSON)),

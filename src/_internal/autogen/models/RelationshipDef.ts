@@ -20,11 +20,37 @@ import { mapValues } from '../runtime';
  */
 export interface RelationshipDef {
     /**
+     * Description is a gloss of what this relationship type means. Max 200 to match the config-gen
+     * producer (configgendto.RelationshipType.Description, max=200), whose output is copied verbatim
+     * into this type when an AI-generated schema is applied and saved via UpdateApp.
+     * @type {string}
+     * @memberof RelationshipDef
+     */
+    description?: string;
+    /**
      * From is the optional source entity type constraint (e.g., "patient")
      * @type {string}
      * @memberof RelationshipDef
      */
     from?: string;
+    /**
+     * GenerateReverse, when true, stores reverse_triplet_dense/sparse vectors on every point of this type.
+     * @type {boolean}
+     * @memberof RelationshipDef
+     */
+    generateReverse?: boolean;
+    /**
+     * GenerateSynonyms, when true, stores synonym_dense/sparse vectors (generated once per type) on every point of this type.
+     * @type {boolean}
+     * @memberof RelationshipDef
+     */
+    generateSynonyms?: boolean;
+    /**
+     * ReverseType is the label for the reverse direction (e.g. mother_of -> son_of). Required when GenerateReverse is true.
+     * @type {string}
+     * @memberof RelationshipDef
+     */
+    reverseType?: string;
     /**
      * To is the optional target entity type constraint (e.g., "medication")
      * @type {string}
@@ -57,7 +83,11 @@ export function RelationshipDefFromJSONTyped(json: any, ignoreDiscriminator: boo
     }
     return {
         
+        'description': json['description'] == null ? undefined : json['description'],
         'from': json['from'] == null ? undefined : json['from'],
+        'generateReverse': json['generate_reverse'] == null ? undefined : json['generate_reverse'],
+        'generateSynonyms': json['generate_synonyms'] == null ? undefined : json['generate_synonyms'],
+        'reverseType': json['reverse_type'] == null ? undefined : json['reverse_type'],
         'to': json['to'] == null ? undefined : json['to'],
         'type': json['type'],
     };
@@ -74,7 +104,11 @@ export function RelationshipDefToJSONTyped(value?: RelationshipDef | null, ignor
 
     return {
         
+        'description': value['description'],
         'from': value['from'],
+        'generate_reverse': value['generateReverse'],
+        'generate_synonyms': value['generateSynonyms'],
+        'reverse_type': value['reverseType'],
         'to': value['to'],
         'type': value['type'],
     };

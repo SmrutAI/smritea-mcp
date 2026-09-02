@@ -74,6 +74,7 @@ export * from './DirectivesResponse';
 export * from './DomainSchemaResponse';
 export * from './EnforcementConfig';
 export * from './EntitlementUsageSummary';
+export * from './EntityDef';
 export * from './EntityExtractionConfig';
 export * from './EntityMatchResponse';
 export * from './EntityOutputDTO';

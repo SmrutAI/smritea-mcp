@@ -8,6 +8,9 @@ Name | Type
 ------------ | -------------
 `description` | string
 `from` | string
+`generateReverse` | boolean
+`generateSynonyms` | boolean
+`reverseType` | string
 `to` | string
 `type` | string
 
@@ -20,6 +23,9 @@ import type { RelationshipType } from ''
 const example = {
   "description": null,
   "from": null,
+  "generateReverse": null,
+  "generateSynonyms": null,
+  "reverseType": null,
   "to": null,
   "type": null,
 } satisfies RelationshipType

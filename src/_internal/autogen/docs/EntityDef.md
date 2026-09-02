@@ -1,5 +1,5 @@
 
-# RelationshipDef
+# EntityDef
 
 
 ## Properties
@@ -7,28 +7,18 @@
 Name | Type
 ------------ | -------------
 `description` | string
-`from` | string
-`generateReverse` | boolean
-`generateSynonyms` | boolean
-`reverseType` | string
-`to` | string
 `type` | string
 
 ## Example
 
 ```typescript
-import type { RelationshipDef } from ''
+import type { EntityDef } from ''
 
 // TODO: Update the object below with actual values
 const example = {
   "description": null,
-  "from": null,
-  "generateReverse": null,
-  "generateSynonyms": null,
-  "reverseType": null,
-  "to": null,
   "type": null,
-} satisfies RelationshipDef
+} satisfies EntityDef
 
 console.log(example)
 
@@ -37,7 +27,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as RelationshipDef
+const exampleParsed = JSON.parse(exampleJSON) as EntityDef
 console.log(exampleParsed)
 ```
 

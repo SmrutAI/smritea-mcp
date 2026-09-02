@@ -7,7 +7,7 @@
 Name | Type
 ------------ | -------------
 `affirmativeDirective` | string
-`classificationSchema` | { [key: string]: string; }
+`classificationSchema` | [Array&lt;EntityDef&gt;](EntityDef.md)
 `extractionDirective` | string
 `negativeDirective` | string
 `relationshipSchema` | [Array&lt;RelationshipDef&gt;](RelationshipDef.md)

@@ -20,6 +20,13 @@ import {
     RelationshipTypeToJSON,
     RelationshipTypeToJSONTyped,
 } from './RelationshipType';
+import type { EntityDef } from './EntityDef';
+import {
+    EntityDefFromJSON,
+    EntityDefFromJSONTyped,
+    EntityDefToJSON,
+    EntityDefToJSONTyped,
+} from './EntityDef';
 
 /**
  * 
@@ -28,12 +35,11 @@ import {
  */
 export interface DomainSchemaResponse {
     /**
-     * ClassificationSchema provides custom entity types as a map.
-     * Keys are type names, values are descriptions.
-     * @type {{ [key: string]: string; }}
+     * ClassificationSchema provides custom entity types (type + description).
+     * @type {Array<EntityDef>}
      * @memberof DomainSchemaResponse
      */
-    classificationSchema?: { [key: string]: string; };
+    classificationSchema?: Array<EntityDef>;
     /**
      * RelationshipSchema provides custom relationship types.
      * @type {Array<RelationshipType>}
@@ -59,7 +65,7 @@ export function DomainSchemaResponseFromJSONTyped(json: any, ignoreDiscriminator
     }
     return {
         
-        'classificationSchema': json['classification_schema'] == null ? undefined : json['classification_schema'],
+        'classificationSchema': json['classification_schema'] == null ? undefined : ((json['classification_schema'] as Array<any>).map(EntityDefFromJSON)),
         'relationshipSchema': json['relationship_schema'] == null ? undefined : ((json['relationship_schema'] as Array<any>).map(RelationshipTypeFromJSON)),
     };
 }
@@ -75,7 +81,7 @@ export function DomainSchemaResponseToJSONTyped(value?: DomainSchemaResponse | n
 
     return {
         
-        'classification_schema': value['classificationSchema'],
+        'classification_schema': value['classificationSchema'] == null ? undefined : ((value['classificationSchema'] as Array<any>).map(EntityDefToJSON)),
         'relationship_schema': value['relationshipSchema'] == null ? undefined : ((value['relationshipSchema'] as Array<any>).map(RelationshipTypeToJSON)),
     };
 }
