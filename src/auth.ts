@@ -105,7 +105,6 @@ function writeHtml(res: ServerResponse, statusCode: number, title: string, messa
   res.end(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${title}</title>
 <style>${SMONKU_CSS}</style></head><body>
 <div class="card">
-<img src="https://cdn.smritea.ai/arch_frame_oauth.webp" alt="" aria-hidden="true" class="archframe-oauth" />
 <img src="https://cdn.smritea.ai/${isSuccess ? 'monk_happy_logged_in.png' : 'monk_sad_login_failed.png'}" alt="Smonku" class="monk smonku-fade smonku-enter" />
 <h1 class="smonku-text-1">${isSuccess ? 'Welcome home!' : title}</h1>
 <p class="smonku-text-2">${isSuccess ? 'Smonku remembered you. You can close this tab and return to the app.' : message}</p>

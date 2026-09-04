@@ -14,6 +14,4 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;fon
 
 h1{font-size:32px;font-weight:700;margin-bottom:10px}
 p{font-size:18px;color:#666;margin-top:6px;line-height:1.5}
-.card{position:relative}
-.archframe-oauth{position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:480px;max-width:none;height:auto;opacity:.55;pointer-events:none;z-index:-1}
 `;
