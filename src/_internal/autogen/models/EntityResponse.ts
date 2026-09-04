@@ -21,6 +21,12 @@ import { mapValues } from '../runtime';
 export interface EntityResponse {
     /**
      * 
+     * @type {string}
+     * @memberof EntityResponse
+     */
+    actorId?: string;
+    /**
+     * 
      * @type {Array<string>}
      * @memberof EntityResponse
      */
@@ -48,6 +54,12 @@ export interface EntityResponse {
      * @type {string}
      * @memberof EntityResponse
      */
+    customType?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EntityResponse
+     */
     id?: string;
     /**
      * 
@@ -55,6 +67,12 @@ export interface EntityResponse {
      * @memberof EntityResponse
      */
     name?: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof EntityResponse
+     */
+    sourceMemoryIds?: Array<string>;
     /**
      * 
      * @type {string}
@@ -86,12 +104,15 @@ export function EntityResponseFromJSONTyped(json: any, ignoreDiscriminator: bool
     }
     return {
         
+        'actorId': json['actor_id'] == null ? undefined : json['actor_id'],
         'aliases': json['aliases'] == null ? undefined : json['aliases'],
         'appId': json['app_id'] == null ? undefined : json['app_id'],
         'attributes': json['attributes'] == null ? undefined : json['attributes'],
         'createdAt': json['created_at'] == null ? undefined : json['created_at'],
+        'customType': json['custom_type'] == null ? undefined : json['custom_type'],
         'id': json['id'] == null ? undefined : json['id'],
         'name': json['name'] == null ? undefined : json['name'],
+        'sourceMemoryIds': json['source_memory_ids'] == null ? undefined : json['source_memory_ids'],
         'type': json['type'] == null ? undefined : json['type'],
         'updatedAt': json['updated_at'] == null ? undefined : json['updated_at'],
     };
@@ -108,12 +129,15 @@ export function EntityResponseToJSONTyped(value?: EntityResponse | null, ignoreD
 
     return {
         
+        'actor_id': value['actorId'],
         'aliases': value['aliases'],
         'app_id': value['appId'],
         'attributes': value['attributes'],
         'created_at': value['createdAt'],
+        'custom_type': value['customType'],
         'id': value['id'],
         'name': value['name'],
+        'source_memory_ids': value['sourceMemoryIds'],
         'type': value['type'],
         'updated_at': value['updatedAt'],
     };

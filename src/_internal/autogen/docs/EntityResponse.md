@@ -6,12 +6,15 @@
 
 Name | Type
 ------------ | -------------
+`actorId` | string
 `aliases` | Array&lt;string&gt;
 `appId` | string
 `attributes` | { [key: string]: object; }
 `createdAt` | string
+`customType` | string
 `id` | string
 `name` | string
+`sourceMemoryIds` | Array&lt;string&gt;
 `type` | string
 `updatedAt` | string
 
@@ -22,12 +25,15 @@ import type { EntityResponse } from ''
 
 // TODO: Update the object below with actual values
 const example = {
+  "actorId": null,
   "aliases": null,
   "appId": null,
   "attributes": null,
   "createdAt": null,
+  "customType": null,
   "id": null,
   "name": null,
+  "sourceMemoryIds": null,
   "type": null,
   "updatedAt": null,
 } satisfies EntityResponse

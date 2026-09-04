@@ -20,41 +20,51 @@ import { mapValues } from '../runtime';
  */
 export interface UpdateEntityRequest {
     /**
-     * Aliases contains alternative names for this entity (optional)
+     * Aliases contains alternative names for this entity (optional, clearable).
      * @type {Array<string>}
      * @memberof UpdateEntityRequest
      */
     aliases?: Array<string>;
     /**
-     * Attributes contains flexible entity metadata (optional)
+     * Attributes contains flexible entity metadata (optional, clearable).
      * @type {{ [key: string]: object; }}
      * @memberof UpdateEntityRequest
      */
     attributes?: { [key: string]: object; };
     /**
-     * CustomType is an LLM-defined entity type when Type is "other" (optional)
+     * CustomType is an LLM-defined entity type when Type is "other" (optional).
      * @type {string}
      * @memberof UpdateEntityRequest
      */
     customType?: string;
     /**
-     * Name is the entity name (optional for partial update)
+     * Name is the entity name (required for full replacement).
      * @type {string}
      * @memberof UpdateEntityRequest
      */
-    name?: string;
+    name: string;
     /**
-     * Type is the entity type (optional for partial update)
+     * SourceMemoryIDs is the merged provenance list to persist (required).
+     * Replaces the stored list; the service pre-unions it.
+     * @type {Array<string>}
+     * @memberof UpdateEntityRequest
+     */
+    sourceMemoryIds: Array<string>;
+    /**
+     * Type is the entity type (required for full replacement).
      * @type {string}
      * @memberof UpdateEntityRequest
      */
-    type?: string;
+    type: string;
 }
 
 /**
  * Check if a given object implements the UpdateEntityRequest interface.
  */
 export function instanceOfUpdateEntityRequest(value: object): value is UpdateEntityRequest {
+    if (!('name' in value) || value['name'] === undefined) return false;
+    if (!('sourceMemoryIds' in value) || value['sourceMemoryIds'] === undefined) return false;
+    if (!('type' in value) || value['type'] === undefined) return false;
     return true;
 }
 
@@ -71,8 +81,9 @@ export function UpdateEntityRequestFromJSONTyped(json: any, ignoreDiscriminator:
         'aliases': json['aliases'] == null ? undefined : json['aliases'],
         'attributes': json['attributes'] == null ? undefined : json['attributes'],
         'customType': json['custom_type'] == null ? undefined : json['custom_type'],
-        'name': json['name'] == null ? undefined : json['name'],
-        'type': json['type'] == null ? undefined : json['type'],
+        'name': json['name'],
+        'sourceMemoryIds': json['source_memory_ids'],
+        'type': json['type'],
     };
 }
 
@@ -91,6 +102,7 @@ export function UpdateEntityRequestToJSONTyped(value?: UpdateEntityRequest | nul
         'attributes': value['attributes'],
         'custom_type': value['customType'],
         'name': value['name'],
+        'source_memory_ids': value['sourceMemoryIds'],
         'type': value['type'],
     };
 }

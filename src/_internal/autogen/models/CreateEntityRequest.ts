@@ -56,6 +56,13 @@ export interface CreateEntityRequest {
      */
     name: string;
     /**
+     * SourceMemoryIDs are the memories this entity was extracted from / reused for (required).
+     * Set by extraction or provided by API callers; at least one memory reference is required.
+     * @type {Array<string>}
+     * @memberof CreateEntityRequest
+     */
+    sourceMemoryIds: Array<string>;
+    /**
      * Type is the entity type (required)
      * @type {string}
      * @memberof CreateEntityRequest
@@ -70,6 +77,7 @@ export function instanceOfCreateEntityRequest(value: object): value is CreateEnt
     if (!('actorId' in value) || value['actorId'] === undefined) return false;
     if (!('appId' in value) || value['appId'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
+    if (!('sourceMemoryIds' in value) || value['sourceMemoryIds'] === undefined) return false;
     if (!('type' in value) || value['type'] === undefined) return false;
     return true;
 }
@@ -90,6 +98,7 @@ export function CreateEntityRequestFromJSONTyped(json: any, ignoreDiscriminator:
         'attributes': json['attributes'] == null ? undefined : json['attributes'],
         'customType': json['custom_type'] == null ? undefined : json['custom_type'],
         'name': json['name'],
+        'sourceMemoryIds': json['source_memory_ids'],
         'type': json['type'],
     };
 }
@@ -111,6 +120,7 @@ export function CreateEntityRequestToJSONTyped(value?: CreateEntityRequest | nul
         'attributes': value['attributes'],
         'custom_type': value['customType'],
         'name': value['name'],
+        'source_memory_ids': value['sourceMemoryIds'],
         'type': value['type'],
     };
 }

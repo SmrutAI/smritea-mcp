@@ -26,11 +26,11 @@ export interface CreateRelationshipRequest {
      */
     appId: string;
     /**
-     * Fact is a natural language description of the relationship (optional)
+     * Fact is a natural language description of the relationship (required)
      * @type {string}
      * @memberof CreateRelationshipRequest
      */
-    fact?: string;
+    fact: string;
     /**
      * Metadata contains flexible relationship metadata (optional)
      * @type {object}
@@ -50,11 +50,11 @@ export interface CreateRelationshipRequest {
      */
     sourceEntityId: string;
     /**
-     * SourceMemoryIDs are memory IDs that contributed to this relationship (optional)
+     * SourceMemoryIDs are memory IDs that contributed to this relationship (required)
      * @type {Array<string>}
      * @memberof CreateRelationshipRequest
      */
-    sourceMemoryIds?: Array<string>;
+    sourceMemoryIds: Array<string>;
     /**
      * TargetEntityID is the target entity ID (required)
      * @type {string}
@@ -80,7 +80,7 @@ export interface CreateRelationshipRequest {
      */
     validTo?: string;
     /**
-     * Weight is the relationship strength (optional, default 1.0, range 0-5)
+     * Weight is the relationship strength (optional, default 1.0, range 0-1)
      * @type {number}
      * @memberof CreateRelationshipRequest
      */
@@ -92,7 +92,9 @@ export interface CreateRelationshipRequest {
  */
 export function instanceOfCreateRelationshipRequest(value: object): value is CreateRelationshipRequest {
     if (!('appId' in value) || value['appId'] === undefined) return false;
+    if (!('fact' in value) || value['fact'] === undefined) return false;
     if (!('sourceEntityId' in value) || value['sourceEntityId'] === undefined) return false;
+    if (!('sourceMemoryIds' in value) || value['sourceMemoryIds'] === undefined) return false;
     if (!('targetEntityId' in value) || value['targetEntityId'] === undefined) return false;
     if (!('type' in value) || value['type'] === undefined) return false;
     return true;
@@ -109,11 +111,11 @@ export function CreateRelationshipRequestFromJSONTyped(json: any, ignoreDiscrimi
     return {
         
         'appId': json['app_id'],
-        'fact': json['fact'] == null ? undefined : json['fact'],
+        'fact': json['fact'],
         'metadata': json['metadata'] == null ? undefined : json['metadata'],
         'name': json['name'] == null ? undefined : json['name'],
         'sourceEntityId': json['source_entity_id'],
-        'sourceMemoryIds': json['source_memory_ids'] == null ? undefined : json['source_memory_ids'],
+        'sourceMemoryIds': json['source_memory_ids'],
         'targetEntityId': json['target_entity_id'],
         'type': json['type'],
         'validFrom': json['valid_from'] == null ? undefined : json['valid_from'],

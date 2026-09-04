@@ -12,6 +12,7 @@ Name | Type
 `attributes` | { [key: string]: object; }
 `customType` | string
 `name` | string
+`sourceMemoryIds` | Array&lt;string&gt;
 `type` | string
 
 ## Example
@@ -27,6 +28,7 @@ const example = {
   "attributes": null,
   "customType": null,
   "name": null,
+  "sourceMemoryIds": null,
   "type": null,
 } satisfies CreateEntityRequest
 

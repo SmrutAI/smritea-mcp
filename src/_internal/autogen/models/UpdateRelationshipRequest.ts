@@ -20,61 +20,61 @@ import { mapValues } from '../runtime';
  */
 export interface UpdateRelationshipRequest {
     /**
-     * Fact is a natural language description of the relationship (optional)
+     * Fact is a natural language description of the relationship (required)
      * @type {string}
      * @memberof UpdateRelationshipRequest
      */
-    fact?: string;
+    fact: string;
     /**
-     * Metadata contains flexible relationship metadata (optional)
+     * Metadata contains flexible relationship metadata (optional, clearable)
      * @type {object}
      * @memberof UpdateRelationshipRequest
      */
     metadata?: object;
     /**
-     * Name is a human-readable name for the relationship (optional)
+     * Name is a human-readable name for the relationship (optional, clearable)
      * @type {string}
      * @memberof UpdateRelationshipRequest
      */
     name?: string;
     /**
-     * SourceEntityID is the source entity ID (optional for partial update)
+     * SourceEntityID is the source entity ID (required)
      * @type {string}
      * @memberof UpdateRelationshipRequest
      */
-    sourceEntityId?: string;
+    sourceEntityId: string;
     /**
-     * SourceMemoryIDs are memory IDs that contributed to this relationship (optional)
+     * SourceMemoryIDs are memory IDs that contributed to this relationship (required)
      * @type {Array<string>}
      * @memberof UpdateRelationshipRequest
      */
-    sourceMemoryIds?: Array<string>;
+    sourceMemoryIds: Array<string>;
     /**
-     * TargetEntityID is the target entity ID (optional for partial update)
+     * TargetEntityID is the target entity ID (required)
      * @type {string}
      * @memberof UpdateRelationshipRequest
      */
-    targetEntityId?: string;
+    targetEntityId: string;
     /**
-     * Type is the relationship type (optional for partial update)
+     * Type is the relationship type (required)
      * @type {string}
      * @memberof UpdateRelationshipRequest
      */
-    type?: string;
+    type: string;
     /**
-     * ValidFrom is the start of validity period (optional)
+     * ValidFrom is the start of validity period (optional, clearable)
      * @type {string}
      * @memberof UpdateRelationshipRequest
      */
     validFrom?: string;
     /**
-     * ValidTo is the end of validity period (optional)
+     * ValidTo is the end of validity period (optional, clearable)
      * @type {string}
      * @memberof UpdateRelationshipRequest
      */
     validTo?: string;
     /**
-     * Weight is the relationship strength (optional, range 0-5)
+     * Weight is the relationship strength (optional, range 0-1)
      * @type {number}
      * @memberof UpdateRelationshipRequest
      */
@@ -85,6 +85,11 @@ export interface UpdateRelationshipRequest {
  * Check if a given object implements the UpdateRelationshipRequest interface.
  */
 export function instanceOfUpdateRelationshipRequest(value: object): value is UpdateRelationshipRequest {
+    if (!('fact' in value) || value['fact'] === undefined) return false;
+    if (!('sourceEntityId' in value) || value['sourceEntityId'] === undefined) return false;
+    if (!('sourceMemoryIds' in value) || value['sourceMemoryIds'] === undefined) return false;
+    if (!('targetEntityId' in value) || value['targetEntityId'] === undefined) return false;
+    if (!('type' in value) || value['type'] === undefined) return false;
     return true;
 }
 
@@ -98,13 +103,13 @@ export function UpdateRelationshipRequestFromJSONTyped(json: any, ignoreDiscrimi
     }
     return {
         
-        'fact': json['fact'] == null ? undefined : json['fact'],
+        'fact': json['fact'],
         'metadata': json['metadata'] == null ? undefined : json['metadata'],
         'name': json['name'] == null ? undefined : json['name'],
-        'sourceEntityId': json['source_entity_id'] == null ? undefined : json['source_entity_id'],
-        'sourceMemoryIds': json['source_memory_ids'] == null ? undefined : json['source_memory_ids'],
-        'targetEntityId': json['target_entity_id'] == null ? undefined : json['target_entity_id'],
-        'type': json['type'] == null ? undefined : json['type'],
+        'sourceEntityId': json['source_entity_id'],
+        'sourceMemoryIds': json['source_memory_ids'],
+        'targetEntityId': json['target_entity_id'],
+        'type': json['type'],
         'validFrom': json['valid_from'] == null ? undefined : json['valid_from'],
         'validTo': json['valid_to'] == null ? undefined : json['valid_to'],
         'weight': json['weight'] == null ? undefined : json['weight'],
