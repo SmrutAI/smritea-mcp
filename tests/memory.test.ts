@@ -12,22 +12,22 @@ vi.mock('smritea-sdk', () => {
       this.statusCode = statusCode;
     }
   }
-  class SmriteaAuthError extends SmriteaError {
+  class SmriteaUnauthorizedError extends SmriteaError {
     constructor(message: string, statusCode?: number) {
       super(message, statusCode ?? 401);
-      this.name = 'SmriteaAuthError';
+      this.name = 'SmriteaUnauthorizedError';
     }
   }
-  class SmriteaQuotaError extends SmriteaError {
+  class SmriteaPaymentRequiredError extends SmriteaError {
     constructor(message: string, statusCode?: number) {
       super(message, statusCode ?? 402);
-      this.name = 'SmriteaQuotaError';
+      this.name = 'SmriteaPaymentRequiredError';
     }
   }
-  class SmriteaValidationError extends SmriteaError {
+  class SmriteaBadRequestError extends SmriteaError {
     constructor(message: string, statusCode?: number) {
       super(message, statusCode ?? 400);
-      this.name = 'SmriteaValidationError';
+      this.name = 'SmriteaBadRequestError';
     }
   }
   class SmriteaNotFoundError extends SmriteaError {
@@ -36,18 +36,18 @@ vi.mock('smritea-sdk', () => {
       this.name = 'SmriteaNotFoundError';
     }
   }
-  class SmriteaRateLimitError extends SmriteaError {
+  class SmriteaTooManyRequestsError extends SmriteaError {
     retryAfter?: number;
     constructor(message: string, statusCode?: number, retryAfter?: number) {
       super(message, statusCode);
-      this.name = 'SmriteaRateLimitError';
+      this.name = 'SmriteaTooManyRequestsError';
       this.retryAfter = retryAfter;
     }
   }
-  return { SmriteaError, SmriteaAuthError, SmriteaQuotaError, SmriteaValidationError, SmriteaNotFoundError, SmriteaRateLimitError, SmriteaClient: vi.fn() };
+  return { SmriteaError, SmriteaUnauthorizedError, SmriteaPaymentRequiredError, SmriteaBadRequestError, SmriteaNotFoundError, SmriteaTooManyRequestsError, SmriteaClient: vi.fn() };
 });
 
-import { SmriteaError, SmriteaAuthError, SmriteaQuotaError, SmriteaRateLimitError } from 'smritea-sdk';
+import { SmriteaError, SmriteaUnauthorizedError, SmriteaPaymentRequiredError, SmriteaTooManyRequestsError } from 'smritea-sdk';
 import type { ResolvedConfig } from '../src/config.js';
 import {
   formatError,
@@ -69,26 +69,26 @@ function makeConfig(overrides?: Partial<ResolvedConfig>): ResolvedConfig {
 // formatError
 // ---------------------------------------------------------------------------
 describe('formatError', () => {
-  it('includes retry-after duration for SmriteaRateLimitError with retryAfter', () => {
-    const err = new SmriteaRateLimitError('rate limited', 429, 10);
+  it('includes retry-after duration for SmriteaTooManyRequestsError with retryAfter', () => {
+    const err = new SmriteaTooManyRequestsError('rate limited', 429, 10);
     const result = formatError(err);
     expect(result).toContain('retry after 10s');
   });
 
   it('omits retry-after when retryAfter is undefined', () => {
-    const err = new SmriteaRateLimitError('rate limited', 429);
+    const err = new SmriteaTooManyRequestsError('rate limited', 429);
     const result = formatError(err);
     expect(result).toContain('Rate limit exceeded');
     expect(result).not.toContain('retry after');
   });
 
-  it('returns auth message for SmriteaAuthError', () => {
-    const err = new SmriteaAuthError('unauthorized', 401);
+  it('returns auth message for SmriteaUnauthorizedError', () => {
+    const err = new SmriteaUnauthorizedError('unauthorized', 401);
     expect(formatError(err)).toContain('smritea-mcp login');
   });
 
-  it('returns quota message for SmriteaQuotaError', () => {
-    const err = new SmriteaQuotaError('no credits', 402);
+  it('returns quota message for SmriteaPaymentRequiredError', () => {
+    const err = new SmriteaPaymentRequiredError('no credits', 402);
     expect(formatError(err)).toContain('Organization admin');
   });
 
@@ -169,9 +169,9 @@ describe('handleAddMemory', () => {
     }));
   });
 
-  it('returns isError with retry-after on SmriteaRateLimitError', async () => {
+  it('returns isError with retry-after on SmriteaTooManyRequestsError', async () => {
     mockClient.add.mockRejectedValue(
-      new SmriteaRateLimitError('too fast', 429, 5),
+      new SmriteaTooManyRequestsError('too fast', 429, 5),
     );
 
     const result = await handleAddMemory(

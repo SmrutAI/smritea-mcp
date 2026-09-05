@@ -1,4 +1,4 @@
-import { SmriteaClient, SmriteaError, SmriteaRateLimitError, SmriteaAuthError, SmriteaQuotaError, SmriteaValidationError, SmriteaNotFoundError } from 'smritea-sdk';
+import { SmriteaClient, SmriteaError, SmriteaTooManyRequestsError, SmriteaUnauthorizedError, SmriteaPaymentRequiredError, SmriteaBadRequestError, SmriteaNotFoundError } from 'smritea-sdk';
 import type { Memory, SearchResult } from 'smritea-sdk';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import type { AddMemoryInput, SearchMemoriesInput, GetMemoryInput, DeleteMemoryInput } from '../types.js';
@@ -46,20 +46,20 @@ export function formatSearchResult(result: SearchResult): string {
 }
 
 export function formatError(err: unknown): string {
-  if (err instanceof SmriteaAuthError) {
+  if (err instanceof SmriteaUnauthorizedError) {
     return 'Authentication failed. Run `smritea-mcp login` to re-authenticate.';
   }
-  if (err instanceof SmriteaQuotaError) {
+  if (err instanceof SmriteaPaymentRequiredError) {
     return 'This app has no credits remaining. Contact your Organization admin to add credits.';
   }
-  if (err instanceof SmriteaRateLimitError) {
+  if (err instanceof SmriteaTooManyRequestsError) {
     const suffix = err.retryAfter !== undefined ? ` (retry after ${err.retryAfter}s)` : '';
     return `Rate limit exceeded.${suffix} Wait a moment and try again.`;
   }
   if (err instanceof SmriteaNotFoundError) {
     return `Not found: ${err.message}`;
   }
-  if (err instanceof SmriteaValidationError) {
+  if (err instanceof SmriteaBadRequestError) {
     return `Invalid request: ${err.message}`;
   }
   if (err instanceof SmriteaError) {

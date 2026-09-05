@@ -3,6 +3,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import http, { type IncomingMessage, type ServerResponse } from 'node:http';
 import { dirname } from 'node:path';
+import { parseResponse } from 'errkit';
 import { AuthApi } from './_internal/autogen/apis/AuthApi.js';
 import { type CLIRefreshTokenRequest, type CLITokenRequest, type CLITokenResponse } from './_internal/autogen/models/index.js';
 import { Configuration, ResponseError } from './_internal/autogen/runtime.js';
@@ -265,21 +266,8 @@ async function renewFailureError(err: unknown): Promise<Error> {
     }
     let detail = '';
     try {
-      const raw = (await err.response.clone().text()).trim();
-      let code: unknown;
-      let message: unknown;
-      try {
-        const parsed = JSON.parse(raw) as Record<string, unknown>;
-        code = parsed['code'];
-        message = parsed['message'];
-      } catch {
-        // Non-JSON body — fall through to the raw text below.
-      }
-      if (typeof code === 'string' || typeof message === 'string') {
-        detail = ` (code: ${typeof code === 'string' ? code : 'n/a'}, message: ${typeof message === 'string' ? message : 'n/a'})`;
-      } else if (raw.length > 0) {
-        detail = ` — ${raw.slice(0, 500)}`;
-      }
+      const parsed = await parseResponse(err.response.clone());
+      detail = ` (code: ${parsed.code}, message: ${parsed.message})`;
     } catch {
       detail = '';
     }
