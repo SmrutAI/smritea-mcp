@@ -1,6 +1,6 @@
 {
   "name": "smritea-mcp",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "MCP server for smritea AI memory system",
   "bin": {
     "smritea-mcp": "./dist/index.js"
@@ -22,9 +22,9 @@
   "dependencies": {
     "@clack/prompts": "^1.7.0",
     "@modelcontextprotocol/sdk": "^1.0.0",
-    "errkit": "file:../../../smritea-oss/modules/polyglot/errkit/errkit-ts",
     "smritea-sdk": "file:../../polyglot/smritea-sdk/typescript",
-    "zod": "^3.23.0"
+    "zod": "^3.23.0",
+    "errkit": "file:../../../smritea-oss/modules/polyglot/errkit/errkit-ts"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
