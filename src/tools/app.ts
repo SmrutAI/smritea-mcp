@@ -1,7 +1,8 @@
 import { writeFileSync, existsSync, readFileSync } from 'node:fs';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { parseResponse } from 'errkit';
 import { DashboardApi } from '../_internal/autogen/apis/DashboardApi.js';
-import { Configuration } from '../_internal/autogen/runtime.js';
+import { Configuration, ResponseError } from '../_internal/autogen/runtime.js';
 import type { SelectAppInput } from '../types.js';
 import { getAuthFilePath, readSettingsFile, readSettingsFileAt, writeSettingsFile, writeSettingsFileAt, type AuthFile, type ResolvedConfig, type SmriteaSettings } from '../config.js';
 
@@ -9,6 +10,30 @@ import { getAuthFilePath, readSettingsFile, readSettingsFileAt, writeSettingsFil
 export interface StudioAppItem {
   id: string;
   name?: string;
+}
+
+/**
+ * Converts a Studio API error to a typed, informative Error message.
+ * If the error is a ResponseError (generated API client), parse the response via errkit
+ * to extract the server's code and message. Falls back to the original error message if parsing fails.
+ * Non-ResponseError errors are re-raised unchanged.
+ */
+async function studioRequestError(op: string, err: unknown): Promise<Error> {
+  if (err instanceof ResponseError) {
+    let detail = '';
+    try {
+      const parsed = await parseResponse(err.response.clone());
+      detail = ` (code: ${parsed.code}, message: ${parsed.message})`;
+    } catch {
+      // Parsing failed; detail stays empty, but error is still thrown below
+    }
+    return new Error(`Failed to ${op}${detail}`);
+  }
+  // Non-ResponseError: re-raise unchanged
+  if (err instanceof Error) {
+    return err;
+  }
+  return new Error(`Failed to ${op}: ${String(err)}`);
 }
 
 function readJsonFile<T>(path: string): T | null {
@@ -81,7 +106,12 @@ function createStudioApi(config: ResolvedConfig): DashboardApi {
 
 export async function fetchStudioApps(config: ResolvedConfig): Promise<StudioAppItem[]> {
   const api = createStudioApi(config);
-  const items = await api.listApps();
+  let items;
+  try {
+    items = await api.listApps();
+  } catch (err) {
+    throw await studioRequestError('list Studio apps', err);
+  }
 
   return items
     .map((item) => ({
@@ -103,13 +133,18 @@ async function createStudioApiKey(config: ResolvedConfig, appId: string): Promis
   }
 
   const api = createStudioApi(config);
-  const payload = await api.createApiKey({
-    orgId,
-    request: {
-      appId,
-      name: buildApiKeyName(),
-    },
-  });
+  let payload;
+  try {
+    payload = await api.createApiKey({
+      orgId,
+      request: {
+        appId,
+        name: buildApiKeyName(),
+      },
+    });
+  } catch (err) {
+    throw await studioRequestError('create Studio API key', err);
+  }
 
   const apiKey = payload.apiKey?.trim();
   if (!apiKey) {

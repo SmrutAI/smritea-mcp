@@ -10,9 +10,9 @@
     "./config": "./dist/config.js"
   },
   "scripts": {
-    "build": "tsup src/index.ts src/config.ts --format cjs --dts",
+    "build": "tsup",
     "start": "node dist/index.js",
-    "dev": "tsup src/index.ts src/config.ts --format cjs --dts --watch",
+    "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
