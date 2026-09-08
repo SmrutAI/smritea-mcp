@@ -1,32 +1,24 @@
 
-# DataPlaneAppResponse
+# CreateDraftRequest
 
 
 ## Properties
 
 Name | Type
 ------------ | -------------
-`dataPlaneCloud` | string
+`appId` | string
 `dataPlaneId` | string
-`dataPlaneRegion` | string
-`hasPendingDraft` | boolean
-`response` | [AppResponse](AppResponse.md)
-`syncStatus` | string
 
 ## Example
 
 ```typescript
-import type { DataPlaneAppResponse } from ''
+import type { CreateDraftRequest } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "dataPlaneCloud": null,
+  "appId": null,
   "dataPlaneId": null,
-  "dataPlaneRegion": null,
-  "hasPendingDraft": null,
-  "response": null,
-  "syncStatus": null,
-} satisfies DataPlaneAppResponse
+} satisfies CreateDraftRequest
 
 console.log(example)
 
@@ -35,7 +27,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as DataPlaneAppResponse
+const exampleParsed = JSON.parse(exampleJSON) as CreateDraftRequest
 console.log(exampleParsed)
 ```
 

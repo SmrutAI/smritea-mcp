@@ -40,7 +40,10 @@ export interface RerankerOptions {
      */
     topN?: number;
     /**
-     * Type specifies the reranker algorithm: rrf, rrf_temporal, mmr, temporal, node_distance, cross_encoder
+     * Type specifies the reranker algorithm: rrf, rrf_temporal, mmr, temporal, node_distance, cross_encoder.
+     * Default = cross_encoder (canonical, ADR-012 amendment 2026-09-09). The `default=` literal below
+     * mirrors DefaultRerankerType in config_defaults.go and is drift-pinned by
+     * TestSearchConfigDefaultsMatchConstants.
      * @type {RerankerOptionsTypeEnum}
      * @memberof RerankerOptions
      */

@@ -60,6 +60,14 @@ export interface CreateAppRequest {
      */
     extractionConfig?: ExtractionConfig;
     /**
+     * ID optionally pins the application identifier (prefixed nanoid). When empty the
+     * server generates one. Used by callers that stage an app id before creation
+     * (e.g. smritea-cloud app-config drafts) so the id stays stable across staging and creation.
+     * @type {string}
+     * @memberof CreateAppRequest
+     */
+    id?: string;
+    /**
      * Name is the application name (required, 1-255 chars)
      * @type {string}
      * @memberof CreateAppRequest
@@ -94,6 +102,7 @@ export function CreateAppRequestFromJSONTyped(json: any, ignoreDiscriminator: bo
         'description': json['description'] == null ? undefined : json['description'],
         'directiveConfig': json['directive_config'] == null ? undefined : DirectiveConfigFromJSON(json['directive_config']),
         'extractionConfig': json['extraction_config'] == null ? undefined : ExtractionConfigFromJSON(json['extraction_config']),
+        'id': json['id'] == null ? undefined : json['id'],
         'name': json['name'],
         'searchConfig': json['search_config'] == null ? undefined : SearchConfigFromJSON(json['search_config']),
     };
@@ -113,6 +122,7 @@ export function CreateAppRequestToJSONTyped(value?: CreateAppRequest | null, ign
         'description': value['description'],
         'directive_config': DirectiveConfigToJSON(value['directiveConfig']),
         'extraction_config': ExtractionConfigToJSON(value['extractionConfig']),
+        'id': value['id'],
         'name': value['name'],
         'search_config': SearchConfigToJSON(value['searchConfig']),
     };

@@ -50,6 +50,7 @@ docs/ConfigUsed.md
 docs/CreateAPIKeyRequest.md
 docs/CreateAPIKeyResponse.md
 docs/CreateAppRequest.md
+docs/CreateDraftRequest.md
 docs/CreateEntityRequest.md
 docs/CreateInvitationRequest.md
 docs/CreateLinkRequest.md
@@ -77,6 +78,7 @@ docs/DebugModelsResponse.md
 docs/DirectiveConfig.md
 docs/DirectivesResponse.md
 docs/DomainSchemaResponse.md
+docs/DraftResponse.md
 docs/EnforcementConfig.md
 docs/EntitlementUsageSummary.md
 docs/EntityDef.md
@@ -167,6 +169,7 @@ docs/PlanSummary.md
 docs/PlanVersionResponse.md
 docs/ProviderHistoryView.md
 docs/PublicInvitationInfo.md
+docs/PublishDraftResponse.md
 docs/RateLimitStatusResponse.md
 docs/RateLimitWindow.md
 docs/ReauthorizeResponse.md
@@ -190,6 +193,7 @@ docs/ResetPasswordRequest.md
 docs/ResetPasswordRequestRequest.md
 docs/ResultExplanation.md
 docs/RevenueByPlanEntry.md
+docs/SaveDraftRequest.md
 docs/SchemaDefaultsResponse.md
 docs/ScoreComponents.md
 docs/SearchConfig.md
@@ -296,6 +300,7 @@ models/ConfigUsed.ts
 models/CreateAPIKeyRequest.ts
 models/CreateAPIKeyResponse.ts
 models/CreateAppRequest.ts
+models/CreateDraftRequest.ts
 models/CreateEntityRequest.ts
 models/CreateInvitationRequest.ts
 models/CreateLinkRequest.ts
@@ -322,6 +327,7 @@ models/DebugModelsResponse.ts
 models/DirectiveConfig.ts
 models/DirectivesResponse.ts
 models/DomainSchemaResponse.ts
+models/DraftResponse.ts
 models/EnforcementConfig.ts
 models/EntitlementUsageSummary.ts
 models/EntityDef.ts
@@ -411,6 +417,7 @@ models/PlanSummary.ts
 models/PlanVersionResponse.ts
 models/ProviderHistoryView.ts
 models/PublicInvitationInfo.ts
+models/PublishDraftResponse.ts
 models/RateLimitStatusResponse.ts
 models/RateLimitWindow.ts
 models/ReauthorizeResponse.ts
@@ -434,6 +441,7 @@ models/ResetPasswordRequest.ts
 models/ResetPasswordRequestRequest.ts
 models/ResultExplanation.ts
 models/RevenueByPlanEntry.ts
+models/SaveDraftRequest.ts
 models/SchemaDefaultsResponse.ts
 models/ScoreComponents.ts
 models/SearchConfig.ts

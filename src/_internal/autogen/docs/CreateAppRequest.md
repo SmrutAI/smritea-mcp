@@ -9,6 +9,7 @@ Name | Type
 `description` | string
 `directiveConfig` | [DirectiveConfig](DirectiveConfig.md)
 `extractionConfig` | [ExtractionConfig](ExtractionConfig.md)
+`id` | string
 `name` | string
 `searchConfig` | [SearchConfig](SearchConfig.md)
 
@@ -22,6 +23,7 @@ const example = {
   "description": null,
   "directiveConfig": null,
   "extractionConfig": null,
+  "id": null,
   "name": null,
   "searchConfig": null,
 } satisfies CreateAppRequest

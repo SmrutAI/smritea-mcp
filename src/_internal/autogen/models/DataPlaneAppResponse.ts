@@ -51,6 +51,13 @@ export interface DataPlaneAppResponse {
      */
     dataPlaneRegion?: string;
     /**
+     * HasPendingDraft indicates whether this app has a pending configuration draft.
+     * Set by studio-api during enrichment to show if the app has unsaved changes.
+     * @type {boolean}
+     * @memberof DataPlaneAppResponse
+     */
+    hasPendingDraft?: boolean;
+    /**
      * 
      * @type {AppResponse}
      * @memberof DataPlaneAppResponse
@@ -85,6 +92,7 @@ export function DataPlaneAppResponseFromJSONTyped(json: any, ignoreDiscriminator
         'dataPlaneCloud': json['data_plane_cloud'] == null ? undefined : json['data_plane_cloud'],
         'dataPlaneId': json['data_plane_id'] == null ? undefined : json['data_plane_id'],
         'dataPlaneRegion': json['data_plane_region'] == null ? undefined : json['data_plane_region'],
+        'hasPendingDraft': json['has_pending_draft'] == null ? undefined : json['has_pending_draft'],
         'response': json['response'] == null ? undefined : AppResponseFromJSON(json['response']),
         'syncStatus': json['sync_status'] == null ? undefined : json['sync_status'],
     };
@@ -104,6 +112,7 @@ export function DataPlaneAppResponseToJSONTyped(value?: DataPlaneAppResponse | n
         'data_plane_cloud': value['dataPlaneCloud'],
         'data_plane_id': value['dataPlaneId'],
         'data_plane_region': value['dataPlaneRegion'],
+        'has_pending_draft': value['hasPendingDraft'],
         'response': AppResponseToJSON(value['response']),
         'sync_status': value['syncStatus'],
     };
