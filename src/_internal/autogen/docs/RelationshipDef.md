@@ -10,6 +10,7 @@ Name | Type
 `from` | string
 `generateReverse` | boolean
 `generateSynonyms` | boolean
+`queryExpansion` | boolean
 `reverseType` | string
 `to` | string
 `type` | string
@@ -25,6 +26,7 @@ const example = {
   "from": null,
   "generateReverse": null,
   "generateSynonyms": null,
+  "queryExpansion": null,
   "reverseType": null,
   "to": null,
   "type": null,

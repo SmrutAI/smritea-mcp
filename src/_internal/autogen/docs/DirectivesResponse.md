@@ -8,6 +8,7 @@ Name | Type
 ------------ | -------------
 `affirmativeDirective` | string
 `extractionDirective` | string
+`negativeDirective` | string
 `tagSchema` | [Array&lt;TagSchemaDef&gt;](TagSchemaDef.md)
 
 ## Example
@@ -19,6 +20,7 @@ import type { DirectivesResponse } from ''
 const example = {
   "affirmativeDirective": null,
   "extractionDirective": null,
+  "negativeDirective": null,
   "tagSchema": null,
 } satisfies DirectivesResponse
 

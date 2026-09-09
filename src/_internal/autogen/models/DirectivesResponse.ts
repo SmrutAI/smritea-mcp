@@ -40,6 +40,12 @@ export interface DirectivesResponse {
      */
     extractionDirective?: string;
     /**
+     * NegativeDirective specifies what to explicitly exclude from extraction.
+     * @type {string}
+     * @memberof DirectivesResponse
+     */
+    negativeDirective?: string;
+    /**
      * TagSchema provides domain-specific tag keys that extend the base tag schema.
      * Used for categorizing extracted facts into domain-specific dimensions.
      * @type {Array<TagSchemaDef>}
@@ -67,6 +73,7 @@ export function DirectivesResponseFromJSONTyped(json: any, ignoreDiscriminator: 
         
         'affirmativeDirective': json['affirmative_directive'] == null ? undefined : json['affirmative_directive'],
         'extractionDirective': json['extraction_directive'] == null ? undefined : json['extraction_directive'],
+        'negativeDirective': json['negative_directive'] == null ? undefined : json['negative_directive'],
         'tagSchema': json['tag_schema'] == null ? undefined : ((json['tag_schema'] as Array<any>).map(TagSchemaDefFromJSON)),
     };
 }
@@ -84,6 +91,7 @@ export function DirectivesResponseToJSONTyped(value?: DirectivesResponse | null,
         
         'affirmative_directive': value['affirmativeDirective'],
         'extraction_directive': value['extractionDirective'],
+        'negative_directive': value['negativeDirective'],
         'tag_schema': value['tagSchema'] == null ? undefined : ((value['tagSchema'] as Array<any>).map(TagSchemaDefToJSON)),
     };
 }

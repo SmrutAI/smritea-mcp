@@ -13,6 +13,21 @@
  */
 
 import { mapValues } from '../runtime';
+import type { RelationshipDef } from './RelationshipDef';
+import {
+    RelationshipDefFromJSON,
+    RelationshipDefFromJSONTyped,
+    RelationshipDefToJSON,
+    RelationshipDefToJSONTyped,
+} from './RelationshipDef';
+import type { EntityDef } from './EntityDef';
+import {
+    EntityDefFromJSON,
+    EntityDefFromJSONTyped,
+    EntityDefToJSON,
+    EntityDefToJSONTyped,
+} from './EntityDef';
+
 /**
  * 
  * @export
@@ -20,17 +35,18 @@ import { mapValues } from '../runtime';
  */
 export interface SchemaDefaultsResponse {
     /**
-     * EntityTypes contains all base entity type identifiers (e.g., "person", "organization").
-     * @type {Array<string>}
+     * EntityTypes are the base entity-type definitions (type identifier + human description).
+     * @type {Array<EntityDef>}
      * @memberof SchemaDefaultsResponse
      */
-    entityTypes?: Array<string>;
+    entityTypes?: Array<EntityDef>;
     /**
-     * RelationshipTypes contains all base relationship type identifiers (e.g., "works_for", "knows").
-     * @type {Array<string>}
+     * RelationshipTypes are the base relationship-type definitions (type identifier + human
+     * description; From/To are empty for base types — the UI draws no default edges from them).
+     * @type {Array<RelationshipDef>}
      * @memberof SchemaDefaultsResponse
      */
-    relationshipTypes?: Array<string>;
+    relationshipTypes?: Array<RelationshipDef>;
 }
 
 /**
@@ -50,8 +66,8 @@ export function SchemaDefaultsResponseFromJSONTyped(json: any, ignoreDiscriminat
     }
     return {
         
-        'entityTypes': json['entity_types'] == null ? undefined : json['entity_types'],
-        'relationshipTypes': json['relationship_types'] == null ? undefined : json['relationship_types'],
+        'entityTypes': json['entity_types'] == null ? undefined : ((json['entity_types'] as Array<any>).map(EntityDefFromJSON)),
+        'relationshipTypes': json['relationship_types'] == null ? undefined : ((json['relationship_types'] as Array<any>).map(RelationshipDefFromJSON)),
     };
 }
 
@@ -66,8 +82,8 @@ export function SchemaDefaultsResponseToJSONTyped(value?: SchemaDefaultsResponse
 
     return {
         
-        'entity_types': value['entityTypes'],
-        'relationship_types': value['relationshipTypes'],
+        'entity_types': value['entityTypes'] == null ? undefined : ((value['entityTypes'] as Array<any>).map(EntityDefToJSON)),
+        'relationship_types': value['relationshipTypes'] == null ? undefined : ((value['relationshipTypes'] as Array<any>).map(RelationshipDefToJSON)),
     };
 }
 

@@ -46,6 +46,15 @@ export interface RelationshipDef {
      */
     generateSynonyms?: boolean;
     /**
+     * QueryExpansion is the customer's single "Query expansion" intent for this relationship — the
+     * master gate for ALL query-expansion behavior. HOW expansion works (reverse direction, synonym
+     * phrases, vectors) is an internal concern never surfaced to the customer. The AI-suggested
+     * GenerateReverse/GenerateSynonyms flags only take effect when this is on.
+     * @type {boolean}
+     * @memberof RelationshipDef
+     */
+    queryExpansion?: boolean;
+    /**
      * ReverseType is the label for the reverse direction (e.g. mother_of -> son_of). Required when GenerateReverse is true.
      * @type {string}
      * @memberof RelationshipDef
@@ -87,6 +96,7 @@ export function RelationshipDefFromJSONTyped(json: any, ignoreDiscriminator: boo
         'from': json['from'] == null ? undefined : json['from'],
         'generateReverse': json['generate_reverse'] == null ? undefined : json['generate_reverse'],
         'generateSynonyms': json['generate_synonyms'] == null ? undefined : json['generate_synonyms'],
+        'queryExpansion': json['query_expansion'] == null ? undefined : json['query_expansion'],
         'reverseType': json['reverse_type'] == null ? undefined : json['reverse_type'],
         'to': json['to'] == null ? undefined : json['to'],
         'type': json['type'],
@@ -108,6 +118,7 @@ export function RelationshipDefToJSONTyped(value?: RelationshipDef | null, ignor
         'from': value['from'],
         'generate_reverse': value['generateReverse'],
         'generate_synonyms': value['generateSynonyms'],
+        'query_expansion': value['queryExpansion'],
         'reverse_type': value['reverseType'],
         'to': value['to'],
         'type': value['type'],

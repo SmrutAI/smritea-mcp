@@ -6,8 +6,8 @@
 
 Name | Type
 ------------ | -------------
-`entityTypes` | Array&lt;string&gt;
-`relationshipTypes` | Array&lt;string&gt;
+`entityTypes` | [Array&lt;EntityDef&gt;](EntityDef.md)
+`relationshipTypes` | [Array&lt;RelationshipDef&gt;](RelationshipDef.md)
 
 ## Example
 
