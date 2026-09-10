@@ -77,7 +77,6 @@ docs/DebugModelInfo.md
 docs/DebugModelsResponse.md
 docs/DirectiveConfig.md
 docs/DirectivesResponse.md
-docs/DomainSchemaResponse.md
 docs/DraftResponse.md
 docs/EnforcementConfig.md
 docs/EntitlementUsageSummary.md
@@ -168,7 +167,9 @@ docs/PlanResponse.md
 docs/PlanSummary.md
 docs/PlanVersionResponse.md
 docs/ProviderHistoryView.md
+docs/PublicDomainSchemaResponse.md
 docs/PublicInvitationInfo.md
+docs/PublicRelationshipType.md
 docs/PublishDraftResponse.md
 docs/RateLimitStatusResponse.md
 docs/RateLimitWindow.md
@@ -181,7 +182,6 @@ docs/RegisterResponse.md
 docs/RelationshipDef.md
 docs/RelationshipOutputDTO.md
 docs/RelationshipResponse.md
-docs/RelationshipType.md
 docs/RelativeStandingConfig.md
 docs/ReplayWebhookResponse.md
 docs/RerankerAdjustment.md
@@ -326,7 +326,6 @@ models/DebugModelInfo.ts
 models/DebugModelsResponse.ts
 models/DirectiveConfig.ts
 models/DirectivesResponse.ts
-models/DomainSchemaResponse.ts
 models/DraftResponse.ts
 models/EnforcementConfig.ts
 models/EntitlementUsageSummary.ts
@@ -416,7 +415,9 @@ models/PlanResponse.ts
 models/PlanSummary.ts
 models/PlanVersionResponse.ts
 models/ProviderHistoryView.ts
+models/PublicDomainSchemaResponse.ts
 models/PublicInvitationInfo.ts
+models/PublicRelationshipType.ts
 models/PublishDraftResponse.ts
 models/RateLimitStatusResponse.ts
 models/RateLimitWindow.ts
@@ -429,7 +430,6 @@ models/RegisterResponse.ts
 models/RelationshipDef.ts
 models/RelationshipOutputDTO.ts
 models/RelationshipResponse.ts
-models/RelationshipType.ts
 models/RelativeStandingConfig.ts
 models/ReplayWebhookResponse.ts
 models/RerankerAdjustment.ts

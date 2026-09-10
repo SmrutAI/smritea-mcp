@@ -1,5 +1,5 @@
 
-# RelationshipType
+# PublicRelationshipType
 
 
 ## Properties
@@ -8,27 +8,23 @@ Name | Type
 ------------ | -------------
 `description` | string
 `from` | string
-`generateReverse` | boolean
-`generateSynonyms` | boolean
-`reverseType` | string
+`queryExpansion` | boolean
 `to` | string
 `type` | string
 
 ## Example
 
 ```typescript
-import type { RelationshipType } from ''
+import type { PublicRelationshipType } from ''
 
 // TODO: Update the object below with actual values
 const example = {
   "description": null,
   "from": null,
-  "generateReverse": null,
-  "generateSynonyms": null,
-  "reverseType": null,
+  "queryExpansion": null,
   "to": null,
   "type": null,
-} satisfies RelationshipType
+} satisfies PublicRelationshipType
 
 console.log(example)
 
@@ -37,7 +33,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as RelationshipType
+const exampleParsed = JSON.parse(exampleJSON) as PublicRelationshipType
 console.log(exampleParsed)
 ```
 

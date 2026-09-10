@@ -1,5 +1,5 @@
 
-# DomainSchemaResponse
+# PublicDomainSchemaResponse
 
 
 ## Properties
@@ -7,18 +7,18 @@
 Name | Type
 ------------ | -------------
 `classificationSchema` | [Array&lt;EntityDef&gt;](EntityDef.md)
-`relationshipSchema` | [Array&lt;RelationshipType&gt;](RelationshipType.md)
+`relationshipSchema` | [Array&lt;PublicRelationshipType&gt;](PublicRelationshipType.md)
 
 ## Example
 
 ```typescript
-import type { DomainSchemaResponse } from ''
+import type { PublicDomainSchemaResponse } from ''
 
 // TODO: Update the object below with actual values
 const example = {
   "classificationSchema": null,
   "relationshipSchema": null,
-} satisfies DomainSchemaResponse
+} satisfies PublicDomainSchemaResponse
 
 console.log(example)
 
@@ -27,7 +27,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as DomainSchemaResponse
+const exampleParsed = JSON.parse(exampleJSON) as PublicDomainSchemaResponse
 console.log(exampleParsed)
 ```
 
