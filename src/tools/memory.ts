@@ -37,6 +37,24 @@ function resolveActorId(
   return config.firstPersonEmail;
 }
 
+/**
+ * Resolves speakerActorId for SEARCH from caller input only — never defaults to
+ * the configured identity. Search must be a faithful pass-through: if the caller
+ * supplies no actor, no speakerActorId is sent, so results are scoped only by the
+ * selected app (and any explicit filters). Unlike resolveActorId (used on add),
+ * this returns undefined instead of falling back to the user's email.
+ */
+function resolveSpeakerActorId(
+  inputActorId: string | null | undefined,
+  inputActorName: string | null | undefined,
+): string | undefined {
+  const explicit = blank(inputActorId);
+  if (explicit !== undefined) return explicit;
+  const name = blank(inputActorName);
+  if (name !== undefined) return normalizeActorId(name);
+  return undefined;
+}
+
 export function formatMemory(memory: Memory): string {
   return JSON.stringify(memory, null, 2);
 }
@@ -108,23 +126,20 @@ export async function handleAddMemory(
 export async function handleSearchMemories(
   client: SmriteaClient,
   input: SearchMemoriesInput,
-  config: ResolvedConfig,
 ): Promise<CallToolResult> {
   try {
-    const actorId = resolveActorId(input.actor_id, input.actor_name, config);
-    const actorType = blank(input.actor_type) ?? (actorId !== undefined ? 'user' : undefined);
-    const projectName = config.projectName;
-    const inputMetadataFilter = blank(input.metadata_filter);
-    const metadataFilter =
-      projectName === undefined || projectName.trim().length === 0
-        ? inputMetadataFilter
-        : inputMetadataFilter !== undefined
-          ? { $and: [inputMetadataFilter, { project_name: projectName }] }
-          : { project_name: projectName };
+    // Faithful pass-through: the MCP must NEVER inject a scope the caller did not
+    // ask for. Only the selected app (app_id, set on the client) is implicit.
+    //  - speakerActorId: identity of who is asking (pronoun resolution / audit),
+    //    NEVER a filter, and set ONLY when the caller passes actor_id/actor_name.
+    //    It does not default to the configured user.
+    //  - No project_name is injected into metadata_filter; the caller's
+    //    metadata_filter is sent verbatim. Actor-based filtering belongs to
+    //    add() (creation), never to search().
+    const speakerActorId = resolveSpeakerActorId(input.actor_id, input.actor_name);
     const results = await client.search(input.query, {
+      speakerActorId,
       scope: {
-        actorId,
-        actorType,
         conversationId: blank(input.conversation_id),
         sourceType: blank(input.source_type),
         participantIds: blank(input.participant_ids),
@@ -135,7 +150,7 @@ export async function handleSearchMemories(
       fromTime: blank(input.from_time),
       toTime: blank(input.to_time),
       validAt: blank(input.valid_at),
-      metadataFilter,
+      metadataFilter: blank(input.metadata_filter),
     });
 
     if (results.length === 0) {

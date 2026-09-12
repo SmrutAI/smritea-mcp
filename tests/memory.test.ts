@@ -241,38 +241,35 @@ describe('handleSearchMemories', () => {
     expect(parsed[1].score).toBe(0.80);
   });
 
-  it('uses firstPersonEmail as actorId when input.actor_id is undefined', async () => {
+  it('sends no speakerActorId and no actor filter when no actor is given', async () => {
     mockClient.search.mockResolvedValue([]);
 
-    await handleSearchMemories(
-      mockClient as any,
-      { query: 'q' },
-      makeConfig({ firstPersonEmail: 'alice@example.com' }),
-    );
+    await handleSearchMemories(mockClient as any, { query: 'q' });
 
-    expect(mockClient.search).toHaveBeenCalledWith('q', expect.objectContaining({
-      scope: expect.objectContaining({
-        actorId: 'alice@example.com',
-        actorType: 'user',
-      }),
-    }));
+    const [, opts] = mockClient.search.mock.calls[0];
+    // Search must never default to the configured identity — no forced scoping.
+    expect(opts.speakerActorId).toBeUndefined();
+    expect(opts.scope.actorId).toBeUndefined();
+    expect(opts.scope.actorType).toBeUndefined();
   });
 
-  it('prefers input.actor_id over firstPersonEmail', async () => {
+  it('passes actor_id as speakerActorId, never as a scope filter', async () => {
     mockClient.search.mockResolvedValue([]);
 
-    await handleSearchMemories(
-      mockClient as any,
-      { query: 'q', actor_id: 'bob' },
-      makeConfig({ firstPersonEmail: 'alice@example.com' }),
-    );
+    await handleSearchMemories(mockClient as any, { query: 'q', actor_id: 'bob' });
 
-    expect(mockClient.search).toHaveBeenCalledWith('q', expect.objectContaining({
-      scope: expect.objectContaining({
-        actorId: 'bob',
-        actorType: 'user',
-      }),
-    }));
+    const [, opts] = mockClient.search.mock.calls[0];
+    expect(opts.speakerActorId).toBe('bob');
+    expect(opts.scope.actorId).toBeUndefined();
+  });
+
+  it('does not inject a project_name metadata filter', async () => {
+    mockClient.search.mockResolvedValue([]);
+
+    await handleSearchMemories(mockClient as any, { query: 'q' });
+
+    const [, opts] = mockClient.search.mock.calls[0];
+    expect(opts.metadataFilter).toBeUndefined();
   });
 
   it('returns isError on failure', async () => {

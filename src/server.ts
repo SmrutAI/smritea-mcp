@@ -126,6 +126,12 @@ export function createMcpServer(): McpServer {
 
   const startupConfig = loadConfig();
   const firstPersonHint = actorDefaultsHint(startupConfig.firstPersonEmail, startupConfig.actorName);
+  const searchScopingHint =
+    ' Search is NOT scoped or filtered unless you ask: it never defaults to the configured' +
+    ' identity and never filters by actor. Results are scoped only to the selected app plus any' +
+    ' filters you explicitly pass. actor_id/actor_name set speaker_actor_id (who is asking, for' +
+    ' pronoun resolution only) — NOT a filter. To restrict which memories are searched, use' +
+    ' conversation_id, participant_ids, source_type, or metadata_filter.';
 
   server.tool(
     'add_memory',
@@ -152,16 +158,15 @@ export function createMcpServer(): McpServer {
     'topic to surface relevant context — user preferences, past decisions, stated constraints — ' +
     'without waiting for the user to re-explain them. Also call when the user asks "do you remember", ' +
     '"what do you know about", or "remind me".' +
-    firstPersonHint,
+    searchScopingHint,
     SearchMemoriesInput.shape,
     async (input) => {
       const pre = await ensureSession();
       if (pre !== null) {
         return pre;
       }
-      const config = loadConfig();
       const client = getMemoryClient();
-      return handleSearchMemories(client, SearchMemoriesInput.parse(input), config);
+      return handleSearchMemories(client, SearchMemoriesInput.parse(input));
     },
   );
 

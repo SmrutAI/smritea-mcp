@@ -42,16 +42,16 @@ export type AddMemoryInput = z.infer<typeof AddMemoryInput>;
 
 export const SearchMemoriesInput = z.object({
   query: z.string().min(1).describe('Natural language search query'),
-  actor_id: z.string().nullish().describe('Filter by the actor this memory belongs to. Omit to use your configured identity; for another named person set actor_name instead (actor_id is derived). null or empty are treated as omitted; not a UUID.'),
+  actor_id: z.string().nullish().describe('Identity of WHO is asking (speaker_actor_id) — used only for pronoun resolution and audit, NEVER to filter results. It does NOT restrict search to that actor. Omit to search with no requester identity (results are scoped only by the selected app plus any filters you pass); it does NOT default to your configured identity. null or empty are treated as omitted; not a UUID.'),
   actor_type: z
     .enum(['user', 'agent', 'system'])
     .nullish()
-    .describe('Optional. Filter by actor type: "user", "agent", or "system".'),
+    .describe('Optional. Ignored by search (search does not filter by actor). Kept for parity with add().'),
   actor_name: z
     .string()
     .max(255)
     .nullish()
-    .describe('To search a specific named person\'s memories, set their display name (e.g. "Harry Potter") — actor_id is derived from it (same slug used on add). Omit for your own memories (defaults to your configured identity). Max 255 chars.'),
+    .describe('Display name of the requester, used to derive speaker_actor_id (same slug as add) for pronoun resolution — NOT a filter. Setting it does NOT restrict results to that person. To restrict which memories are searched, use conversation_id or participant_ids. Max 255 chars.'),
   participant_ids: z
     .array(z.string())
     .min(2)
