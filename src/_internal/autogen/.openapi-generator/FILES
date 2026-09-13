@@ -10,6 +10,7 @@ docs/AddTeamMemberRequest.md
 docs/AdminAPIKeyResponse.md
 docs/AdminGrantCreditsRequest.md
 docs/AdminOrgResponse.md
+docs/AdminStaleAppResponse.md
 docs/AdminStatsResponse.md
 docs/AdminUserResponse.md
 docs/AppAIConfig.md
@@ -40,6 +41,7 @@ docs/CheckoutResponse.md
 docs/CommondtoPaginatedResponseAPIKeyDetails.md
 docs/CommondtoPaginatedResponseAdminAPIKeyResponse.md
 docs/CommondtoPaginatedResponseAdminOrgResponse.md
+docs/CommondtoPaginatedResponseAdminStaleAppResponse.md
 docs/CommondtoPaginatedResponseAdminUserResponse.md
 docs/CommondtoPaginatedResponseMemoryResponse.md
 docs/CommondtoPaginatedResponseOrganizationSummary.md
@@ -261,6 +263,7 @@ models/AddTeamMemberRequest.ts
 models/AdminAPIKeyResponse.ts
 models/AdminGrantCreditsRequest.ts
 models/AdminOrgResponse.ts
+models/AdminStaleAppResponse.ts
 models/AdminStatsResponse.ts
 models/AdminUserResponse.ts
 models/AppAIConfig.ts
@@ -290,6 +293,7 @@ models/CheckoutResponse.ts
 models/CommondtoPaginatedResponseAPIKeyDetails.ts
 models/CommondtoPaginatedResponseAdminAPIKeyResponse.ts
 models/CommondtoPaginatedResponseAdminOrgResponse.ts
+models/CommondtoPaginatedResponseAdminStaleAppResponse.ts
 models/CommondtoPaginatedResponseAdminUserResponse.ts
 models/CommondtoPaginatedResponseMemoryResponse.ts
 models/CommondtoPaginatedResponseOrganizationSummary.ts
