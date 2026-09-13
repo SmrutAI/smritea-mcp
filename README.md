@@ -4,10 +4,10 @@ title: smritea-mcp
 status: stable
 tags:
 - readme
-stale_after: 2026-12-31
+stale_after: 2027-05-20
 generated:
   by: Tushar Dwivedi
-  at: 2026-08-25T00:00:00Z
+  at: 2026-09-22T00:00:00Z
 ---
 
 # smritea-mcp
@@ -210,25 +210,36 @@ Add a memory: "User prefers dark mode and uses vim keybindings" for actor_id "55
 
 Search for memories semantically. Returns results ranked by relevance score.
 
+This tool does not apply an actor filter. The `actor_id` / `actor_name` you pass are sent as the
+*speaker* identity (`speakerActorId`) — a "who is asking" signal used for pronoun resolution and
+audit — not as a scope filter, so they do not narrow the result set. (The underlying search API can
+filter by `scope.actor_id`, but this tool does not expose that; it only sends `conversation_id`,
+`source_type`, and `participant_ids` as scope filters.) To restrict which memories are searched, use
+`conversation_id`, `source_type`, `participant_ids`, or `metadata_filter`.
+
 **Parameters**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `query` | string | Yes | Natural language search query |
-| `actor_id` | string | No | Filter to a specific actor (UUID). Omit for the user's own memories — defaults to their configured email. For a different named person, leave this unset and set `actor_name` instead (same slug derivation as `add_memory`). |
-| `actor_type` | string | No | Filter by actor type: `user`, `agent`, or `system`. Defaults to `user`. |
-| `actor_name` | string | No | Search a specific named person's memories (e.g. `"Harry Potter"`) — `actor_id` is derived from it, the same slug used on `add_memory`. Omit for the user's own memories. |
-| `limit` | number | No | Maximum number of results to return |
-| `method` | string | No | Search method: `quick_search`, `deep_search`, `context_aware_search` |
-| `threshold` | number | No | Minimum relevance score (0.0–1.0) |
-| `graph_depth` | number | No | Graph traversal depth override |
-| `conversation_id` | string | No | Filter to a specific conversation |
-| `source_type` | string | No | Filter by origin: `conversation`, `document`, or `api` |
+| `actor_id` | string | No | Identity of who is asking (the speaker), used only for pronoun resolution and audit — never a filter. It does not restrict results to that actor. Omit to search with no requester identity; unlike `add_memory` it does not default to your configured identity. |
+| `actor_type` | string | No | Not used as a filter by this tool — actor input is sent as the speaker identity, not a scope filter. Accepted only for parity with `add_memory`. |
+| `actor_name` | string | No | Display name of the requester, used to derive the speaker identity (same slug as `add_memory`) for pronoun resolution — not a filter. Setting it does not restrict results to that person. |
+| `participant_ids` | string[] | No | Search across conversations where all listed actors participated (AND semantics). Requires at least 2 IDs. Mutually exclusive with `conversation_id`. |
+| `limit` | number | No | Maximum results (`0` = app default, typically 20; max 100). |
+| `threshold` | number | No | Minimum relevance score (0.0–1.0). |
+| `graph_depth` | number | No | Graph traversal depth (`0` = app config; `1`–`5` = explicit override). |
+| `conversation_id` | string | No | Filter to a specific conversation. |
+| `source_type` | string | No | Filter by origin: `conversation`, `document`, or `api`. |
+| `from_time` | string | No | ISO-8601 — only return memories created at or after this time. |
+| `to_time` | string | No | ISO-8601 — only return memories created at or before this time. |
+| `valid_at` | string | No | ISO-8601 — return memories valid at this point in time. Mutually exclusive with `from_time`/`to_time`. |
+| `metadata_filter` | object | No | MongoDB-style operator DSL to filter by memory metadata (e.g. `{"level": {"$gte": 4}}`). |
 
 **Example**
 
 ```
-Search memories for "editor preferences" for actor_id "550e8400-e29b-41d4-a716-446655440000" actor_type "user", limit 5
+Search memories for "editor preferences", limit 5
 ```
 
 ---
