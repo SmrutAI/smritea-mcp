@@ -38,6 +38,12 @@ export interface AdminStaleAppResponse {
      */
     dataPlaneId?: string;
     /**
+     * DataPurgedAt is the data purge timestamp (when associated data was deleted).
+     * @type {string}
+     * @memberof AdminStaleAppResponse
+     */
+    dataPurgedAt?: string;
+    /**
      * DeletedAt is the soft-delete timestamp.
      * @type {string}
      * @memberof AdminStaleAppResponse
@@ -89,6 +95,7 @@ export function AdminStaleAppResponseFromJSONTyped(json: any, ignoreDiscriminato
         'appId': json['app_id'] == null ? undefined : json['app_id'],
         'createdAt': json['created_at'] == null ? undefined : json['created_at'],
         'dataPlaneId': json['data_plane_id'] == null ? undefined : json['data_plane_id'],
+        'dataPurgedAt': json['data_purged_at'] == null ? undefined : json['data_purged_at'],
         'deletedAt': json['deleted_at'] == null ? undefined : json['deleted_at'],
         'id': json['id'] == null ? undefined : json['id'],
         'organizationId': json['organization_id'] == null ? undefined : json['organization_id'],
@@ -111,6 +118,7 @@ export function AdminStaleAppResponseToJSONTyped(value?: AdminStaleAppResponse |
         'app_id': value['appId'],
         'created_at': value['createdAt'],
         'data_plane_id': value['dataPlaneId'],
+        'data_purged_at': value['dataPurgedAt'],
         'deleted_at': value['deletedAt'],
         'id': value['id'],
         'organization_id': value['organizationId'],

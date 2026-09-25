@@ -1,38 +1,40 @@
 
-# AdminStaleAppResponse
+# StudioAuditEntryResponse
 
 
 ## Properties
 
 Name | Type
 ------------ | -------------
+`action` | string
+`actorId` | string
 `appId` | string
 `createdAt` | string
-`dataPlaneId` | string
-`dataPurgedAt` | string
-`deletedAt` | string
+`details` | { [key: string]: object; }
+`errorMessage` | string
 `id` | string
-`organizationId` | string
-`syncStatus` | string
-`updatedAt` | string
+`orgId` | string
+`requestId` | string
+`success` | boolean
 
 ## Example
 
 ```typescript
-import type { AdminStaleAppResponse } from ''
+import type { StudioAuditEntryResponse } from ''
 
 // TODO: Update the object below with actual values
 const example = {
+  "action": null,
+  "actorId": null,
   "appId": null,
   "createdAt": null,
-  "dataPlaneId": null,
-  "dataPurgedAt": null,
-  "deletedAt": null,
+  "details": null,
+  "errorMessage": null,
   "id": null,
-  "organizationId": null,
-  "syncStatus": null,
-  "updatedAt": null,
-} satisfies AdminStaleAppResponse
+  "orgId": null,
+  "requestId": null,
+  "success": null,
+} satisfies StudioAuditEntryResponse
 
 console.log(example)
 
@@ -41,7 +43,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as AdminStaleAppResponse
+const exampleParsed = JSON.parse(exampleJSON) as StudioAuditEntryResponse
 console.log(exampleParsed)
 ```
 
