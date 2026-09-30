@@ -9,13 +9,13 @@ Name | Type
 `enableAutoSelect` | boolean
 `entityExtraction` | [EntityExtractionConfig](EntityExtractionConfig.md)
 `graphOptions` | [GraphSearchOptions](GraphSearchOptions.md)
-`maxResults` | number
 `memoryStorageEngine` | string
 `methodWeights` | [MethodWeights](MethodWeights.md)
 `reranker` | [RerankerOptions](RerankerOptions.md)
 `sourceWeights` | [SourceWeightsConfig](SourceWeightsConfig.md)
 `temporalDecay` | [TemporalDecayConfig](TemporalDecayConfig.md)
 `temporalFilter` | [TemporalFilter](TemporalFilter.md)
+`topN` | number
 `version` | number
 
 ## Example
@@ -28,13 +28,13 @@ const example = {
   "enableAutoSelect": null,
   "entityExtraction": null,
   "graphOptions": null,
-  "maxResults": null,
   "memoryStorageEngine": null,
   "methodWeights": null,
   "reranker": null,
   "sourceWeights": null,
   "temporalDecay": null,
   "temporalFilter": null,
+  "topN": null,
   "version": null,
 } satisfies SearchConfig
 

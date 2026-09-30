@@ -90,12 +90,6 @@ export interface SearchConfig {
      */
     graphOptions?: GraphSearchOptions;
     /**
-     * MaxResults limits the maximum number of results returned.
-     * @type {number}
-     * @memberof SearchConfig
-     */
-    maxResults?: number;
-    /**
      * MemoryStorageEngine specifies the default search strategy.
      * Options: quick_search, deep_search, context_aware_search
      * @type {SearchConfigMemoryStorageEngineEnum}
@@ -136,6 +130,12 @@ export interface SearchConfig {
      */
     temporalFilter?: TemporalFilter;
     /**
+     * TopN is the result count (also the reranker count). Absent or 0 = services.search.top_n (10); max 20 (= services.search.top_n_max).
+     * @type {number}
+     * @memberof SearchConfig
+     */
+    topN?: number;
+    /**
      * Version is incremented on each config update for cache invalidation.
      * @type {number}
      * @memberof SearchConfig
@@ -175,13 +175,13 @@ export function SearchConfigFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'enableAutoSelect': json['enable_auto_select'] == null ? undefined : json['enable_auto_select'],
         'entityExtraction': json['entity_extraction'] == null ? undefined : EntityExtractionConfigFromJSON(json['entity_extraction']),
         'graphOptions': json['graph_options'] == null ? undefined : GraphSearchOptionsFromJSON(json['graph_options']),
-        'maxResults': json['max_results'] == null ? undefined : json['max_results'],
         'memoryStorageEngine': json['memory_storage_engine'] == null ? undefined : json['memory_storage_engine'],
         'methodWeights': json['method_weights'] == null ? undefined : MethodWeightsFromJSON(json['method_weights']),
         'reranker': json['reranker'] == null ? undefined : RerankerOptionsFromJSON(json['reranker']),
         'sourceWeights': json['source_weights'] == null ? undefined : SourceWeightsConfigFromJSON(json['source_weights']),
         'temporalDecay': json['temporal_decay'] == null ? undefined : TemporalDecayConfigFromJSON(json['temporal_decay']),
         'temporalFilter': json['temporal_filter'] == null ? undefined : TemporalFilterFromJSON(json['temporal_filter']),
+        'topN': json['top_n'] == null ? undefined : json['top_n'],
         'version': json['version'] == null ? undefined : json['version'],
     };
 }
@@ -200,13 +200,13 @@ export function SearchConfigToJSONTyped(value?: SearchConfig | null, ignoreDiscr
         'enable_auto_select': value['enableAutoSelect'],
         'entity_extraction': EntityExtractionConfigToJSON(value['entityExtraction']),
         'graph_options': GraphSearchOptionsToJSON(value['graphOptions']),
-        'max_results': value['maxResults'],
         'memory_storage_engine': value['memoryStorageEngine'],
         'method_weights': MethodWeightsToJSON(value['methodWeights']),
         'reranker': RerankerOptionsToJSON(value['reranker']),
         'source_weights': SourceWeightsConfigToJSON(value['sourceWeights']),
         'temporal_decay': TemporalDecayConfigToJSON(value['temporalDecay']),
         'temporal_filter': TemporalFilterToJSON(value['temporalFilter']),
+        'top_n': value['topN'],
         'version': value['version'],
     };
 }

@@ -6,9 +6,8 @@
 
 Name | Type
 ------------ | -------------
-`k` | number
-`lambda` | number
-`topN` | number
+`mmrLambda` | number
+`rrfK` | number
 `type` | string
 
 ## Example
@@ -18,9 +17,8 @@ import type { RerankerOptions } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "k": null,
-  "lambda": null,
-  "topN": null,
+  "mmrLambda": null,
+  "rrfK": null,
   "type": null,
 } satisfies RerankerOptions
 

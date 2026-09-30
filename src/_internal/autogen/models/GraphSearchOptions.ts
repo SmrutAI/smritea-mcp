@@ -40,7 +40,7 @@ export interface GraphSearchOptions {
      */
     hopDecayFactor?: number;
     /**
-     * MaxHops is the graph traversal depth (default: 2)
+     * MaxHops is the graph traversal depth
      * @type {number}
      * @memberof GraphSearchOptions
      */

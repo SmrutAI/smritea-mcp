@@ -20,17 +20,17 @@ import { mapValues } from '../runtime';
  */
 export interface RerankerConfigUsed {
     /**
-     * K is the RRF constant (for RRF reranker)
+     * MMRLambda is the diversity parameter (for MMR reranker)
      * @type {number}
      * @memberof RerankerConfigUsed
      */
-    k?: number;
+    mmrLambda?: number;
     /**
-     * Lambda is the diversity parameter (for MMR reranker)
+     * RRFK is the RRF constant (for RRF reranker)
      * @type {number}
      * @memberof RerankerConfigUsed
      */
-    lambda?: number;
+    rrfK?: number;
     /**
      * Type is the reranker algorithm (none, rrf, mmr, temporal, etc.)
      * @type {RerankerConfigUsedTypeEnum}
@@ -69,8 +69,8 @@ export function RerankerConfigUsedFromJSONTyped(json: any, ignoreDiscriminator: 
     }
     return {
         
-        'k': json['k'] == null ? undefined : json['k'],
-        'lambda': json['lambda'] == null ? undefined : json['lambda'],
+        'mmrLambda': json['mmr_lambda'] == null ? undefined : json['mmr_lambda'],
+        'rrfK': json['rrf_k'] == null ? undefined : json['rrf_k'],
         'type': json['type'] == null ? undefined : json['type'],
     };
 }
@@ -86,8 +86,8 @@ export function RerankerConfigUsedToJSONTyped(value?: RerankerConfigUsed | null,
 
     return {
         
-        'k': value['k'],
-        'lambda': value['lambda'],
+        'mmr_lambda': value['mmrLambda'],
+        'rrf_k': value['rrfK'],
         'type': value['type'],
     };
 }

@@ -1,5 +1,5 @@
 
-# EntityExtractionConfig
+# EntityExtractionOverrides
 
 
 ## Properties
@@ -12,12 +12,11 @@ Name | Type
 `fallbackMessages` | number
 `minConfidence` | number
 `model` | string
-`reflectionPasses` | number
 
 ## Example
 
 ```typescript
-import type { EntityExtractionConfig } from ''
+import type { EntityExtractionOverrides } from ''
 
 // TODO: Update the object below with actual values
 const example = {
@@ -27,8 +26,7 @@ const example = {
   "fallbackMessages": null,
   "minConfidence": null,
   "model": null,
-  "reflectionPasses": null,
-} satisfies EntityExtractionConfig
+} satisfies EntityExtractionOverrides
 
 console.log(example)
 
@@ -37,7 +35,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as EntityExtractionConfig
+const exampleParsed = JSON.parse(exampleJSON) as EntityExtractionOverrides
 console.log(exampleParsed)
 ```
 

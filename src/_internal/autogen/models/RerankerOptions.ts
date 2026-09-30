@@ -20,30 +20,27 @@ import { mapValues } from '../runtime';
  */
 export interface RerankerOptions {
     /**
-     * K is the RRF constant for reciprocal rank fusion (default: 60)
+     * MMRLambda is the MMR diversity parameter: 0.0 = maximum diversity, 1.0 = pure relevance. Validated
+     * (0.0 to 1.0) by Validate when Type is mmr; other types store the value without validating it. Defaults to
+     * 0.5 (the built-in services.search.mmr_lambda) when the key is absent. Not read by the pipeline yet
+     * (roadmap TD48).
      * @type {number}
      * @memberof RerankerOptions
      */
-    k?: number;
+    mmrLambda?: number;
     /**
-     * Lambda is the MMR diversity parameter.
-     * 0.0 = maximum diversity, 1.0 = pure relevance.
+     * RRFK is the reciprocal rank fusion constant. Validated (0 to 1000) by Validate when Type is rrf or
+     * rrf_temporal; other types store the value without validating it. Defaults to 60 (the built-in
+     * services.search.rrf_k) when the key is absent; an explicit 0 is kept. Not read by the pipeline yet
+     * (roadmap TD47).
      * @type {number}
      * @memberof RerankerOptions
      */
-    lambda?: number;
-    /**
-     * TopN limits maximum results to return after reranking.
-     * 0 means return all results.
-     * @type {number}
-     * @memberof RerankerOptions
-     */
-    topN?: number;
+    rrfK?: number;
     /**
      * Type specifies the reranker algorithm: rrf, rrf_temporal, mmr, temporal, node_distance, cross_encoder.
-     * Default = cross_encoder (canonical, ADR-012 amendment 2026-09-09). The `default=` literal below
-     * mirrors DefaultRerankerType in config_defaults.go and is drift-pinned by
-     * TestSearchConfigDefaultsMatchConstants.
+     * The tag default (cross_encoder) applies when a stored config has no type; new apps are written with
+     * the system value services.search.reranker_type.
      * @type {RerankerOptionsTypeEnum}
      * @memberof RerankerOptions
      */
@@ -82,9 +79,8 @@ export function RerankerOptionsFromJSONTyped(json: any, ignoreDiscriminator: boo
     }
     return {
         
-        'k': json['k'] == null ? undefined : json['k'],
-        'lambda': json['lambda'] == null ? undefined : json['lambda'],
-        'topN': json['top_n'] == null ? undefined : json['top_n'],
+        'mmrLambda': json['mmr_lambda'] == null ? undefined : json['mmr_lambda'],
+        'rrfK': json['rrf_k'] == null ? undefined : json['rrf_k'],
         'type': json['type'] == null ? undefined : json['type'],
     };
 }
@@ -100,9 +96,8 @@ export function RerankerOptionsToJSONTyped(value?: RerankerOptions | null, ignor
 
     return {
         
-        'k': value['k'],
-        'lambda': value['lambda'],
-        'top_n': value['topN'],
+        'mmr_lambda': value['mmrLambda'],
+        'rrf_k': value['rrfK'],
         'type': value['type'],
     };
 }

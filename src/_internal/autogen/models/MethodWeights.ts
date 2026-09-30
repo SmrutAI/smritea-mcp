@@ -20,19 +20,19 @@ import { mapValues } from '../runtime';
  */
 export interface MethodWeights {
     /**
-     * BM25 is the weight for keyword matching results (default: 0.2)
+     * BM25 is the weight for keyword matching results
      * @type {number}
      * @memberof MethodWeights
      */
     bm25?: number;
     /**
-     * Graph is the weight for graph-enhanced results (default: 0.3)
+     * Graph is the weight for graph-enhanced results
      * @type {number}
      * @memberof MethodWeights
      */
     graph?: number;
     /**
-     * Vector is the weight for vector similarity search (default: 0.5)
+     * Vector is the weight for vector similarity search
      * @type {number}
      * @memberof MethodWeights
      */

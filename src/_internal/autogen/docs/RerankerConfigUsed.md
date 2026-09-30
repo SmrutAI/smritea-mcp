@@ -6,8 +6,8 @@
 
 Name | Type
 ------------ | -------------
-`k` | number
-`lambda` | number
+`mmrLambda` | number
+`rrfK` | number
 `type` | string
 
 ## Example
@@ -17,8 +17,8 @@ import type { RerankerConfigUsed } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "k": null,
-  "lambda": null,
+  "mmrLambda": null,
+  "rrfK": null,
   "type": null,
 } satisfies RerankerConfigUsed
 

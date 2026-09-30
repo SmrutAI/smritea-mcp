@@ -9,11 +9,11 @@ Name | Type
 `defaultMethod` | string
 `enableAutoSelect` | boolean
 `graphOptions` | [GraphSearchOptions](GraphSearchOptions.md)
-`maxResults` | number
 `methodWeights` | [MethodWeights](MethodWeights.md)
 `reranker` | [RerankerOptions](RerankerOptions.md)
 `sourceWeights` | [SourceWeightsConfig](SourceWeightsConfig.md)
 `temporalDecay` | [TemporalDecayConfig](TemporalDecayConfig.md)
+`topN` | number
 
 ## Example
 
@@ -25,11 +25,11 @@ const example = {
   "defaultMethod": null,
   "enableAutoSelect": null,
   "graphOptions": null,
-  "maxResults": null,
   "methodWeights": null,
   "reranker": null,
   "sourceWeights": null,
   "temporalDecay": null,
+  "topN": null,
 } satisfies UpdateSearchConfigRequest
 
 console.log(example)

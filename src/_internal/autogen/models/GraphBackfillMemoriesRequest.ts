@@ -26,12 +26,6 @@ export interface GraphBackfillMemoriesRequest {
      */
     appId: string;
     /**
-     * MaxPasses overrides entity extraction passes. 0 = use app config. -1 = disable. 1-5 = run N passes.
-     * @type {number}
-     * @memberof GraphBackfillMemoriesRequest
-     */
-    maxPasses?: number;
-    /**
      * 
      * @type {Array<string>}
      * @memberof GraphBackfillMemoriesRequest
@@ -59,7 +53,6 @@ export function GraphBackfillMemoriesRequestFromJSONTyped(json: any, ignoreDiscr
     return {
         
         'appId': json['app_id'],
-        'maxPasses': json['max_passes'] == null ? undefined : json['max_passes'],
         'memoryIds': json['memory_ids'],
     };
 }
@@ -76,7 +69,6 @@ export function GraphBackfillMemoriesRequestToJSONTyped(value?: GraphBackfillMem
     return {
         
         'app_id': value['appId'],
-        'max_passes': value['maxPasses'],
         'memory_ids': value['memoryIds'],
     };
 }

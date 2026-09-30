@@ -20,7 +20,7 @@ import { mapValues } from '../runtime';
  */
 export interface TemporalDecayConfig {
     /**
-     * Enabled toggles temporal decay (true by default)
+     * Enabled toggles temporal decay
      * @type {boolean}
      * @memberof TemporalDecayConfig
      */

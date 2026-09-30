@@ -40,6 +40,7 @@ export interface AppEmbeddingConnection {
      * Defaults to 2048 when not specified (voyage-4). Must be between 1 and 4096.
      * Once set for an app, this value must not be changed as it is tied
      * to the existing vector index and stored embeddings.
+     * 2048 = qdrant_vector_dimensions (deployment/common/ansible/roles/qdrant/defaults/main.yml:29); must not change.
      * @type {number}
      * @memberof AppEmbeddingConnection
      */

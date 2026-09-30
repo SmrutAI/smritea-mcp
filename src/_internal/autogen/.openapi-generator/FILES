@@ -87,6 +87,7 @@ docs/EnforcementConfig.md
 docs/EntitlementUsageSummary.md
 docs/EntityDef.md
 docs/EntityExtractionConfig.md
+docs/EntityExtractionOverrides.md
 docs/EntityMatchResponse.md
 docs/EntityOutputDTO.md
 docs/EntityResponse.md
@@ -94,6 +95,7 @@ docs/ExecutionTrace.md
 docs/ExplainedResult.md
 docs/ExtractionConfig.md
 docs/FactExtractionConfig.md
+docs/FactExtractionOverrides.md
 docs/ForceReconcileError.md
 docs/ForceReconcileResponse.md
 docs/GDPRDeletionResult.md
@@ -205,6 +207,8 @@ docs/SchemaDefaultsResponse.md
 docs/ScoreComponents.md
 docs/SearchConfig.md
 docs/SearchEntitiesResponse.md
+docs/SearchExplainOptions.md
+docs/SearchExplainRequest.md
 docs/SearchExplainResponse.md
 docs/SearchMemoriesResponse.md
 docs/SearchMemoryRequest.md
@@ -344,6 +348,7 @@ models/EnforcementConfig.ts
 models/EntitlementUsageSummary.ts
 models/EntityDef.ts
 models/EntityExtractionConfig.ts
+models/EntityExtractionOverrides.ts
 models/EntityMatchResponse.ts
 models/EntityOutputDTO.ts
 models/EntityResponse.ts
@@ -351,6 +356,7 @@ models/ExecutionTrace.ts
 models/ExplainedResult.ts
 models/ExtractionConfig.ts
 models/FactExtractionConfig.ts
+models/FactExtractionOverrides.ts
 models/ForceReconcileError.ts
 models/ForceReconcileResponse.ts
 models/GDPRDeletionResult.ts
@@ -461,6 +467,8 @@ models/SchemaDefaultsResponse.ts
 models/ScoreComponents.ts
 models/SearchConfig.ts
 models/SearchEntitiesResponse.ts
+models/SearchExplainOptions.ts
+models/SearchExplainRequest.ts
 models/SearchExplainResponse.ts
 models/SearchMemoriesResponse.ts
 models/SearchMemoryRequest.ts

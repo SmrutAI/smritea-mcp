@@ -74,12 +74,6 @@ export interface UpdateSearchConfigRequest {
      */
     graphOptions?: GraphSearchOptions;
     /**
-     * MaxResults limits maximum results (optional)
-     * @type {number}
-     * @memberof UpdateSearchConfigRequest
-     */
-    maxResults?: number;
-    /**
      * MethodWeights configures hybrid search weights (optional)
      * @type {MethodWeights}
      * @memberof UpdateSearchConfigRequest
@@ -103,6 +97,12 @@ export interface UpdateSearchConfigRequest {
      * @memberof UpdateSearchConfigRequest
      */
     temporalDecay?: TemporalDecayConfig;
+    /**
+     * TopN sets the result count (optional). nil = not sent; 0 is stored as the system top_n (services.search.top_n).
+     * @type {number}
+     * @memberof UpdateSearchConfigRequest
+     */
+    topN?: number;
 }
 
 
@@ -137,11 +137,11 @@ export function UpdateSearchConfigRequestFromJSONTyped(json: any, ignoreDiscrimi
         'defaultMethod': json['default_method'] == null ? undefined : json['default_method'],
         'enableAutoSelect': json['enable_auto_select'] == null ? undefined : json['enable_auto_select'],
         'graphOptions': json['graph_options'] == null ? undefined : GraphSearchOptionsFromJSON(json['graph_options']),
-        'maxResults': json['max_results'] == null ? undefined : json['max_results'],
         'methodWeights': json['method_weights'] == null ? undefined : MethodWeightsFromJSON(json['method_weights']),
         'reranker': json['reranker'] == null ? undefined : RerankerOptionsFromJSON(json['reranker']),
         'sourceWeights': json['source_weights'] == null ? undefined : SourceWeightsConfigFromJSON(json['source_weights']),
         'temporalDecay': json['temporal_decay'] == null ? undefined : TemporalDecayConfigFromJSON(json['temporal_decay']),
+        'topN': json['top_n'] == null ? undefined : json['top_n'],
     };
 }
 
@@ -159,11 +159,11 @@ export function UpdateSearchConfigRequestToJSONTyped(value?: UpdateSearchConfigR
         'default_method': value['defaultMethod'],
         'enable_auto_select': value['enableAutoSelect'],
         'graph_options': GraphSearchOptionsToJSON(value['graphOptions']),
-        'max_results': value['maxResults'],
         'method_weights': MethodWeightsToJSON(value['methodWeights']),
         'reranker': RerankerOptionsToJSON(value['reranker']),
         'source_weights': SourceWeightsConfigToJSON(value['sourceWeights']),
         'temporal_decay': TemporalDecayConfigToJSON(value['temporalDecay']),
+        'top_n': value['topN'],
     };
 }
 

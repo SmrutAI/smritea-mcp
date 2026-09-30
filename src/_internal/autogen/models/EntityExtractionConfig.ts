@@ -49,44 +49,24 @@ export interface EntityExtractionConfig {
      */
     fallbackMessages?: number;
     /**
-     * MaxPasses controls how many extraction passes to perform.
-     * -1 = explicitly skip entity extraction (sentinel value).
-     * 0 = not specified (Go zero value), use default.
-     * 1-5 = run N extraction passes.
-     * Multiple passes can improve extraction quality but increase cost and latency.
-     * @type {number}
-     * @memberof EntityExtractionConfig
-     */
-    maxPasses?: number;
-    /**
-     * MaxTokens is the maximum completion tokens for LLM responses.
-     * 0 = not set (use default). Higher values allow more entities but increase cost.
-     * TODO(https://linear.app/bityantriki/issue/BIT-83): revert gte=0 to gte=100 once pedantigo applies defaults to nested structs during Validate()
-     * @type {number}
-     * @memberof EntityExtractionConfig
-     */
-    maxTokens?: number;
-    /**
-     * MinConfidence is the minimum confidence threshold for extracted entities (0.0 to 1.0).
-     * Entities below this threshold are filtered out.
+     * MinConfidence is not read by any extraction path (dead field, roadmap TD36). Kept in the API.
      * @type {number}
      * @memberof EntityExtractionConfig
      */
     minConfidence?: number;
     /**
-     * Model is the LLM model to use (empty = use provider default).
-     * Examples: "gpt-4", "gpt-3.5-turbo", "llama-3.3-70b-versatile"
+     * Model has no effect today: the model comes from the system AI connection. Reserved for model
+     * selection by criteria, allowed only for apps that use their own AI (custom AI / BYOK).
      * @type {string}
      * @memberof EntityExtractionConfig
      */
     model?: string;
     /**
-     * Temperature controls LLM randomness (0.0 = deterministic, higher = creative).
-     * For extraction, lower values (0.0-0.3) are recommended for consistency.
+     * ReflectionPasses is the number of reflection calls after the first extraction call (0-5). 0 = one extraction, no reflection.
      * @type {number}
      * @memberof EntityExtractionConfig
      */
-    temperature?: number;
+    reflectionPasses?: number;
 }
 
 /**
@@ -110,11 +90,9 @@ export function EntityExtractionConfigFromJSONTyped(json: any, ignoreDiscriminat
         'enableContext': json['enable_context'] == null ? undefined : json['enable_context'],
         'entityTypes': json['entity_types'] == null ? undefined : json['entity_types'],
         'fallbackMessages': json['fallback_messages'] == null ? undefined : json['fallback_messages'],
-        'maxPasses': json['max_passes'] == null ? undefined : json['max_passes'],
-        'maxTokens': json['max_tokens'] == null ? undefined : json['max_tokens'],
         'minConfidence': json['min_confidence'] == null ? undefined : json['min_confidence'],
         'model': json['model'] == null ? undefined : json['model'],
-        'temperature': json['temperature'] == null ? undefined : json['temperature'],
+        'reflectionPasses': json['reflection_passes'] == null ? undefined : json['reflection_passes'],
     };
 }
 
@@ -133,11 +111,9 @@ export function EntityExtractionConfigToJSONTyped(value?: EntityExtractionConfig
         'enable_context': value['enableContext'],
         'entity_types': value['entityTypes'],
         'fallback_messages': value['fallbackMessages'],
-        'max_passes': value['maxPasses'],
-        'max_tokens': value['maxTokens'],
         'min_confidence': value['minConfidence'],
         'model': value['model'],
-        'temperature': value['temperature'],
+        'reflection_passes': value['reflectionPasses'],
     };
 }
 

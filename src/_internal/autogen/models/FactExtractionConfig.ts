@@ -20,49 +20,30 @@ import { mapValues } from '../runtime';
  */
 export interface FactExtractionConfig {
     /**
-     * MaxPasses controls how many extraction passes to perform.
-     * -1 = explicitly skip fact extraction (sentinel value).
-     * 0 = not specified (Go zero value), use default.
-     * 1-5 = run N extraction passes.
-     * Default is 1 (single pass) so that fact extraction is enabled by default.
-     * @type {number}
-     * @memberof FactExtractionConfig
-     */
-    maxPasses?: number;
-    /**
-     * MaxTokens is the maximum completion tokens for LLM responses.
-     * 0 = not set (use default).
-     * TODO(https://linear.app/bityantriki/issue/BIT-83): revert gte=0 to gte=100 once pedantigo applies defaults to nested structs during Validate()
-     * @type {number}
-     * @memberof FactExtractionConfig
-     */
-    maxTokens?: number;
-    /**
-     * MinImportance is the minimum importance threshold for extracted facts (0.0 to 1.0).
-     * Facts below this threshold are filtered out.
+     * MinImportance is not read (dead field, roadmap TD41). Kept in the API.
      * @type {number}
      * @memberof FactExtractionConfig
      */
     minImportance?: number;
     /**
-     * Model is the LLM model to use (empty = use provider default).
+     * Model has no effect today: the model comes from the system AI connection. Reserved for model
+     * selection by criteria, allowed only for apps that use their own AI (custom AI / BYOK).
      * @type {string}
      * @memberof FactExtractionConfig
      */
     model?: string;
     /**
-     * Strategy is the fact extraction strategy to use.
-     * Default: "llm_fact_extraction"
+     * ReflectionPasses is the number of reflection calls after the first extraction call (0-5). 0 = one extraction, no reflection.
+     * @type {number}
+     * @memberof FactExtractionConfig
+     */
+    reflectionPasses?: number;
+    /**
+     * Strategy is not read (dead field, roadmap TD42). Kept in the API.
      * @type {FactExtractionConfigStrategyEnum}
      * @memberof FactExtractionConfig
      */
     strategy?: FactExtractionConfigStrategyEnum;
-    /**
-     * Temperature controls LLM randomness (0.0 = deterministic, higher = creative).
-     * @type {number}
-     * @memberof FactExtractionConfig
-     */
-    temperature?: number;
 }
 
 
@@ -92,12 +73,10 @@ export function FactExtractionConfigFromJSONTyped(json: any, ignoreDiscriminator
     }
     return {
         
-        'maxPasses': json['max_passes'] == null ? undefined : json['max_passes'],
-        'maxTokens': json['max_tokens'] == null ? undefined : json['max_tokens'],
         'minImportance': json['min_importance'] == null ? undefined : json['min_importance'],
         'model': json['model'] == null ? undefined : json['model'],
+        'reflectionPasses': json['reflection_passes'] == null ? undefined : json['reflection_passes'],
         'strategy': json['strategy'] == null ? undefined : json['strategy'],
-        'temperature': json['temperature'] == null ? undefined : json['temperature'],
     };
 }
 
@@ -112,12 +91,10 @@ export function FactExtractionConfigToJSONTyped(value?: FactExtractionConfig | n
 
     return {
         
-        'max_passes': value['maxPasses'],
-        'max_tokens': value['maxTokens'],
         'min_importance': value['minImportance'],
         'model': value['model'],
+        'reflection_passes': value['reflectionPasses'],
         'strategy': value['strategy'],
-        'temperature': value['temperature'],
     };
 }
 

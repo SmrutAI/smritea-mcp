@@ -1,28 +1,26 @@
 
-# FactExtractionConfig
+# SearchExplainOptions
 
 
 ## Properties
 
 Name | Type
 ------------ | -------------
-`minImportance` | number
-`model` | string
-`reflectionPasses` | number
-`strategy` | string
+`includePerStepScores` | boolean
+`includeRerankerTrace` | boolean
+`includeTiming` | boolean
 
 ## Example
 
 ```typescript
-import type { FactExtractionConfig } from ''
+import type { SearchExplainOptions } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "minImportance": null,
-  "model": null,
-  "reflectionPasses": null,
-  "strategy": null,
-} satisfies FactExtractionConfig
+  "includePerStepScores": null,
+  "includeRerankerTrace": null,
+  "includeTiming": null,
+} satisfies SearchExplainOptions
 
 console.log(example)
 
@@ -31,7 +29,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as FactExtractionConfig
+const exampleParsed = JSON.parse(exampleJSON) as SearchExplainOptions
 console.log(exampleParsed)
 ```
 

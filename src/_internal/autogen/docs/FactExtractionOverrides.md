@@ -1,34 +1,26 @@
 
-# EntityExtractionConfig
+# FactExtractionOverrides
 
 
 ## Properties
 
 Name | Type
 ------------ | -------------
-`contextWindow` | number
-`enableContext` | boolean
-`entityTypes` | Array&lt;string&gt;
-`fallbackMessages` | number
-`minConfidence` | number
+`minImportance` | number
 `model` | string
-`reflectionPasses` | number
+`strategy` | string
 
 ## Example
 
 ```typescript
-import type { EntityExtractionConfig } from ''
+import type { FactExtractionOverrides } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "contextWindow": null,
-  "enableContext": null,
-  "entityTypes": null,
-  "fallbackMessages": null,
-  "minConfidence": null,
+  "minImportance": null,
   "model": null,
-  "reflectionPasses": null,
-} satisfies EntityExtractionConfig
+  "strategy": null,
+} satisfies FactExtractionOverrides
 
 console.log(example)
 
@@ -37,7 +29,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as EntityExtractionConfig
+const exampleParsed = JSON.parse(exampleJSON) as FactExtractionOverrides
 console.log(exampleParsed)
 ```
 

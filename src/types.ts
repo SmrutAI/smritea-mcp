@@ -62,18 +62,18 @@ export const SearchMemoriesInput = z.object({
   limit: z
     .number()
     .int()
-    .min(0)
-    .max(100)
+    .min(1)
+    .max(20)
     .nullish()
-    .describe('Maximum number of results (0 = use app default, typically 20; max 100)'),
+    .describe('Number of results (1-20). Omit to use the app top_n.'),
   threshold: z.number().min(0).max(1).nullish().describe('Minimum relevance score filter (0.0–1.0). Note: pipeline uses RRF scores (~0.06), not cosine similarity.'),
   graph_depth: z
     .number()
     .int()
-    .min(0)
+    .min(1)
     .max(5)
     .nullish()
-    .describe('Graph traversal depth (0 = use app config; 1–5 = explicit override)'),
+    .describe('Graph traversal depth (1-5). Omit to use the system default.'),
   conversation_id: z.string().nullish().describe('Filter to a specific conversation'),
   source_type: z
     .enum(['conversation', 'document', 'api'])
