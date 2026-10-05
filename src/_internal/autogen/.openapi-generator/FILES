@@ -18,6 +18,7 @@ docs/AdminUserResponse.md
 docs/AppAIConfig.md
 docs/AppAIConfigStatus.md
 docs/AppAIProviderStatus.md
+docs/AppConfigKind.md
 docs/AppEmbeddingConnection.md
 docs/AppLLMConnection.md
 docs/AppRerankerConnection.md
@@ -114,6 +115,7 @@ docs/HourlyUsageEntry.md
 docs/HourlyUsageResponse.md
 docs/InternalCreateMemoryRequest.md
 docs/InternalSearchMemoriesRequest.md
+docs/InvalidAppConfig.md
 docs/LedgerEntry.md
 docs/ListActorsResponse.md
 docs/ListEntitiesResponse.md
@@ -210,6 +212,7 @@ docs/SearchEntitiesResponse.md
 docs/SearchExplainOptions.md
 docs/SearchExplainRequest.md
 docs/SearchExplainResponse.md
+docs/SearchLimitsResponse.md
 docs/SearchMemoriesResponse.md
 docs/SearchMemoryRequest.md
 docs/SearchMemoryResponse.md
@@ -281,6 +284,7 @@ models/AdminUserResponse.ts
 models/AppAIConfig.ts
 models/AppAIConfigStatus.ts
 models/AppAIProviderStatus.ts
+models/AppConfigKind.ts
 models/AppEmbeddingConnection.ts
 models/AppLLMConnection.ts
 models/AppRerankerConnection.ts
@@ -375,6 +379,7 @@ models/HourlyUsageEntry.ts
 models/HourlyUsageResponse.ts
 models/InternalCreateMemoryRequest.ts
 models/InternalSearchMemoriesRequest.ts
+models/InvalidAppConfig.ts
 models/LedgerEntry.ts
 models/ListActorsResponse.ts
 models/ListEntitiesResponse.ts
@@ -470,6 +475,7 @@ models/SearchEntitiesResponse.ts
 models/SearchExplainOptions.ts
 models/SearchExplainRequest.ts
 models/SearchExplainResponse.ts
+models/SearchLimitsResponse.ts
 models/SearchMemoriesResponse.ts
 models/SearchMemoryRequest.ts
 models/SearchMemoryResponse.ts

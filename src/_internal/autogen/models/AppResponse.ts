@@ -41,6 +41,13 @@ import {
     DirectiveConfigToJSON,
     DirectiveConfigToJSONTyped,
 } from './DirectiveConfig';
+import type { InvalidAppConfig } from './InvalidAppConfig';
+import {
+    InvalidAppConfigFromJSON,
+    InvalidAppConfigFromJSONTyped,
+    InvalidAppConfigToJSON,
+    InvalidAppConfigToJSONTyped,
+} from './InvalidAppConfig';
 
 /**
  * 
@@ -78,6 +85,14 @@ export interface AppResponse {
      * @memberof AppResponse
      */
     id?: string;
+    /**
+     * InvalidConfigs lists stored configs that failed to parse; each such config field above
+     * is null. Empty when every stored config is valid. Not redacted: the parse error is about
+     * the customer's own config (spec 186 D3).
+     * @type {Array<InvalidAppConfig>}
+     * @memberof AppResponse
+     */
+    invalidConfigs?: Array<InvalidAppConfig>;
     /**
      * MemoryCount is the number of memories stored for this app.
      * Used by the frontend to determine if the memory storage engine can be changed.
@@ -135,6 +150,7 @@ export function AppResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'directiveConfig': json['directive_config'] == null ? undefined : DirectiveConfigFromJSON(json['directive_config']),
         'extractionConfig': json['extraction_config'] == null ? undefined : ExtractionConfigFromJSON(json['extraction_config']),
         'id': json['id'] == null ? undefined : json['id'],
+        'invalidConfigs': json['invalid_configs'] == null ? undefined : ((json['invalid_configs'] as Array<any>).map(InvalidAppConfigFromJSON)),
         'memoryCount': json['memory_count'] == null ? undefined : json['memory_count'],
         'name': json['name'] == null ? undefined : json['name'],
         'searchConfig': json['search_config'] == null ? undefined : SearchConfigFromJSON(json['search_config']),
@@ -159,6 +175,7 @@ export function AppResponseToJSONTyped(value?: AppResponse | null, ignoreDiscrim
         'directive_config': DirectiveConfigToJSON(value['directiveConfig']),
         'extraction_config': ExtractionConfigToJSON(value['extractionConfig']),
         'id': value['id'],
+        'invalid_configs': value['invalidConfigs'] == null ? undefined : ((value['invalidConfigs'] as Array<any>).map(InvalidAppConfigToJSON)),
         'memory_count': value['memoryCount'],
         'name': value['name'],
         'search_config': SearchConfigToJSON(value['searchConfig']),

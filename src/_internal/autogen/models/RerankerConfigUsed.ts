@@ -32,7 +32,7 @@ export interface RerankerConfigUsed {
      */
     rrfK?: number;
     /**
-     * Type is the reranker algorithm (none, rrf, mmr, temporal, etc.)
+     * Type is the reranker that actually ran for this search.
      * @type {RerankerConfigUsedTypeEnum}
      * @memberof RerankerConfigUsed
      */
@@ -44,10 +44,13 @@ export interface RerankerConfigUsed {
  * @export
  */
 export const RerankerConfigUsedTypeEnum = {
-    None: 'none',
     Rrf: 'rrf',
     Mmr: 'mmr',
-    Temporal: 'temporal'
+    Temporal: 'temporal',
+    CrossEncoder: 'cross_encoder',
+    NodeDistance: 'node_distance',
+    RrfTemporal: 'rrf_temporal',
+    CrossEncoderTemporal: 'cross_encoder_temporal'
 } as const;
 export type RerankerConfigUsedTypeEnum = typeof RerankerConfigUsedTypeEnum[keyof typeof RerankerConfigUsedTypeEnum];
 

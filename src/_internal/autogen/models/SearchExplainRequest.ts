@@ -13,6 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
+import type { RerankerType } from './RerankerType';
+import {
+    RerankerTypeFromJSON,
+    RerankerTypeFromJSONTyped,
+    RerankerTypeToJSON,
+    RerankerTypeToJSONTyped,
+} from './RerankerType';
 import type { SearchExplainOptions } from './SearchExplainOptions';
 import {
     SearchExplainOptionsFromJSON,
@@ -58,29 +65,73 @@ export interface SearchExplainRequest {
      */
     explainOptions?: SearchExplainOptions;
     /**
+     * FromTime is the start of a time-range filter, RFC3339 (optional; use with ToTime).
+     * @type {string}
+     * @memberof SearchExplainRequest
+     */
+    fromTime?: string;
+    /**
+     * GraphDepth overrides graph traversal depth. 0 = system graph_max_hops; max = services.search.graph_max_hops_max.
+     * @type {number}
+     * @memberof SearchExplainRequest
+     */
+    graphDepth?: number;
+    /**
      * IncludeExplanation enables detailed scoring breakdown (default: true)
      * @type {boolean}
      * @memberof SearchExplainRequest
      */
     includeExplanation?: boolean;
     /**
-     * Number of results. 0 = the app's top_n; max 20 (= services.search.top_n_max).
+     * Number of results. 0 = the app's top_n; must be <= services.search.top_n_max (checked in the service layer).
      * @type {number}
      * @memberof SearchExplainRequest
      */
     limit?: number;
     /**
-     * Method specifies which search strategy to use (default: quick_search)
+     * MetadataFilter filters memories by user-provided key-value metadata (same DSL as SDK search).
+     * @type {object}
+     * @memberof SearchExplainRequest
+     */
+    metadataFilter?: object;
+    /**
+     * Method specifies which search strategy to use. Empty = the app's memory_storage_engine,
+     * then the system default (resolved by the service, like SDK search).
      * @type {SearchExplainRequestMethodEnum}
      * @memberof SearchExplainRequest
      */
     method?: SearchExplainRequestMethodEnum;
+    /**
+     * ParticipantIDs restricts the search to conversations that include all these actors (optional, >= 2 ids).
+     * @type {Array<string>}
+     * @memberof SearchExplainRequest
+     */
+    participantIds?: Array<string>;
     /**
      * Query is the search text (required, 1-4096 chars)
      * @type {string}
      * @memberof SearchExplainRequest
      */
     query: string;
+    /**
+     * RerankerType overrides the reranker for this request (optional). Only applies to deep_search.
+     * @type {RerankerType}
+     * @memberof SearchExplainRequest
+     */
+    rerankerType?: RerankerType;
+    /**
+     * SpeakerActorID identifies the actor making the request. Never used for filtering;
+     * it seeds the speaker entity, as in SDK search (optional).
+     * @type {string}
+     * @memberof SearchExplainRequest
+     */
+    speakerActorId?: string;
+    /**
+     * ToTime is the end of a time-range filter, RFC3339 (optional; use with FromTime).
+     * @type {string}
+     * @memberof SearchExplainRequest
+     */
+    toTime?: string;
     /**
      * ValidAt returns only memories valid at this time, RFC3339 (optional).
      * @type {string}
@@ -135,10 +186,17 @@ export function SearchExplainRequestFromJSONTyped(json: any, ignoreDiscriminator
         'appId': json['app_id'],
         'conversationId': json['conversation_id'] == null ? undefined : json['conversation_id'],
         'explainOptions': json['explain_options'] == null ? undefined : SearchExplainOptionsFromJSON(json['explain_options']),
+        'fromTime': json['from_time'] == null ? undefined : json['from_time'],
+        'graphDepth': json['graph_depth'] == null ? undefined : json['graph_depth'],
         'includeExplanation': json['include_explanation'] == null ? undefined : json['include_explanation'],
         'limit': json['limit'] == null ? undefined : json['limit'],
+        'metadataFilter': json['metadata_filter'] == null ? undefined : json['metadata_filter'],
         'method': json['method'] == null ? undefined : json['method'],
+        'participantIds': json['participant_ids'] == null ? undefined : json['participant_ids'],
         'query': json['query'],
+        'rerankerType': json['reranker_type'] == null ? undefined : RerankerTypeFromJSON(json['reranker_type']),
+        'speakerActorId': json['speaker_actor_id'] == null ? undefined : json['speaker_actor_id'],
+        'toTime': json['to_time'] == null ? undefined : json['to_time'],
         'validAt': json['valid_at'] == null ? undefined : json['valid_at'],
     };
 }
@@ -159,10 +217,17 @@ export function SearchExplainRequestToJSONTyped(value?: SearchExplainRequest | n
         'app_id': value['appId'],
         'conversation_id': value['conversationId'],
         'explain_options': SearchExplainOptionsToJSON(value['explainOptions']),
+        'from_time': value['fromTime'],
+        'graph_depth': value['graphDepth'],
         'include_explanation': value['includeExplanation'],
         'limit': value['limit'],
+        'metadata_filter': value['metadataFilter'],
         'method': value['method'],
+        'participant_ids': value['participantIds'],
         'query': value['query'],
+        'reranker_type': RerankerTypeToJSON(value['rerankerType']),
+        'speaker_actor_id': value['speakerActorId'],
+        'to_time': value['toTime'],
         'valid_at': value['validAt'],
     };
 }

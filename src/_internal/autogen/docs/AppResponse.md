@@ -11,6 +11,7 @@ Name | Type
 `directiveConfig` | [DirectiveConfig](DirectiveConfig.md)
 `extractionConfig` | [ExtractionConfig](ExtractionConfig.md)
 `id` | string
+`invalidConfigs` | [Array&lt;InvalidAppConfig&gt;](InvalidAppConfig.md)
 `memoryCount` | number
 `name` | string
 `searchConfig` | [SearchConfig](SearchConfig.md)
@@ -29,6 +30,7 @@ const example = {
   "directiveConfig": null,
   "extractionConfig": null,
   "id": null,
+  "invalidConfigs": null,
   "memoryCount": null,
   "name": null,
   "searchConfig": null,

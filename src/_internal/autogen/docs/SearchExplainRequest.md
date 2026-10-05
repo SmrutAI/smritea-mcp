@@ -11,10 +11,17 @@ Name | Type
 `appId` | string
 `conversationId` | string
 `explainOptions` | [SearchExplainOptions](SearchExplainOptions.md)
+`fromTime` | string
+`graphDepth` | number
 `includeExplanation` | boolean
 `limit` | number
+`metadataFilter` | object
 `method` | string
+`participantIds` | Array&lt;string&gt;
 `query` | string
+`rerankerType` | [RerankerType](RerankerType.md)
+`speakerActorId` | string
+`toTime` | string
 `validAt` | string
 
 ## Example
@@ -29,10 +36,17 @@ const example = {
   "appId": null,
   "conversationId": null,
   "explainOptions": null,
+  "fromTime": null,
+  "graphDepth": null,
   "includeExplanation": null,
   "limit": null,
+  "metadataFilter": null,
   "method": null,
+  "participantIds": null,
   "query": null,
+  "rerankerType": null,
+  "speakerActorId": null,
+  "toTime": null,
   "validAt": null,
 } satisfies SearchExplainRequest
 

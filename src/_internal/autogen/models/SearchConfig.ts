@@ -130,7 +130,8 @@ export interface SearchConfig {
      */
     temporalFilter?: TemporalFilter;
     /**
-     * TopN is the result count (also the reranker count). Absent or 0 = services.search.top_n (10); max 20 (= services.search.top_n_max).
+     * TopN is the result count (also the reranker count). Absent or 0 = services.search.top_n (10); must be <= services.search.top_n_max
+     * (checked in AppService.CreateApp/UpdateApp and ResolveEffectiveSearchConfig, because the bound is runtime config).
      * @type {number}
      * @memberof SearchConfig
      */

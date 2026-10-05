@@ -145,7 +145,6 @@ export async function handleSearchMemories(
         participantIds: blank(input.participant_ids),
       },
       limit: blank(input.limit),
-      threshold: blank(input.threshold),
       graphDepth: blank(input.graph_depth),
       fromTime: blank(input.from_time),
       toTime: blank(input.to_time),

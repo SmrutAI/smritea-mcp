@@ -63,10 +63,8 @@ export const SearchMemoriesInput = z.object({
     .number()
     .int()
     .min(1)
-    .max(20)
     .nullish()
-    .describe('Number of results (1-20). Omit to use the app top_n.'),
-  threshold: z.number().min(0).max(1).nullish().describe('Minimum relevance score filter (0.0–1.0). Note: pipeline uses RRF scores (~0.06), not cosine similarity.'),
+    .describe('Number of results; must not exceed the server top_n_max (default 20). Omit to use the app top_n.'),
   graph_depth: z
     .number()
     .int()
