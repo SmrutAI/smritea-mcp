@@ -90,12 +90,12 @@ export interface SearchConfig {
      */
     graphOptions?: GraphSearchOptions;
     /**
-     * MemoryStorageEngine specifies the default search strategy.
-     * Options: quick_search, deep_search, context_aware_search
+     * MemoryStorageEngine specifies the default search strategy. Required in every request; must be
+     * one of quick_search, deep_search or context_aware_search. It cannot be changed once the app has memories.
      * @type {SearchConfigMemoryStorageEngineEnum}
      * @memberof SearchConfig
      */
-    memoryStorageEngine?: SearchConfigMemoryStorageEngineEnum;
+    memoryStorageEngine: SearchConfigMemoryStorageEngineEnum;
     /**
      * MethodWeights configures weights for hybrid search (optional).
      * @type {MethodWeights}
@@ -160,6 +160,7 @@ export type SearchConfigMemoryStorageEngineEnum = typeof SearchConfigMemoryStora
  * Check if a given object implements the SearchConfig interface.
  */
 export function instanceOfSearchConfig(value: object): value is SearchConfig {
+    if (!('memoryStorageEngine' in value) || value['memoryStorageEngine'] === undefined) return false;
     return true;
 }
 
@@ -176,7 +177,7 @@ export function SearchConfigFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'enableAutoSelect': json['enable_auto_select'] == null ? undefined : json['enable_auto_select'],
         'entityExtraction': json['entity_extraction'] == null ? undefined : EntityExtractionConfigFromJSON(json['entity_extraction']),
         'graphOptions': json['graph_options'] == null ? undefined : GraphSearchOptionsFromJSON(json['graph_options']),
-        'memoryStorageEngine': json['memory_storage_engine'] == null ? undefined : json['memory_storage_engine'],
+        'memoryStorageEngine': json['memory_storage_engine'],
         'methodWeights': json['method_weights'] == null ? undefined : MethodWeightsFromJSON(json['method_weights']),
         'reranker': json['reranker'] == null ? undefined : RerankerOptionsFromJSON(json['reranker']),
         'sourceWeights': json['source_weights'] == null ? undefined : SourceWeightsConfigFromJSON(json['source_weights']),

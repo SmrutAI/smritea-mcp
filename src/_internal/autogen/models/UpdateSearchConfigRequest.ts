@@ -56,11 +56,13 @@ import {
  */
 export interface UpdateSearchConfigRequest {
     /**
-     * DefaultMethod specifies the default search strategy (optional)
+     * DefaultMethod specifies the default search strategy; required in every update request.
+     * The caller must resend the current engine value on every update;
+     * a different value is rejected once memories exist.
      * @type {UpdateSearchConfigRequestDefaultMethodEnum}
      * @memberof UpdateSearchConfigRequest
      */
-    defaultMethod?: UpdateSearchConfigRequestDefaultMethodEnum;
+    defaultMethod: UpdateSearchConfigRequestDefaultMethodEnum;
     /**
      * EnableAutoSelect enables/disables automatic method selection (optional)
      * @type {boolean}
@@ -121,6 +123,7 @@ export type UpdateSearchConfigRequestDefaultMethodEnum = typeof UpdateSearchConf
  * Check if a given object implements the UpdateSearchConfigRequest interface.
  */
 export function instanceOfUpdateSearchConfigRequest(value: object): value is UpdateSearchConfigRequest {
+    if (!('defaultMethod' in value) || value['defaultMethod'] === undefined) return false;
     return true;
 }
 
@@ -134,7 +137,7 @@ export function UpdateSearchConfigRequestFromJSONTyped(json: any, ignoreDiscrimi
     }
     return {
         
-        'defaultMethod': json['default_method'] == null ? undefined : json['default_method'],
+        'defaultMethod': json['default_method'],
         'enableAutoSelect': json['enable_auto_select'] == null ? undefined : json['enable_auto_select'],
         'graphOptions': json['graph_options'] == null ? undefined : GraphSearchOptionsFromJSON(json['graph_options']),
         'methodWeights': json['method_weights'] == null ? undefined : MethodWeightsFromJSON(json['method_weights']),

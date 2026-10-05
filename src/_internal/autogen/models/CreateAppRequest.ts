@@ -74,11 +74,11 @@ export interface CreateAppRequest {
      */
     name: string;
     /**
-     * SearchConfig contains algorithm configuration for search operations (optional)
+     * SearchConfig contains algorithm configuration for search operations (required; memory_storage_engine inside it is required and cannot change after memories exist)
      * @type {SearchConfig}
      * @memberof CreateAppRequest
      */
-    searchConfig?: SearchConfig;
+    searchConfig: SearchConfig;
 }
 
 /**
@@ -86,6 +86,7 @@ export interface CreateAppRequest {
  */
 export function instanceOfCreateAppRequest(value: object): value is CreateAppRequest {
     if (!('name' in value) || value['name'] === undefined) return false;
+    if (!('searchConfig' in value) || value['searchConfig'] === undefined) return false;
     return true;
 }
 
@@ -104,7 +105,7 @@ export function CreateAppRequestFromJSONTyped(json: any, ignoreDiscriminator: bo
         'extractionConfig': json['extraction_config'] == null ? undefined : ExtractionConfigFromJSON(json['extraction_config']),
         'id': json['id'] == null ? undefined : json['id'],
         'name': json['name'],
-        'searchConfig': json['search_config'] == null ? undefined : SearchConfigFromJSON(json['search_config']),
+        'searchConfig': SearchConfigFromJSON(json['search_config']),
     };
 }
 
