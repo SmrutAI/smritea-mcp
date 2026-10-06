@@ -80,15 +80,15 @@ export const SearchMemoriesInput = z.object({
   from_time: z
     .string()
     .nullish()
-    .describe('ISO-8601 datetime — only return memories created at or after this time (e.g. "2024-01-01T00:00:00Z")'),
+    .describe('ISO-8601 datetime — start of a time range: memories whose validity period overlaps [from_time, infinity). Can be used alone (open-ended). Cannot be combined with valid_at (e.g. "2024-01-01T00:00:00Z")'),
   to_time: z
     .string()
     .nullish()
-    .describe('ISO-8601 datetime — only return memories created at or before this time (e.g. "2024-12-31T23:59:59Z")'),
+    .describe('ISO-8601 datetime — end of a time range (inclusive): memories whose validity period overlaps (-infinity, to_time]. Can be used alone (open-ended). Cannot be combined with valid_at (e.g. "2024-12-31T23:59:59Z")'),
   valid_at: z
     .string()
     .nullish()
-    .describe('ISO-8601 datetime — return memories valid at exactly this point in time. Mutually exclusive with from_time/to_time.'),
+    .describe('ISO-8601 datetime — return memories valid at exactly this moment. Cannot be combined with from_time or to_time.'),
   metadata_filter: z
     .record(z.unknown())
     .nullish()

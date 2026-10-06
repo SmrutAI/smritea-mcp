@@ -65,7 +65,8 @@ export interface SearchExplainRequest {
      */
     explainOptions?: SearchExplainOptions;
     /**
-     * FromTime is the start of a time-range filter, RFC3339 (optional; use with ToTime).
+     * FromTime is the start of a time-range filter, RFC3339 (optional). Can be used alone (open-ended: memories
+     * overlapping [from_time, ∞)). With ToTime the range is [from_time, to_time].
      * @type {string}
      * @memberof SearchExplainRequest
      */
@@ -127,13 +128,14 @@ export interface SearchExplainRequest {
      */
     speakerActorId?: string;
     /**
-     * ToTime is the end of a time-range filter, RFC3339 (optional; use with FromTime).
+     * ToTime is the end of a time-range filter, RFC3339 (optional). Can be used alone (open-ended: memories
+     * overlapping (−∞, to_time]). With FromTime the range is [from_time, to_time] and from_time must be on or before to_time.
      * @type {string}
      * @memberof SearchExplainRequest
      */
     toTime?: string;
     /**
-     * ValidAt returns only memories valid at this time, RFC3339 (optional).
+     * ValidAt returns only memories valid at exactly this time, RFC3339 (optional). Cannot be combined with FromTime or ToTime.
      * @type {string}
      * @memberof SearchExplainRequest
      */

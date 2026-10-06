@@ -230,9 +230,9 @@ filter by `scope.actor_id`, but this tool does not expose that; it only sends `c
 | `graph_depth` | number | No | Graph traversal depth (`1`-`5`). Omit to use the system default. |
 | `conversation_id` | string | No | Filter to a specific conversation. |
 | `source_type` | string | No | Filter by origin: `conversation`, `document`, or `api`. |
-| `from_time` | string | No | ISO-8601 — only return memories created at or after this time. |
-| `to_time` | string | No | ISO-8601 — only return memories created at or before this time. |
-| `valid_at` | string | No | ISO-8601 — return memories valid at this point in time. Mutually exclusive with `from_time`/`to_time`. |
+| `from_time` | string | No | ISO-8601 — start of a time range: memories whose validity period overlaps [from_time, ∞). Can be used alone (open-ended). Cannot be combined with `valid_at`. |
+| `to_time` | string | No | ISO-8601 — end of a time range (inclusive): memories whose validity period overlaps (−∞, to_time]. Can be used alone (open-ended). Cannot be combined with `valid_at`. |
+| `valid_at` | string | No | ISO-8601 — return memories valid at exactly this moment. Cannot be combined with `from_time` or `to_time`. |
 | `metadata_filter` | object | No | MongoDB-style operator DSL to filter by memory metadata (e.g. `{"level": {"$gte": 4}}`). |
 
 **Example**
