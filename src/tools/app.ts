@@ -137,8 +137,8 @@ async function createStudioApiKey(config: ResolvedConfig, appId: string): Promis
   try {
     payload = await api.createApiKey({
       orgId,
+      xAppID: appId,
       request: {
-        appId,
         name: buildApiKeyName(),
       },
     });

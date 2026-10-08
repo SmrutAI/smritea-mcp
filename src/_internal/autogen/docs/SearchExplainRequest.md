@@ -8,7 +8,6 @@ Name | Type
 ------------ | -------------
 `actorId` | string
 `actorType` | string
-`appId` | string
 `conversationId` | string
 `explainOptions` | [SearchExplainOptions](SearchExplainOptions.md)
 `fromTime` | string
@@ -33,7 +32,6 @@ import type { SearchExplainRequest } from ''
 const example = {
   "actorId": null,
   "actorType": null,
-  "appId": null,
   "conversationId": null,
   "explainOptions": null,
   "fromTime": null,

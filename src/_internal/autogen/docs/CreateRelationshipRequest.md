@@ -6,7 +6,6 @@
 
 Name | Type
 ------------ | -------------
-`appId` | string
 `fact` | string
 `metadata` | object
 `name` | string
@@ -25,7 +24,6 @@ import type { CreateRelationshipRequest } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "appId": null,
   "fact": null,
   "metadata": null,
   "name": null,

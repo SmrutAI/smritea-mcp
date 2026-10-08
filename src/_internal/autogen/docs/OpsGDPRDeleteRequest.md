@@ -7,7 +7,6 @@ GDPR deletion request
 
 Name | Type
 ------------ | -------------
-`appId` | string
 `conversationId` | string
 `level` | string
 
@@ -18,7 +17,6 @@ import type { OpsGDPRDeleteRequest } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "appId": null,
   "conversationId": null,
   "level": null,
 } satisfies OpsGDPRDeleteRequest

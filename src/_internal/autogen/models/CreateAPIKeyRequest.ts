@@ -20,12 +20,6 @@ import { mapValues } from '../runtime';
  */
 export interface CreateAPIKeyRequest {
     /**
-     * 
-     * @type {string}
-     * @memberof CreateAPIKeyRequest
-     */
-    appId: string;
-    /**
      * RFC3339 format, nil = no expiry
      * @type {string}
      * @memberof CreateAPIKeyRequest
@@ -49,7 +43,6 @@ export interface CreateAPIKeyRequest {
  * Check if a given object implements the CreateAPIKeyRequest interface.
  */
 export function instanceOfCreateAPIKeyRequest(value: object): value is CreateAPIKeyRequest {
-    if (!('appId' in value) || value['appId'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     return true;
 }
@@ -64,7 +57,6 @@ export function CreateAPIKeyRequestFromJSONTyped(json: any, ignoreDiscriminator:
     }
     return {
         
-        'appId': json['app_id'],
         'expiresAt': json['expires_at'] == null ? undefined : json['expires_at'],
         'name': json['name'],
         'scopes': json['scopes'] == null ? undefined : json['scopes'],
@@ -82,7 +74,6 @@ export function CreateAPIKeyRequestToJSONTyped(value?: CreateAPIKeyRequest | nul
 
     return {
         
-        'app_id': value['appId'],
         'expires_at': value['expiresAt'],
         'name': value['name'],
         'scopes': value['scopes'],

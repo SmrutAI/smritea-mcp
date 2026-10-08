@@ -8,7 +8,6 @@ Name | Type
 ------------ | -------------
 `actorId` | string
 `aliases` | Array&lt;string&gt;
-`appId` | string
 `attributes` | { [key: string]: object; }
 `customType` | string
 `name` | string
@@ -24,7 +23,6 @@ import type { CreateEntityRequest } from ''
 const example = {
   "actorId": null,
   "aliases": null,
-  "appId": null,
   "attributes": null,
   "customType": null,
   "name": null,

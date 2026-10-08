@@ -47,12 +47,6 @@ export interface SearchExplainRequest {
      */
     actorType?: SearchExplainRequestActorTypeEnum;
     /**
-     * AppID is the application to search within (required)
-     * @type {string}
-     * @memberof SearchExplainRequest
-     */
-    appId: string;
-    /**
      * ConversationID restricts the search to one conversation (optional).
      * @type {string}
      * @memberof SearchExplainRequest
@@ -168,7 +162,6 @@ export type SearchExplainRequestMethodEnum = typeof SearchExplainRequestMethodEn
  * Check if a given object implements the SearchExplainRequest interface.
  */
 export function instanceOfSearchExplainRequest(value: object): value is SearchExplainRequest {
-    if (!('appId' in value) || value['appId'] === undefined) return false;
     if (!('query' in value) || value['query'] === undefined) return false;
     return true;
 }
@@ -185,7 +178,6 @@ export function SearchExplainRequestFromJSONTyped(json: any, ignoreDiscriminator
         
         'actorId': json['actor_id'] == null ? undefined : json['actor_id'],
         'actorType': json['actor_type'] == null ? undefined : json['actor_type'],
-        'appId': json['app_id'],
         'conversationId': json['conversation_id'] == null ? undefined : json['conversation_id'],
         'explainOptions': json['explain_options'] == null ? undefined : SearchExplainOptionsFromJSON(json['explain_options']),
         'fromTime': json['from_time'] == null ? undefined : json['from_time'],
@@ -216,7 +208,6 @@ export function SearchExplainRequestToJSONTyped(value?: SearchExplainRequest | n
         
         'actor_id': value['actorId'],
         'actor_type': value['actorType'],
-        'app_id': value['appId'],
         'conversation_id': value['conversationId'],
         'explain_options': SearchExplainOptionsToJSON(value['explainOptions']),
         'from_time': value['fromTime'],

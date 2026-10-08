@@ -238,11 +238,11 @@ No authorization required
 
 ## createApiKey
 
-> CreateAPIKeyResponse createApiKey(orgId, request)
+> CreateAPIKeyResponse createApiKey(orgId, xAppID, request)
 
 Create API key
 
-Create a new API key for the organization. Returns the full key value only once.
+Create a new API key for the organization. The app ID is taken from the X-App-ID header. Returns the full key value only once.
 
 ### Example
 
@@ -260,6 +260,8 @@ async function example() {
   const body = {
     // string | Organization ID
     orgId: orgId_example,
+    // string | App ID the API key is scoped to
+    xAppID: xAppID_example,
     // CreateAPIKeyRequest | API key creation details
     request: ...,
   } satisfies CreateApiKeyRequest;
@@ -282,6 +284,7 @@ example().catch(console.error);
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **orgId** | `string` | Organization ID | [Defaults to `undefined`] |
+| **xAppID** | `string` | App ID the API key is scoped to | [Defaults to `undefined`] |
 | **request** | [CreateAPIKeyRequest](CreateAPIKeyRequest.md) | API key creation details | |
 
 ### Return type

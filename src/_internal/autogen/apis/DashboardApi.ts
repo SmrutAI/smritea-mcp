@@ -33,6 +33,7 @@ import {
 
 export interface CreateApiKeyRequest {
     orgId: string;
+    xAppID: string;
     request: CreateAPIKeyRequest;
 }
 
@@ -52,6 +53,13 @@ export class DashboardApi extends runtime.BaseAPI {
             );
         }
 
+        if (requestParameters['xAppID'] == null) {
+            throw new runtime.RequiredError(
+                'xAppID',
+                'Required parameter "xAppID" was null or undefined when calling createApiKey().'
+            );
+        }
+
         if (requestParameters['request'] == null) {
             throw new runtime.RequiredError(
                 'request',
@@ -64,6 +72,10 @@ export class DashboardApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['xAppID'] != null) {
+            headerParameters['X-App-ID'] = String(requestParameters['xAppID']);
+        }
 
 
         let urlPath = `/api/v1/dashboard/organizations/{orgId}/api-keys`;
@@ -79,7 +91,7 @@ export class DashboardApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create a new API key for the organization. Returns the full key value only once.
+     * Create a new API key for the organization. The app ID is taken from the X-App-ID header. Returns the full key value only once.
      * Create API key
      */
     async createApiKeyRaw(requestParameters: CreateApiKeyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateAPIKeyResponse>> {
@@ -90,7 +102,7 @@ export class DashboardApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create a new API key for the organization. Returns the full key value only once.
+     * Create a new API key for the organization. The app ID is taken from the X-App-ID header. Returns the full key value only once.
      * Create API key
      */
     async createApiKey(requestParameters: CreateApiKeyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateAPIKeyResponse> {

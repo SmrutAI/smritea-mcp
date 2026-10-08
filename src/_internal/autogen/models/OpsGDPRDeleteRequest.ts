@@ -20,12 +20,6 @@ import { mapValues } from '../runtime';
  */
 export interface OpsGDPRDeleteRequest {
     /**
-     * AppID scopes deletion to a specific application (required to prevent cross-app deletion)
-     * @type {string}
-     * @memberof OpsGDPRDeleteRequest
-     */
-    appId: string;
-    /**
      * ConversationID optionally limits deletion to a specific conversation
      * @type {string}
      * @memberof OpsGDPRDeleteRequest
@@ -55,7 +49,6 @@ export type OpsGDPRDeleteRequestLevelEnum = typeof OpsGDPRDeleteRequestLevelEnum
  * Check if a given object implements the OpsGDPRDeleteRequest interface.
  */
 export function instanceOfOpsGDPRDeleteRequest(value: object): value is OpsGDPRDeleteRequest {
-    if (!('appId' in value) || value['appId'] === undefined) return false;
     if (!('level' in value) || value['level'] === undefined) return false;
     return true;
 }
@@ -70,7 +63,6 @@ export function OpsGDPRDeleteRequestFromJSONTyped(json: any, ignoreDiscriminator
     }
     return {
         
-        'appId': json['app_id'],
         'conversationId': json['conversation_id'] == null ? undefined : json['conversation_id'],
         'level': json['level'],
     };
@@ -87,7 +79,6 @@ export function OpsGDPRDeleteRequestToJSONTyped(value?: OpsGDPRDeleteRequest | n
 
     return {
         
-        'app_id': value['appId'],
         'conversation_id': value['conversationId'],
         'level': value['level'],
     };

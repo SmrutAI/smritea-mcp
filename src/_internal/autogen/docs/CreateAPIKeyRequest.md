@@ -6,7 +6,6 @@
 
 Name | Type
 ------------ | -------------
-`appId` | string
 `expiresAt` | string
 `name` | string
 `scopes` | Array&lt;string&gt;
@@ -18,7 +17,6 @@ import type { CreateAPIKeyRequest } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "appId": null,
   "expiresAt": null,
   "name": null,
   "scopes": null,

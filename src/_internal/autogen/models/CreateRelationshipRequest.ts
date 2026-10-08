@@ -20,12 +20,6 @@ import { mapValues } from '../runtime';
  */
 export interface CreateRelationshipRequest {
     /**
-     * AppID is the application identifier (required)
-     * @type {string}
-     * @memberof CreateRelationshipRequest
-     */
-    appId: string;
-    /**
      * Fact is a natural language description of the relationship (required)
      * @type {string}
      * @memberof CreateRelationshipRequest
@@ -91,7 +85,6 @@ export interface CreateRelationshipRequest {
  * Check if a given object implements the CreateRelationshipRequest interface.
  */
 export function instanceOfCreateRelationshipRequest(value: object): value is CreateRelationshipRequest {
-    if (!('appId' in value) || value['appId'] === undefined) return false;
     if (!('fact' in value) || value['fact'] === undefined) return false;
     if (!('sourceEntityId' in value) || value['sourceEntityId'] === undefined) return false;
     if (!('sourceMemoryIds' in value) || value['sourceMemoryIds'] === undefined) return false;
@@ -110,7 +103,6 @@ export function CreateRelationshipRequestFromJSONTyped(json: any, ignoreDiscrimi
     }
     return {
         
-        'appId': json['app_id'],
         'fact': json['fact'],
         'metadata': json['metadata'] == null ? undefined : json['metadata'],
         'name': json['name'] == null ? undefined : json['name'],
@@ -135,7 +127,6 @@ export function CreateRelationshipRequestToJSONTyped(value?: CreateRelationshipR
 
     return {
         
-        'app_id': value['appId'],
         'fact': value['fact'],
         'metadata': value['metadata'],
         'name': value['name'],

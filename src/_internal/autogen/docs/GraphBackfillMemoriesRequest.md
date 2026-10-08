@@ -7,7 +7,6 @@ Graph backfill from memories request payload
 
 Name | Type
 ------------ | -------------
-`appId` | string
 `memoryIds` | Array&lt;string&gt;
 
 ## Example
@@ -17,7 +16,6 @@ import type { GraphBackfillMemoriesRequest } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "appId": null,
   "memoryIds": null,
 } satisfies GraphBackfillMemoriesRequest
 

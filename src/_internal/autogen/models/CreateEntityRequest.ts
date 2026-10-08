@@ -32,12 +32,6 @@ export interface CreateEntityRequest {
      */
     aliases?: Array<string>;
     /**
-     * AppID is the application identifier (required)
-     * @type {string}
-     * @memberof CreateEntityRequest
-     */
-    appId: string;
-    /**
      * Attributes contains flexible entity metadata (optional)
      * @type {{ [key: string]: object; }}
      * @memberof CreateEntityRequest
@@ -75,7 +69,6 @@ export interface CreateEntityRequest {
  */
 export function instanceOfCreateEntityRequest(value: object): value is CreateEntityRequest {
     if (!('actorId' in value) || value['actorId'] === undefined) return false;
-    if (!('appId' in value) || value['appId'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('sourceMemoryIds' in value) || value['sourceMemoryIds'] === undefined) return false;
     if (!('type' in value) || value['type'] === undefined) return false;
@@ -94,7 +87,6 @@ export function CreateEntityRequestFromJSONTyped(json: any, ignoreDiscriminator:
         
         'actorId': json['actor_id'],
         'aliases': json['aliases'] == null ? undefined : json['aliases'],
-        'appId': json['app_id'],
         'attributes': json['attributes'] == null ? undefined : json['attributes'],
         'customType': json['custom_type'] == null ? undefined : json['custom_type'],
         'name': json['name'],
@@ -116,7 +108,6 @@ export function CreateEntityRequestToJSONTyped(value?: CreateEntityRequest | nul
         
         'actor_id': value['actorId'],
         'aliases': value['aliases'],
-        'app_id': value['appId'],
         'attributes': value['attributes'],
         'custom_type': value['customType'],
         'name': value['name'],

@@ -21,12 +21,6 @@ import { mapValues } from '../runtime';
 export interface GraphBackfillMemoriesRequest {
     /**
      * 
-     * @type {string}
-     * @memberof GraphBackfillMemoriesRequest
-     */
-    appId: string;
-    /**
-     * 
      * @type {Array<string>}
      * @memberof GraphBackfillMemoriesRequest
      */
@@ -37,7 +31,6 @@ export interface GraphBackfillMemoriesRequest {
  * Check if a given object implements the GraphBackfillMemoriesRequest interface.
  */
 export function instanceOfGraphBackfillMemoriesRequest(value: object): value is GraphBackfillMemoriesRequest {
-    if (!('appId' in value) || value['appId'] === undefined) return false;
     if (!('memoryIds' in value) || value['memoryIds'] === undefined) return false;
     return true;
 }
@@ -52,7 +45,6 @@ export function GraphBackfillMemoriesRequestFromJSONTyped(json: any, ignoreDiscr
     }
     return {
         
-        'appId': json['app_id'],
         'memoryIds': json['memory_ids'],
     };
 }
@@ -68,7 +60,6 @@ export function GraphBackfillMemoriesRequestToJSONTyped(value?: GraphBackfillMem
 
     return {
         
-        'app_id': value['appId'],
         'memory_ids': value['memoryIds'],
     };
 }
