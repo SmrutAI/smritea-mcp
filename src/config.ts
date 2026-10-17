@@ -164,6 +164,18 @@ function readAuthFile(): AuthFile | null {
   return readJsonFile<AuthFile>(getAuthFilePath());
 }
 
+/** Origin segment of the trace ID the MCP sends on memory calls. */
+export const MCP_TRACE_ORIGIN = 'smritea-mcp';
+
+/**
+ * Trace ID for an MCP process started at `now`: the UTC run ID (YYYYMMDDTHHMMSS, the same form as
+ * the e2e run ID) followed by the MCP origin, for example `20261017T110203.smritea-mcp`.
+ */
+export function buildMcpTraceId(now: Date): string {
+  const runId = now.toISOString().slice(0, 19).replace(/[-:]/g, '');
+  return `${runId}.${MCP_TRACE_ORIGIN}`;
+}
+
 /**
  * Resolves the auth.json file path via the resolved settings.json's auth_file_path field,
  * defaulting to ~/.smritea/auth.json when unset. All auth reads and writes across the MCP MUST

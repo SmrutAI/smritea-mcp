@@ -3,7 +3,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { SmriteaClient } from 'smritea-sdk';
-import { loadConfig, verifyUserSetup } from './config.js';
+import { buildMcpTraceId, loadConfig, verifyUserSetup } from './config.js';
 import { refreshIfNeeded } from './auth.js';
 import { AddMemoryInput, SearchMemoriesInput, GetMemoryInput, DeleteMemoryInput, SelectAppInput } from './types.js';
 import {
@@ -13,6 +13,12 @@ import {
   handleDeleteMemory,
 } from './tools/memory.js';
 import { handleSelectApp, handleListApps } from './tools/app.js';
+
+/**
+ * Trace ID for this MCP process: a UTC timestamp run ID (YYYYMMDDTHHMMSS, the same form as the
+ * e2e run ID) followed by the MCP origin. Sent as X-Trace-ID on every memory call.
+ */
+const MCP_TRACE_ID = buildMcpTraceId(new Date());
 
 function getMemoryClient(): SmriteaClient {
   const config = loadConfig();
@@ -27,6 +33,7 @@ function getMemoryClient(): SmriteaClient {
     apiKey: config.apiKey,
     appId: config.appId,
     baseUrl: config.memoryBaseUrl,
+    traceId: MCP_TRACE_ID,
   });
 }
 
