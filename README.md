@@ -7,7 +7,7 @@ tags:
 stale_after: 2027-05-20
 generated:
   by: Tushar Dwivedi
-  at: 2026-09-22T00:00:00Z
+  at: 2026-10-19T00:00:00Z
 ---
 
 # smritea-mcp
@@ -127,7 +127,7 @@ The MCP resolves the selected app from the active `settings.json`, then resolves
 
 ### Trace ID
 
-Each memory tool call sends an `X-Trace-ID` header to the memory API. The value is the UTC start time of the MCP process, written as `YYYYMMDDTHHMMSS`, followed by `.smritea-mcp`. For example: `20261017T110203.smritea-mcp`. The value cannot be changed by a setting or an environment variable.
+Each server process generates one Trace ID when it starts and sends it as the `X-Trace-ID` header on every memory call (`add_memory`, `search_memories`, `get_memory`, `delete_memory`). The value is `<UTC start time as YYYYMMDDTHHMMSS>.smritea-mcp`, for example `20261017T110203.smritea-mcp`. All calls from one process share the same value, including calls from several SSE clients connected to one `serve-sse` process; restarting the server generates a new one. The value cannot be changed by a setting or an environment variable.
 
 ---
 

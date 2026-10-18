@@ -168,12 +168,19 @@ function readAuthFile(): AuthFile | null {
 export const MCP_TRACE_ORIGIN = 'smritea-mcp';
 
 /**
- * Trace ID for an MCP process started at `now`: the UTC run ID (YYYYMMDDTHHMMSS, the same form as
- * the e2e run ID) followed by the MCP origin, for example `20261017T110203.smritea-mcp`.
+ * Trace ID for a process started at `now`: the UTC run ID (YYYYMMDDTHHMMSS, the same form as the e2e
+ * run ID) followed by the caller's origin segment, for example `20261017T110203.smritea-mcp`.
+ */
+export function buildTraceId(now: Date, origin: string): string {
+  const runId = now.toISOString().slice(0, 19).replace(/[-:]/g, '');
+  return `${runId}.${origin}`;
+}
+
+/**
+ * Trace ID for an MCP process started at `now`, for example `20261017T110203.smritea-mcp`.
  */
 export function buildMcpTraceId(now: Date): string {
-  const runId = now.toISOString().slice(0, 19).replace(/[-:]/g, '');
-  return `${runId}.${MCP_TRACE_ORIGIN}`;
+  return buildTraceId(now, MCP_TRACE_ORIGIN);
 }
 
 /**

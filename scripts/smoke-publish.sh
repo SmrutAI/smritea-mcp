@@ -12,10 +12,10 @@
 # resolution of the installed artifact; a bundling or manifest gap dies earlier with
 # "Cannot find module".
 #
-# Usage (via `make smoke` in this directory, or `make smoke` at the smritea-cloud root):
+# Usage (via `make smoke` in this directory, or `make smoke` at the parent repository root):
 #   SDK_SPEC=local (default): pack the LOCAL smritea-sdk and depend on that tarball —
 #                             pre-publish reality, tests today's SDK code. Requires the
-#                             smritea-cloud monorepo layout (../../polyglot/smritea-sdk).
+#                             monorepo layout (../../polyglot/smritea-sdk).
 #   SDK_SPEC=latest:          depend on the public registry smritea-sdk — what
 #                             publish-mcp.sh actually ships; works in a standalone clone.
 set -euo pipefail
@@ -30,7 +30,7 @@ MCP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SDK_TS_DIR="$MCP_DIR/../../polyglot/smritea-sdk/typescript"
 SDK_SPEC="${SDK_SPEC:-local}"
 if [ "$SDK_SPEC" = "local" ] && [ ! -d "$SDK_TS_DIR" ]; then
-    fail "SDK_SPEC=local needs the smritea-cloud monorepo layout (missing $SDK_TS_DIR); use SDK_SPEC=latest in a standalone clone"
+    fail "SDK_SPEC=local needs the monorepo layout (missing $SDK_TS_DIR); use SDK_SPEC=latest in a standalone clone"
 fi
 
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/smritea-mcp-smoke.XXXXXX")"

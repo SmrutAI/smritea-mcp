@@ -1,8 +1,29 @@
 import { describe, it, expect } from 'vitest';
-import { buildMcpTraceId, MCP_TRACE_ORIGIN } from '../src/config.js';
+import { buildMcpTraceId, buildTraceId, MCP_TRACE_ORIGIN } from '../src/config.js';
 
 // The SDK accepts a trace ID of 8-100 characters from this set (see smritea-sdk client).
 const SDK_TRACE_ID_PATTERN = /^[A-Za-z0-9._:-]{8,100}$/;
+
+describe('buildTraceId', () => {
+  it.each([
+    ['2026-10-17T11:02:03.456Z', 'smritea-mcp', '20261017T110203.smritea-mcp'],
+    ['2026-10-17T11:02:03.456Z', 'smritea-plugin', '20261017T110203.smritea-plugin'],
+    ['2000-01-01T00:00:00.000Z', 'smritea-plugin', '20000101T000000.smritea-plugin'],
+    ['2026-12-31T23:59:59.999Z', 'smritea-mcp', '20261231T235959.smritea-mcp'],
+  ])('formats %s with origin %s as %s', (iso, origin, expected) => {
+    expect(buildTraceId(new Date(iso), origin), `buildTraceId(${iso}, ${origin})`).toBe(expected);
+  });
+
+  it.each([
+    ['2026-10-17T11:02:03.456Z'],
+    ['2000-01-01T00:00:00.000Z'],
+  ])('matches buildMcpTraceId for %s when given the MCP origin', (iso) => {
+    expect(
+      buildTraceId(new Date(iso), MCP_TRACE_ORIGIN),
+      'the MCP builder must be the generic builder with the MCP origin',
+    ).toBe(buildMcpTraceId(new Date(iso)));
+  });
+});
 
 describe('buildMcpTraceId', () => {
   it.each([

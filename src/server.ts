@@ -2,9 +2,9 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
-import { SmriteaClient } from 'smritea-sdk';
 import { buildMcpTraceId, loadConfig, verifyUserSetup } from './config.js';
 import { refreshIfNeeded } from './auth.js';
+import { createMemoryClient } from './memory-client.js';
 import { AddMemoryInput, SearchMemoriesInput, GetMemoryInput, DeleteMemoryInput, SelectAppInput } from './types.js';
 import {
   handleAddMemory,
@@ -19,23 +19,6 @@ import { handleSelectApp, handleListApps } from './tools/app.js';
  * e2e run ID) followed by the MCP origin. Sent as X-Trace-ID on every memory call.
  */
 const MCP_TRACE_ID = buildMcpTraceId(new Date());
-
-function getMemoryClient(): SmriteaClient {
-  const config = loadConfig();
-
-  if (config.apiKey === undefined || config.appId === undefined) {
-    throw new Error(
-      'No app selected or no API key found. Run list_apps and select_app first.',
-    );
-  }
-
-  return new SmriteaClient({
-    apiKey: config.apiKey,
-    appId: config.appId,
-    baseUrl: config.memoryBaseUrl,
-    traceId: MCP_TRACE_ID,
-  });
-}
 
 /**
  * Preflight for the memory tools: if the user-level setup can't support an API call
@@ -154,7 +137,7 @@ export function createMcpServer(): McpServer {
         return pre;
       }
       const config = loadConfig();
-      const client = getMemoryClient();
+      const client = createMemoryClient(config, MCP_TRACE_ID);
       return handleAddMemory(client, AddMemoryInput.parse(input), config);
     },
   );
@@ -172,7 +155,7 @@ export function createMcpServer(): McpServer {
       if (pre !== null) {
         return pre;
       }
-      const client = getMemoryClient();
+      const client = createMemoryClient(loadConfig(), MCP_TRACE_ID);
       return handleSearchMemories(client, SearchMemoriesInput.parse(input));
     },
   );
@@ -187,7 +170,7 @@ export function createMcpServer(): McpServer {
       if (pre !== null) {
         return pre;
       }
-      const client = getMemoryClient();
+      const client = createMemoryClient(loadConfig(), MCP_TRACE_ID);
       return handleGetMemory(client, GetMemoryInput.parse(input));
     },
   );
@@ -203,7 +186,7 @@ export function createMcpServer(): McpServer {
       if (pre !== null) {
         return pre;
       }
-      const client = getMemoryClient();
+      const client = createMemoryClient(loadConfig(), MCP_TRACE_ID);
       return handleDeleteMemory(client, DeleteMemoryInput.parse(input));
     },
   );
