@@ -82,7 +82,7 @@ In a conversation with Claude Code, run:
 Use the list_apps tool, then use the select_app tool with app_id "<your-app-id>"
 ```
 
-`list_apps` uses the generated Studio SDK and the Studio JWT from `~/.smritea/auth.json` to load real apps from the control plane. `select_app` stores `selected_app_id` in `~/.smritea/settings.json`. If the selected app has no stored API key yet, `select_app` creates one through the Studio API and saves it back to `~/.smritea/auth.json` using the name `smritea-plugin-<YYYY-MM-DD>`.
+`list_apps` uses the Smritea Studio API client and the login token from `~/.smritea/auth.json` to load your real apps. `select_app` stores `selected_app_id` in `~/.smritea/settings.json`. If the selected app has no stored API key yet, `select_app` creates one through the Studio API and saves it back to `~/.smritea/auth.json` using the name `smritea-plugin-<YYYY-MM-DD>`.
 
 With `SMRITEA_DEV_CONFIG` on, a project-level `.smritea/settings.dev.json` can override `selected_app_id` and both base URLs for a specific project — see Configuration below.
 
@@ -177,7 +177,7 @@ Use the select_app tool with app_id "app_abc123" and app_name "My Project"
 
 List real Studio apps for the logged-in Studio account.
 
-It uses the generated Studio SDK against the control plane with the Studio JWT from `~/.smritea/auth.json`.
+It uses the Smritea Studio API client with the login token from `~/.smritea/auth.json`.
 
 **Parameters**: none
 
@@ -275,10 +275,10 @@ Delete a memory by its ID. This action is irreversible.
 ## How it works
 
 smritea-mcp is a TypeScript MCP server that wraps two client layers:
-- the customer `smritea-sdk` for dataplane memory operations
-- the generated Studio SDK for control-plane login, app listing, and API-key provisioning
+- the customer `smritea-sdk` for memory operations
+- the Smritea Studio API client for login, app listing, and API-key provisioning
 
-The server starts without requiring app selection — `list_apps` and `select_app` work immediately after login. A new dataplane client is created on every memory tool call; none is cached. Every tool invocation reads config and auth fresh from disk, so login, token refresh, and app selection take effect without restarting the server.
+The server starts without requiring app selection — `list_apps` and `select_app` work immediately after login. A new `smritea-sdk` client is created on every memory tool call; none is cached. Every tool invocation reads config and auth fresh from disk, so login, token refresh, and app selection take effect without restarting the server.
 
 It supports two transports:
 

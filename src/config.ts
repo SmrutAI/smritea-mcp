@@ -17,8 +17,8 @@
  * API key, both URLs) comes exclusively from the resolved settings.json / auth.json.
  *
  * The Smritea platform is split across two base URLs:
- *   - Data plane  (`memoryBaseUrl`)   — memory add/search/get/delete (SmriteaClient). Hardcoded default: https://api-us.smritea.ai
- *   - Control plane (`studioBaseUrl`) — org/app/auth management. Hardcoded default: https://api.smritea.ai
+ *   - Smritea Dataplane API (`memoryBaseUrl`) — memory add/search/get/delete (SmriteaClient). Hardcoded default: https://api-us.smritea.ai
+ *   - Smritea Studio API (`studioBaseUrl`)    — org/app/auth management. Hardcoded default: https://api.smritea.ai
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
