@@ -88,7 +88,7 @@ export interface AppResponse {
     /**
      * InvalidConfigs lists stored configs that failed to parse; each such config field above
      * is null. Empty when every stored config is valid. Not redacted: the parse error is about
-     * the customer's own config (spec 186 D3).
+     * the customer's own config.
      * @type {Array<InvalidAppConfig>}
      * @memberof AppResponse
      */

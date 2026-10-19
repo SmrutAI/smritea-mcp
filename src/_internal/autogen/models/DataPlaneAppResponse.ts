@@ -29,15 +29,15 @@ import {
 export interface DataPlaneAppResponse {
     /**
      * DataPlaneCloud is the pinned data plane's cloud provider: "aws", "azure", or
-     * "docker". Populated by studio-api enrichment, same as DataPlaneID.
+     * "docker". Populated by Studio enrichment, same as DataPlaneID.
      * @type {string}
      * @memberof DataPlaneAppResponse
      */
     dataPlaneCloud?: string;
     /**
      * DataPlaneID is the data plane this app is permanently pinned to. Populated by
-     * studio-api enrichment (from the OrgApp.DataPlaneID column), not by dataplane-api's
-     * own response — dataplane-api has no concept of its own ID or of any other plane's
+     * Studio enrichment (from the OrgApp.DataPlaneID column), not by the data plane's
+     * own response — the data plane has no concept of its own ID or of any other plane's
      * existence. Immutable after app creation.
      * @type {string}
      * @memberof DataPlaneAppResponse
@@ -45,14 +45,14 @@ export interface DataPlaneAppResponse {
     dataPlaneId?: string;
     /**
      * DataPlaneRegion is the human-readable region of the pinned data plane (e.g.
-     * "us-east-1"). Populated by studio-api enrichment, same as DataPlaneID.
+     * "us-east-1"). Populated by Studio enrichment, same as DataPlaneID.
      * @type {string}
      * @memberof DataPlaneAppResponse
      */
     dataPlaneRegion?: string;
     /**
      * HasPendingDraft indicates whether this app has a pending configuration draft.
-     * Set by studio-api during enrichment to show if the app has unsaved changes.
+     * Set by Studio during enrichment to show if the app has unsaved changes.
      * @type {boolean}
      * @memberof DataPlaneAppResponse
      */
@@ -65,7 +65,7 @@ export interface DataPlaneAppResponse {
     response?: AppResponse;
     /**
      * SyncStatus indicates the sync status of the app to data planes (synced, pending, failed)
-     * Set by studio-api during enrichment to show dashboard sync state
+     * Set by Studio during enrichment to show dashboard sync state
      * @type {string}
      * @memberof DataPlaneAppResponse
      */

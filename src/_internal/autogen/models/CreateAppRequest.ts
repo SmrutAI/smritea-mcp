@@ -62,7 +62,7 @@ export interface CreateAppRequest {
     /**
      * ID optionally pins the application identifier (prefixed nanoid). When empty the
      * server generates one. Used by callers that stage an app id before creation
-     * (e.g. smritea-cloud app-config drafts) so the id stays stable across staging and creation.
+     * (e.g. app-config drafts) so the id stays stable across staging and creation.
      * @type {string}
      * @memberof CreateAppRequest
      */
