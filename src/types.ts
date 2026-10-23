@@ -54,10 +54,9 @@ export const SearchMemoriesInput = z.object({
     .describe('Display name of the requester, used to derive speaker_actor_id (same slug as add) for pronoun resolution — NOT a filter. Setting it does NOT restrict results to that person. To restrict which memories are searched, use conversation_id or participant_ids. Max 255 chars.'),
   participant_ids: z
     .array(z.string())
-    .min(2)
     .nullish()
     .describe(
-      'Search across conversations where ALL listed actors participated (AND semantics). Requires at least 2 IDs. Mutually exclusive with conversation_id.',
+      'Search across conversations where ALL listed actors participated (AND semantics). One ID selects every conversation that actor took part in. Duplicate IDs are ignored; null or an empty list means no participant filter. Cannot be combined with conversation_id: the server rejects a search that sets both.',
     ),
   limit: z
     .number()

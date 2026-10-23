@@ -49,6 +49,7 @@ vi.mock('smritea-sdk', () => {
 
 import { SmriteaError, SmriteaUnauthorizedError, SmriteaPaymentRequiredError, SmriteaTooManyRequestsError } from 'smritea-sdk';
 import type { ResolvedConfig } from '../src/config.js';
+import { SearchMemoriesInput } from '../src/types.js';
 import {
   formatError,
   handleAddMemory,
@@ -283,6 +284,44 @@ describe('handleSearchMemories', () => {
 
     expect(result.isError).toBe(true);
     expect(result.content[0].text).toContain('Server error');
+  });
+
+  const participantCases: { name: string; participant_ids: string[] | null | undefined; want: string[] | undefined }[] = [
+    { name: 'omitted is not sent', participant_ids: undefined, want: undefined },
+    { name: 'null is not sent', participant_ids: null, want: undefined },
+    { name: 'empty list is passed through (the server treats it as unset)', participant_ids: [], want: [] },
+    { name: 'one ID is passed through', participant_ids: ['alice'], want: ['alice'] },
+    { name: 'two IDs are passed through', participant_ids: ['alice', 'bob'], want: ['alice', 'bob'] },
+    { name: 'duplicate IDs are passed through (the server drops duplicates)', participant_ids: ['alice', 'alice'], want: ['alice', 'alice'] },
+  ];
+
+  it.each(participantCases)('participant_ids: $name', async ({ participant_ids, want }) => {
+    mockClient.search.mockResolvedValue([]);
+
+    await handleSearchMemories(mockClient as any, { query: 'q', participant_ids });
+
+    const [, opts] = mockClient.search.mock.calls[0];
+    expect(opts.scope.participantIds).toEqual(want);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// SearchMemoriesInput participant_ids schema
+// ---------------------------------------------------------------------------
+describe('SearchMemoriesInput participant_ids', () => {
+  const schemaCases: { name: string; participant_ids: unknown; valid: boolean }[] = [
+    { name: 'omitted', participant_ids: undefined, valid: true },
+    { name: 'null', participant_ids: null, valid: true },
+    { name: 'empty list', participant_ids: [], valid: true },
+    { name: 'one ID', participant_ids: ['alice'], valid: true },
+    { name: 'two IDs', participant_ids: ['alice', 'bob'], valid: true },
+    { name: 'not a list', participant_ids: 'alice', valid: false },
+    { name: 'list of numbers', participant_ids: [1, 2], valid: false },
+  ];
+
+  it.each(schemaCases)('$name -> valid=$valid', ({ participant_ids, valid }) => {
+    const parsed = SearchMemoriesInput.safeParse({ query: 'q', participant_ids });
+    expect(parsed.success).toBe(valid);
   });
 });
 

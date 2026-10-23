@@ -47,7 +47,7 @@ export interface SearchExplainRequest {
      */
     actorType?: SearchExplainRequestActorTypeEnum;
     /**
-     * ConversationID restricts the search to one conversation (optional).
+     * ConversationID restricts the search to one conversation (optional). Cannot be combined with participant_ids.
      * @type {string}
      * @memberof SearchExplainRequest
      */
@@ -97,7 +97,10 @@ export interface SearchExplainRequest {
      */
     method?: SearchExplainRequestMethodEnum;
     /**
-     * ParticipantIDs restricts the search to conversations that include all these actors (optional, >= 2 ids).
+     * ParticipantIDs restricts the search to conversations by their participants (optional). One ID selects every
+     * conversation that actor took part in; several IDs select conversations where ALL of them took part. Duplicate
+     * IDs are ignored. null and [] mean no filter. Cannot be combined with a non-empty ConversationID (rejected with
+     * 400 VALIDATION_FAILED).
      * @type {Array<string>}
      * @memberof SearchExplainRequest
      */

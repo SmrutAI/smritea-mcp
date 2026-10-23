@@ -230,7 +230,7 @@ filter by `scope.actor_id`, but this tool does not expose that; it only sends `c
 | `actor_id` | string | No | Identity of who is asking (the speaker), used only for pronoun resolution and audit — never a filter. It does not restrict results to that actor. Omit to search with no requester identity; unlike `add_memory` it does not default to your configured identity. |
 | `actor_type` | string | No | Not used as a filter by this tool — actor input is sent as the speaker identity, not a scope filter. Accepted only for parity with `add_memory`. |
 | `actor_name` | string | No | Display name of the requester, used to derive the speaker identity (same slug as `add_memory`) for pronoun resolution — not a filter. Setting it does not restrict results to that person. |
-| `participant_ids` | string[] | No | Search across conversations where all listed actors participated (AND semantics). Requires at least 2 IDs. Mutually exclusive with `conversation_id`. |
+| `participant_ids` | string[] | No | Search across conversations where all listed actors participated (AND semantics). One ID selects every conversation that actor took part in. Duplicate IDs are ignored; `null` or an empty list means no participant filter. Cannot be combined with `conversation_id`: the server rejects a search that sets both. |
 | `limit` | number | No | Number of results; must not exceed the server `top_n_max` (default 20). Omit to use the app top_n. |
 | `graph_depth` | number | No | Graph traversal depth (`1`-`5`). Omit to use the system default. |
 | `conversation_id` | string | No | Filter to a specific conversation. |
