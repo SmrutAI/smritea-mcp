@@ -1,7 +1,11 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
+
 import { buildMcpTraceId, loadConfig, verifyUserSetup } from './config.js';
 import { refreshIfNeeded } from './auth.js';
 import { createMemoryClient } from './memory-client.js';
@@ -13,6 +17,17 @@ import {
   handleDeleteMemory,
 } from './tools/memory.js';
 import { handleSelectApp, handleListApps } from './tools/app.js';
+
+/** Runtime-resolved version from package.json (read once at module-load time, never hardcoded). */
+const SERVER_VERSION = (() => {
+  try {
+    const pkgPath = join(__dirname, '..', 'package.json');
+    const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as { version?: string };
+    return typeof pkg.version === 'string' && pkg.version.length > 0 ? pkg.version : 'unknown';
+  } catch {
+    return 'unknown';
+  }
+})();
 
 /**
  * Trace ID for this MCP process: a UTC timestamp run ID (YYYYMMDDTHHMMSS, the same form as the
@@ -103,7 +118,7 @@ function actorDefaultsHint(email: string | undefined, name: string | undefined):
  */
 export function createMcpServer(): McpServer {
   const server = new McpServer(
-    { name: 'smritea', version: '0.1.0' },
+    { name: 'smritea', version: SERVER_VERSION },
     {
       instructions:
         'smritea is a persistent AI memory system. Use it to remember facts, preferences, ' +
